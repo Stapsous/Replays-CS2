@@ -25,6 +25,8 @@ jobs:
         run: |
           test -n "$PW" || { echo "::error::Secret ANDROID_KEY_PASSWORD absent"; exit 1; }
           openssl enc -d -aes-256-cbc -pbkdf2 -in android/keystore.enc -out android/android.keystore -pass env:PW
+          # Bubblewrap cherche les outils du SDK dans <sdk>/tools : on y relie les outils actuels
+          [ -e "$ANDROID_HOME/tools" ] || sudo ln -sfn "$ANDROID_HOME/cmdline-tools/latest" "$ANDROID_HOME/tools"
           mkdir -p ~/.bubblewrap
           echo "{\"jdkPath\":\"$JAVA_HOME\",\"androidSdkPath\":\"$ANDROID_HOME\"}" > ~/.bubblewrap/config.json
           cd android
