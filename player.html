@@ -44,6 +44,7 @@
   button { font: inherit; font-weight: 600; background: var(--panel); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; cursor: pointer; min-width: 64px; font-variant-numeric: tabular-nums; }
   button:hover { border-color: var(--muted); }
   button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .vol { width: 110px; accent-color: var(--accent); cursor: pointer; }
   .qual { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; }
   .qual select { font: inherit; font-weight: 600; background: var(--panel); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; }
   button.main { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); min-width: 96px; }
@@ -75,6 +76,7 @@
   <button id="b-p300" type="button">+5 min</button>
   <span class="clock" id="clock" title="Temps écoulé depuis le repère de départ">+0:00:00</span>
   <button id="b-mute" type="button">Son</button>
+  <input id="volume" class="vol" type="range" min="0" max="100" step="5" value="100" aria-label="Volume" title="Volume (flèches haut / bas)">
   <label class="qual" for="quality">Qualité
     <select id="quality" title="Qualité de la vidéo (mémorisée pour les prochains replays)">
       <option value="max">Maximale</option>
@@ -85,7 +87,7 @@
 </div>
 
 <p class="help" id="help" hidden>
-  <kbd>Espace</kbd> pause (pour reprendre : clic dans la vidéo, exigence de Twitch) · <kbd>←</kbd> <kbd>→</kbd> 10 s · <kbd>Maj</kbd>+<kbd>←</kbd> <kbd>→</kbd> 1 min · <kbd>Ctrl</kbd>+<kbd>←</kbd> <kbd>→</kbd> 5 min · <kbd>M</kbd> son · <kbd>F</kbd> plein écran. Sur mobile en plein écran : double tap à gauche (-10 s) ou à droite (+10 s).
+  <kbd>Espace</kbd> pause (pour reprendre : clic dans la vidéo, exigence de Twitch) · <kbd>←</kbd> <kbd>→</kbd> 10 s · <kbd>Maj</kbd>+<kbd>←</kbd> <kbd>→</kbd> 1 min · <kbd>Ctrl</kbd>+<kbd>←</kbd> <kbd>→</kbd> 5 min · <kbd>M</kbd> son · <kbd>↑</kbd> <kbd>↓</kbd> volume · <kbd>F</kbd> plein écran. Sur mobile en plein écran : double tap à gauche (-10 s) ou à droite (+10 s).
   La durée totale de la vidéo n'est jamais affichée.
 </p>
 
@@ -180,6 +182,24 @@
   }
   function mute() { mutedState = !mutedState; try { player.setMuted(mutedState); } catch (e) {} sync(); }
 
+  // Volume : curseur 0 à 100, mémorisé dans ce navigateur, appliqué dès que le lecteur est prêt.
+  var volEl = document.getElementById("volume"), V_KEY = "replays-volume";
+  var vol = 100; try { var sv = parseInt(localStorage.getItem(V_KEY), 10); if (!isNaN(sv)) vol = Math.max(0, Math.min(100, sv)); } catch (e) {}
+  volEl.value = vol;
+  function setVol(v, show) {
+    vol = Math.max(0, Math.min(100, Math.round(v)));
+    volEl.value = vol;
+    try { player.setVolume(vol / 100); } catch (e) {}
+    if (vol > 0 && mutedState) { mutedState = false; try { player.setMuted(false); } catch (e) {} sync(); }
+    try { localStorage.setItem(V_KEY, String(vol)); } catch (e) {}
+    if (show) flash("Volume " + vol + " %");
+  }
+  volEl.addEventListener("input", function () { setVol(+volEl.value, false); });
+  volEl.addEventListener("change", function () { setVol(+volEl.value, true); });
+  try { player.addEventListener(Twitch.Player.READY, function () { setVol(vol, false); }); } catch (e) {}
+  var volApplied = false;
+  setInterval(function () { if (started && !volApplied) { volApplied = true; setVol(vol, false); } }, 1000);
+
   // Souris : clic = lecture/pause, double-clic = plein écran.
   // Tactile : tap = lecture/pause ; double tap en plein écran = -10 s (moitié gauche) ou +10 s (moitié droite),
   // double tap hors plein écran = plein écran. Le tap simple attend un court instant pour distinguer le double tap.
@@ -215,6 +235,8 @@
     else if (e.key === "ArrowLeft") { e.preventDefault(); skip(-step); }
     else if (e.key === "f" || e.key === "F") { fullscreen(); }
     else if (e.key === "m" || e.key === "M") { mute(); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); setVol(vol + 10, true); }
+    else if (e.key === "ArrowDown") { e.preventDefault(); setVol(vol - 10, true); }
   });
 
   // Garde le focus clavier sur la page même si l'iframe Twitch le prend
