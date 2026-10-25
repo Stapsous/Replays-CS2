@@ -294,9 +294,11 @@
     var reserve = Math.max(40, Math.ceil(used) + 2);
     document.documentElement.style.setProperty("--reserve", reserve + "px");
   }
-  window.addEventListener("resize", function () { requestAnimationFrame(fitStage); });
-  new MutationObserver(function () { requestAnimationFrame(fitStage); }).observe(document.body, { attributes: true, attributeFilter: ["class"], subtree: true });
-  requestAnimationFrame(fitStage); setTimeout(fitStage, 500);
+  var fitTimer;
+  function fitSoon() { clearTimeout(fitTimer); fitTimer = setTimeout(fitStage, 60); }
+  window.addEventListener("resize", fitSoon);
+  new MutationObserver(fitSoon).observe(document.body, { attributes: true, attributeFilter: ["class", "hidden"], subtree: true });
+  fitSoon(); setTimeout(fitStage, 500);
 
   // Qualité : par défaut la plus haute disponible (Source), choix mémorisé dans ce navigateur.
   // Le mode auto de Twitch choisit souvent une qualité basse dans un lecteur intégré.
