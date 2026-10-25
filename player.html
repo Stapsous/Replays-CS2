@@ -301,7 +301,14 @@
     showUi();
   });
 
-  document.addEventListener("keydown", function (e) {
+  document.addEventListener("keydown", onKey);
+  // Lecteur intégré à la liste : la page parente nous transmet les touches quand le focus est chez elle
+  if (EMBED) window.addEventListener("message", function (e) {
+    if (e.origin !== location.origin || !e.data || e.data.replays !== "key") return;
+    var d = e.data; showUi();
+    onKey({ key: d.key, code: d.code, ctrlKey: !!d.ctrlKey, shiftKey: !!d.shiftKey, preventDefault: function () {} });
+  });
+  function onKey(e) {
     var step = e.ctrlKey ? 300 : e.shiftKey ? 60 : 10;
     if (e.code === "Space" || e.key === "k") { e.preventDefault(); toggle(); }
     else if (e.key === "ArrowRight") { e.preventDefault(); skip(step); }
@@ -312,7 +319,7 @@
     else if (e.key === "i" || e.key === "I") { toggleStats(); }
     else if (e.key === "ArrowUp") { e.preventDefault(); setVol(vol + 10, true); }
     else if (e.key === "ArrowDown") { e.preventDefault(); setVol(vol - 10, true); }
-  });
+  }
 
   // Garde le focus clavier sur la page même si l'iframe Twitch le prend
   window.addEventListener("blur", function () { setTimeout(function () { if (document.activeElement && document.activeElement.tagName === "IFRAME") { document.activeElement.blur(); window.focus(); } }, 0); });

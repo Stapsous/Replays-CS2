@@ -329,6 +329,18 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
   function saveWide(on) { setWide(on); try { localStorage.setItem(TH_KEY, on ? "1" : "0"); } catch (e) {} }
   document.getElementById("side-hide").addEventListener("click", function () { saveWide(true); });
   document.getElementById("reopen").addEventListener("click", function () { saveWide(false); });
+  // Raccourcis clavier du lecteur même quand le focus est sur la liste
+  var FWD = /^( |k|K|f|F|t|T|m|M|i|I|ArrowLeft|ArrowRight|ArrowUp|ArrowDown)$/;
+  document.addEventListener("keydown", function (e) {
+    if (!document.body.classList.contains("watching") || e.altKey || e.metaKey) return;
+    var tg = e.target && e.target.tagName;
+    if (tg === "INPUT" || tg === "SELECT" || tg === "TEXTAREA") return;
+    if (!FWD.test(e.key)) return;
+    e.preventDefault();
+    // Le plein écran exige un geste dans la page qui le demande : on le fait ici, sur le lecteur entier
+    if (e.key === "f" || e.key === "F") { if (document.fullscreenElement) document.exitFullscreen().catch(function () {}); else if (frame.requestFullscreen) frame.requestFullscreen().catch(function () {}); return; }
+    try { frame.contentWindow.postMessage({ replays: "key", key: e.key, code: e.code, ctrlKey: e.ctrlKey, shiftKey: e.shiftKey }, location.origin); } catch (x) {}
+  });
   window.addEventListener("message", function (e) {
     if (e.origin !== location.origin || !e.data || e.data.replays !== "theater") return;
     setWide(e.data.on);
