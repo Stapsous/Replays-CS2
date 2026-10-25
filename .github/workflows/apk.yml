@@ -39,7 +39,7 @@ jobs:
         run: |
           yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
           set -o pipefail
-          report() { tail -c 3500 build.log | sed 's/\x1b\[[0-9;]*m//g' | python3 -c 'import sys;print("::error title=Journal::"+sys.stdin.read().replace("%","%25").replace("\r","").replace("\n","%0A"))'; exit 1; }
+          report() { { grep -v '^\s*at ' build.log | grep -i -B2 -A10 'what went wrong\|error\|failed' | head -c 3000; echo ----; grep -v '^\s*at ' build.log | tail -c 800; } | sed 's/\x1b\[[0-9;]*m//g' | python3 -c 'import sys;print("::error title=Journal::"+sys.stdin.read().replace("%","%25").replace("\r","").replace("\n","%0A"))'; exit 1; }
           bubblewrap update --skipVersionUpgrade < /dev/null 2>&1 | tee build.log || report
           bubblewrap build --skipPwaValidation < /dev/null 2>&1 | tee build.log || report
           ls -la *.apk
