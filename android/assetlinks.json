@@ -1,0 +1,4 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": { "namespace": "android_app", "package_name": "io.github.stapsous.replays", "sha256_cert_fingerprints": ["63:68:AE:CC:DB:05:4F:FC:D8:14:85:97:FB:75:98:3D:19:7B:37:07:6D:D2:78:CF:D0:57:49:A0:5F:98:3C:55"] }
+}]

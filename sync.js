@@ -77,7 +77,7 @@ async function initMessaging(app) {
     // Page ouverte : Firebase ne montre rien tout seul, on affiche la notification nous-mêmes
     mM.onMessage(messaging, async (p) => {
       const d = p.data || {}; const reg = await swRegister();
-      if (reg && Notification.permission === "granted") reg.showNotification(d.title || "Replays Vitality", { body: d.body || "", tag: d.tag || undefined, data: { link: d.link || location.href } });
+      if (reg && Notification.permission === "granted") reg.showNotification(d.title || "Replays Vitality", { body: d.body || "", icon: "icons/icon-192.png", tag: d.tag || undefined, data: { link: d.link || location.href } });
     });
   } catch (e) {}
 }

@@ -14,7 +14,7 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage((p) => {
   const d = p.data || {};
   return self.registration.showNotification(d.title || "Replays Vitality", {
-    body: d.body || "", tag: d.tag || undefined, data: { link: d.link || self.registration.scope }
+    body: d.body || "", icon: "icons/icon-192.png", tag: d.tag || undefined, data: { link: d.link || self.registration.scope }
   });
 });
 self.addEventListener("notificationclick", (e) => {

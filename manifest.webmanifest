@@ -1,0 +1,19 @@
+{
+  "name": "Replays Vitality",
+  "short_name": "Replays",
+  "description": "Replays CS2 de Team Vitality sans spoiler",
+  "id": "/Replays-CS2/",
+  "start_url": "/Replays-CS2/",
+  "scope": "/Replays-CS2/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#121315",
+  "theme_color": "#121315",
+  "lang": "fr",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
