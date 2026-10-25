@@ -76,6 +76,34 @@ details.group .count { color: var(--muted); opacity: .7; }
 @media (prefers-reduced-motion: reduce) { details.group > summary::before { transition: none; } }
 .empty { border: 1px dashed var(--line); border-radius: 10px; padding: 20px; color: var(--muted); }
 .tips { font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; display: flex; flex-direction: column; gap: 4px; }
+/* Lecture dans la page : lecteur à gauche, liste des replays en menu à droite (repliable), empilés sur mobile */
+.watch, .side-head, .reopen { display: none; }
+body.watching { padding: 0; }
+body.watching .app { display: grid; grid-template-columns: minmax(0, 1fr) 360px; height: 100vh; }
+body.watching .watch { display: block; min-width: 0; }
+body.watching .watch iframe { width: 100%; height: 100%; border: 0; display: block; background: var(--bg); }
+body.watching .side { overflow-y: auto; border-left: 1px solid var(--line); background: var(--bg); }
+body.watching .side-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--bg); z-index: 2; }
+.side-head .label { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.side-head button, .reopen { font: inherit; font-size: 13px; background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer; }
+.side-head button:hover, .reopen:hover { border-color: var(--muted); }
+body.watching main { max-width: none; padding: 16px; gap: 18px; }
+body.watching h1 { font-size: 28px; }
+body.watching .eyebrow, body.watching .lede, body.watching .tips { display: none; }
+body.watching .row { grid-template-columns: 1fr; }
+body.watching.wide .app { grid-template-columns: minmax(0, 1fr); }
+body.watching.wide .side { display: none; }
+body.watching.wide .reopen { display: block; position: fixed; right: max(8px, env(safe-area-inset-right, 0px)); top: 12px; z-index: 5; }
+.row.current { background: color-mix(in srgb, var(--accent) 14%, var(--surface)); }
+.row.current a.watch, a.map.current { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (max-width: 900px) {
+  body.watching .app { display: block; height: auto; }
+  body.watching .watch { height: 100svh; }
+  body.watching .side { border-left: 0; border-top: 1px solid var(--line); overflow: visible; }
+  body.watching .side-head { position: static; }
+  body.watching.wide .side { display: block; }
+  body.watching.wide .reopen, .side-head #side-hide { display: none; }
+}
 @media (max-width: 440px) {
   h1 { font-size: 36px; }
   .row { grid-template-columns: 1fr; }
@@ -83,6 +111,10 @@ details.group .count { color: var(--muted); opacity: .7; }
 </style>
 </head>
 <body>
+<div class="app">
+<section class="watch" id="watch" aria-label="Lecteur"><iframe id="frame" title="Lecteur sans spoiler" allow="autoplay; fullscreen" allowfullscreen></iframe></section>
+<aside class="side" id="side">
+<div class="side-head"><span class="label">Replays</span><span><button id="side-hide" type="button" title="Replier le menu (mode théâtre)">Replier ›</button> <button id="close" type="button" title="Fermer le lecteur">Fermer ✕</button></span></div>
 <main>
   <header>
     <div class="eyebrow">CS2 · sans spoiler</div>
@@ -102,6 +134,9 @@ details.group .count { color: var(--muted); opacity: .7; }
     <span>La page se met à jour toute seule toutes les 3 minutes.</span>
   </div>
 </main>
+</aside>
+</div>
+<button class="reopen" id="reopen" type="button" title="Afficher la liste des replays">‹ Replays</button>
 
 <script>
 (function () {
@@ -224,7 +259,61 @@ details.group .count { color: var(--muted); opacity: .7; }
     if (!keys.length) { daysEl.appendChild(el("div", "empty", "Aucun match pour l'instant.")); return; }
     group("avenir", "À venir", upcoming);
     group("replays", "Replays", past);
+    if (typeof markCurrent === "function") markCurrent();
   }
+
+  // ----- Lecture dans la page -----
+  var frame = document.getElementById("frame"), current = "";
+  var TH_KEY = "replays-theater";
+  function setWide(on) { document.body.classList.toggle("wide", !!on); }
+  function markCurrent() {
+    [].forEach.call(document.querySelectorAll(".row.current, a.map.current"), function (x) { x.classList.remove("current"); });
+    if (!current) return;
+    [].forEach.call(daysEl.querySelectorAll("a.watch, a.map"), function (a) {
+      if (a.getAttribute("href") !== current) return;
+      if (a.classList.contains("map")) a.classList.add("current"); else a.closest(".row").classList.add("current");
+    });
+  }
+  function play(href, push) {
+    var m = href.match(/[?&]v=(\d+)/), t = href.match(/[?&]t=([0-9hms]+)/);
+    if (!m) return false;
+    current = href;
+    document.body.classList.add("watching");
+    var th = false; try { th = localStorage.getItem(TH_KEY) === "1"; } catch (e) {}
+    setWide(th);
+    frame.src = "player.html?embed=1&v=" + m[1] + "&t=" + (t ? t[1] : "0s");
+    try { history[push ? "pushState" : "replaceState"]({ href: href }, "", "?play=" + m[1] + "&t=" + (t ? t[1] : "0s")); } catch (e) {}
+    markCurrent();
+    window.scrollTo(0, 0);
+    return true;
+  }
+  function closePlayer(push) {
+    current = ""; frame.src = "about:blank";
+    document.body.classList.remove("watching", "wide");
+    try { history[push ? "pushState" : "replaceState"]({}, "", location.pathname); } catch (e) {}
+    markCurrent();
+  }
+  daysEl.addEventListener("click", function (e) {
+    var a = e.target.closest && e.target.closest("a.watch, a.map");
+    if (!a || e.ctrlKey || e.metaKey || e.shiftKey || e.button === 1) return;
+    if (play(a.getAttribute("href"), true)) e.preventDefault();
+  });
+  document.getElementById("close").addEventListener("click", function () { closePlayer(true); });
+  function saveWide(on) { setWide(on); try { localStorage.setItem(TH_KEY, on ? "1" : "0"); } catch (e) {} }
+  document.getElementById("side-hide").addEventListener("click", function () { saveWide(true); });
+  document.getElementById("reopen").addEventListener("click", function () { saveWide(false); });
+  window.addEventListener("message", function (e) {
+    if (e.origin !== location.origin || !e.data || e.data.replays !== "theater") return;
+    setWide(e.data.on);
+  });
+  window.addEventListener("popstate", function () {
+    var p = new URLSearchParams(location.search);
+    if (p.get("play")) play("player.html?v=" + p.get("play") + "&t=" + (p.get("t") || "0s"), false); else closePlayer(false);
+  });
+  (function () {
+    var p = new URLSearchParams(location.search);
+    if (p.get("play")) play("player.html?v=" + p.get("play") + "&t=" + (p.get("t") || "0s"), false);
+  })();
 
   function refresh() {
     fetch("data.json?nocache=" + Date.now(), { cache: "no-store" })
