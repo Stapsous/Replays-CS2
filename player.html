@@ -36,7 +36,8 @@
   body.overlay .help, body.overlay .start-hint { display: none; }
   body.overlay .bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; max-width: none; padding: 28px 12px calc(10px + env(safe-area-inset-bottom, 0px)); background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, .78) 45%); opacity: 0; transition: opacity .25s; }
   body.overlay.show-ui .bar, body.overlay .bar:hover, body.overlay .bar:focus-within, body.overlay .stage.is-paused ~ .bar { opacity: 1; }
-  body.overlay .bar button, body.overlay .bar select { background: rgba(23, 24, 28, .72); }
+  body.overlay .bar button:not(.main), body.overlay .bar select { background: rgba(23, 24, 28, .72); }
+  body.overlay .gate { bottom: 96px; }
   body.overlay:not(.show-ui) .stage:not(.is-paused) .shield { cursor: none; }
   @media (prefers-reduced-motion: reduce) { body.overlay .bar { transition: none; } }
   .stage:fullscreen { max-width: none; width: 100vw; height: 100vh; aspect-ratio: auto; border-radius: 0; }
@@ -271,12 +272,12 @@
   function thOn() { return thBtn.getAttribute("aria-pressed") === "true"; }
   thBtn.addEventListener("click", function () { theater(!thOn()); });
 
-  // Surimpression : affiche les boutons 2,5 s après chaque mouvement, toucher ou touche
+  // Surimpression : affiche les boutons 1 s après chaque mouvement, toucher ou touche
   var uiTimer;
   function showUi() {
     if (!document.body.classList.contains("overlay")) return;
     document.body.classList.add("show-ui");
-    clearTimeout(uiTimer); uiTimer = setTimeout(function () { document.body.classList.remove("show-ui"); }, 2500);
+    clearTimeout(uiTimer); uiTimer = setTimeout(function () { document.body.classList.remove("show-ui"); }, 1000);
   }
   ["mousemove", "touchstart", "keydown"].forEach(function (ev) { document.addEventListener(ev, showUi, { passive: true }); });
   if (EMBED) window.addEventListener("message", function (e) {
