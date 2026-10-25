@@ -36,8 +36,10 @@ jobs:
           BUBBLEWRAP_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
-          bubblewrap update --skipVersionUpgrade
-          bubblewrap build --skipPwaValidation
+          set -o pipefail
+          report() { tail -c 3500 build.log | sed 's/\x1b\[[0-9;]*m//g' | python3 -c 'import sys;print("::error title=Journal::"+sys.stdin.read().replace("%","%25").replace("\r","").replace("\n","%0A"))'; exit 1; }
+          bubblewrap update --skipVersionUpgrade < /dev/null 2>&1 | tee build.log || report
+          bubblewrap build --skipPwaValidation < /dev/null 2>&1 | tee build.log || report
           ls -la *.apk
       - name: Publier l'APK sur le site
         run: |
