@@ -285,7 +285,8 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
     document.body.classList.add("watching");
     var th = false; try { th = localStorage.getItem(TH_KEY) === "1"; } catch (e) {}
     setWide(th);
-    frame.src = "player.html?embed=1&v=" + m[1] + "&t=" + (t ? t[1] : "0s");
+    // "_" contourne le cache de GitHub Pages : le lecteur intégré est toujours la dernière version
+    frame.src = "player.html?embed=1&v=" + m[1] + "&t=" + (t ? t[1] : "0s") + "&_=" + Date.now();
     try { history[push ? "pushState" : "replaceState"]({ href: href }, "", "?play=" + m[1] + "&t=" + (t ? t[1] : "0s")); } catch (e) {}
     markCurrent();
     window.scrollTo(0, 0);
