@@ -24,6 +24,11 @@
   .flash.on { opacity: 1; }
   .paused-veil { position: absolute; z-index: 1; inset: 0; background: #000; display: none; align-items: center; justify-content: center; color: var(--muted); font-size: 18px; }
   .stage.is-paused .paused-veil { display: flex; }
+  /* Tant que la lecture n'a jamais démarré, on laisse cliquer dans Twitch (écran « Start Watching » des contenus classés) */
+  .stage:not(.armed) .shield { pointer-events: none; }
+  .stage:not(.armed) .paused-veil { display: none !important; }
+  .gate { position: absolute; z-index: 3; left: 50%; bottom: 16px; transform: translateX(-50%); background: rgba(0,0,0,.75); color: #fff; padding: 8px 14px; border-radius: 8px; font-size: 13px; text-align: center; pointer-events: none; }
+  .stage.armed .gate { display: none; }
   .bar { width: 100%; max-width: 1280px; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; }
   button { font: inherit; font-weight: 600; background: var(--panel); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; cursor: pointer; min-width: 64px; font-variant-numeric: tabular-nums; }
   button:hover { border-color: var(--muted); }
@@ -42,6 +47,7 @@
   <div class="paused-veil">En pause</div>
   <div class="shield" id="shield" title="Lecture / pause"></div>
   <div class="flash" id="flash"></div>
+  <div class="gate">Si Twitch affiche « Start Watching », clique dessus dans la vidéo.</div>
 </div>
 
 <div class="bar" id="bar" hidden>
@@ -114,7 +120,7 @@
     var muted = false; try { muted = player.getMuted(); } catch (e) {}
     muteBtn.textContent = muted ? "Son coupé" : "Son";
   }
-  function toggle() { if (paused()) { player.play(); flash("Lecture"); } else { player.pause(); flash("Pause"); } setTimeout(sync, 150); }
+  function toggle() { if (paused()) { player.play(); setTimeout(function () { if (!paused()) arm(); }, 800); flash("Lecture"); } else { player.pause(); flash("Pause"); } setTimeout(sync, 150); }
   function skip(d) {
     var cur = 0; try { cur = player.getCurrentTime(); } catch (e) {}
     var target = Math.max(0, cur + d);
@@ -148,6 +154,8 @@
   // Garde le focus clavier sur la page même si l'iframe Twitch le prend
   window.addEventListener("blur", function () { setTimeout(function () { if (document.activeElement && document.activeElement.tagName === "IFRAME") { document.activeElement.blur(); window.focus(); } }, 0); });
 
+  function arm() { stage.classList.add("armed"); sync(); }
+  player.addEventListener(Twitch.Player.PLAYING, arm);
   player.addEventListener(Twitch.Player.PLAY, sync);
   player.addEventListener(Twitch.Player.PAUSE, sync);
   player.addEventListener(Twitch.Player.READY, sync);
