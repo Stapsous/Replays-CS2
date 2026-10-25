@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Replay sans spoiler</title>
+<style>
+  :root {
+    --bg: #0d0e10; --panel: #17181c; --fg: #ecebe6; --muted: #8f929a; --line: #2a2c31; --accent: #e3b341; --accent-ink: #17181b;
+    --crop: 72px; /* bandes masquées en haut et en bas du lecteur Twitch (titre, barre de progression) */
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); font: 15px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  body { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 16px max(16px, env(safe-area-inset-left)) 24px max(16px, env(safe-area-inset-right)); }
+  .stage { position: relative; width: 100%; max-width: 1280px; aspect-ratio: 16 / 9; background: #000; overflow: hidden; border-radius: 8px; }
+  .stage:fullscreen { max-width: none; width: 100vw; height: 100vh; aspect-ratio: auto; border-radius: 0; }
+  #player { position: absolute; left: 0; right: 0; top: calc(-1 * var(--crop)); bottom: calc(-1 * var(--crop)); }
+  #player iframe { width: 100%; height: 100%; border: 0; display: block; }
+  /* Couche transparente : capte souris et clavier pour que le lecteur Twitch n'affiche jamais ses contrôles */
+  .shield { position: absolute; inset: 0; z-index: 2; cursor: pointer; }
+  .flash { position: absolute; z-index: 3; left: 50%; top: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,.65); color: #fff; padding: 10px 16px; border-radius: 8px; font-weight: 600; font-variant-numeric: tabular-nums; opacity: 0; transition: opacity .25s; pointer-events: none; }
+  .flash.on { opacity: 1; }
+  .paused-veil { position: absolute; z-index: 1; inset: 0; background: #000; display: none; align-items: center; justify-content: center; color: var(--muted); font-size: 18px; }
+  .stage.is-paused .paused-veil { display: flex; }
+  .bar { width: 100%; max-width: 1280px; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; }
+  button { font: inherit; font-weight: 600; background: var(--panel); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; cursor: pointer; min-width: 64px; font-variant-numeric: tabular-nums; }
+  button:hover { border-color: var(--muted); }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  button.main { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); min-width: 96px; }
+  .clock { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; color: var(--muted); min-width: 120px; text-align: center; font-variant-numeric: tabular-nums; }
+  .help { color: var(--muted); font-size: 13px; text-align: center; max-width: 640px; }
+  .empty { max-width: 560px; color: var(--muted); text-align: center; margin-top: 15vh; }
+  kbd { font-family: ui-monospace, Consolas, monospace; border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; color: var(--fg); }
+</style>
+<script src="https://player.twitch.tv/js/embed/v1.js"></script>
+</head>
+<body>
+<div class="stage" id="stage" hidden>
+  <div id="player"></div>
+  <div class="paused-veil">En pause</div>
+  <div class="shield" id="shield" title="Lecture / pause"></div>
+  <div class="flash" id="flash"></div>
+</div>
+
+<div class="bar" id="bar" hidden>
+  <button id="b-m300" type="button">-5 min</button>
+  <button id="b-m60" type="button">-1 min</button>
+  <button id="b-m10" type="button">-10 s</button>
+  <button id="b-play" class="main" type="button">Pause</button>
+  <button id="b-p10" type="button">+10 s</button>
+  <button id="b-p60" type="button">+1 min</button>
+  <button id="b-p300" type="button">+5 min</button>
+  <span class="clock" id="clock" title="Temps écoulé depuis le repère de départ">+0:00:00</span>
+  <button id="b-mute" type="button">Son</button>
+  <button id="b-fs" type="button">Plein écran</button>
+</div>
+
+<p class="help" id="help" hidden>
+  <kbd>Espace</kbd> lecture/pause · <kbd>←</kbd> <kbd>→</kbd> 10 s · <kbd>Maj</kbd>+<kbd>←</kbd> <kbd>→</kbd> 1 min · <kbd>Ctrl</kbd>+<kbd>←</kbd> <kbd>→</kbd> 5 min · <kbd>M</kbd> son · <kbd>F</kbd> plein écran.
+  La durée totale de la vidéo n'est jamais affichée.
+</p>
+
+<p class="empty" id="empty" hidden>Ouvre ce lecteur depuis la page Replays Vitality : il faut un lien de la forme <code>?v=&lt;id de la vidéo&gt;&amp;t=1h02m03s</code>.</p>
+
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  var vid = (q.get("v") || "").replace(/^v/, "");
+  var t = q.get("t") || "0s";
+  if (!/^\d+$/.test(vid)) { document.getElementById("empty").hidden = false; return; }
+
+  function toSec(s) {
+    var m = String(s).match(/^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$/);
+    return m ? (+(m[1] || 0)) * 3600 + (+(m[2] || 0)) * 60 + (+(m[3] || 0)) : 0;
+  }
+  var start = toSec(t);
+
+  ["stage", "bar", "help"].forEach(function (id) { document.getElementById(id).hidden = false; });
+  var stage = document.getElementById("stage");
+  var flashEl = document.getElementById("flash");
+  var clock = document.getElementById("clock");
+  var playBtn = document.getElementById("b-play");
+  var muteBtn = document.getElementById("b-mute");
+  var flashTimer;
+
+  function fmt(sec) {
+    var sign = sec < 0 ? "-" : "+"; sec = Math.abs(Math.floor(sec));
+    var h = Math.floor(sec / 3600), m = Math.floor(sec / 60) % 60, s = sec % 60;
+    return sign + h + ":" + String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
+  }
+  function flash(text) {
+    flashEl.textContent = text; flashEl.classList.add("on");
+    clearTimeout(flashTimer); flashTimer = setTimeout(function () { flashEl.classList.remove("on"); }, 700);
+  }
+
+  var player = new Twitch.Player("player", {
+    video: "v" + vid,
+    time: t,
+    parent: [location.hostname],
+    autoplay: true,
+    muted: false,
+    controls: false,
+    width: "100%",
+    height: "100%"
+  });
+
+  function paused() { try { return player.isPaused(); } catch (e) { return false; } }
+  function sync() {
+    var p = paused();
+    stage.classList.toggle("is-paused", p);
+    playBtn.textContent = p ? "Lecture" : "Pause";
+    var muted = false; try { muted = player.getMuted(); } catch (e) {}
+    muteBtn.textContent = muted ? "Son coupé" : "Son";
+  }
+  function toggle() { if (paused()) { player.play(); flash("Lecture"); } else { player.pause(); flash("Pause"); } setTimeout(sync, 150); }
+  function skip(d) {
+    var cur = 0; try { cur = player.getCurrentTime(); } catch (e) {}
+    var target = Math.max(0, cur + d);
+    player.seek(target);
+    flash((d > 0 ? "+" : "-") + (Math.abs(d) >= 60 ? Math.abs(d) / 60 + " min" : Math.abs(d) + " s"));
+  }
+  function fullscreen() {
+    if (document.fullscreenElement) document.exitFullscreen().catch(function () {});
+    else if (stage.requestFullscreen) stage.requestFullscreen().catch(function () {});
+  }
+  function mute() { try { player.setMuted(!player.getMuted()); } catch (e) {} setTimeout(sync, 100); }
+
+  document.getElementById("shield").addEventListener("click", toggle);
+  document.getElementById("shield").addEventListener("dblclick", fullscreen);
+  playBtn.addEventListener("click", toggle);
+  [["b-m300", -300], ["b-m60", -60], ["b-m10", -10], ["b-p10", 10], ["b-p60", 60], ["b-p300", 300]].forEach(function (b) {
+    document.getElementById(b[0]).addEventListener("click", function () { skip(b[1]); });
+  });
+  muteBtn.addEventListener("click", mute);
+  document.getElementById("b-fs").addEventListener("click", fullscreen);
+
+  document.addEventListener("keydown", function (e) {
+    var step = e.ctrlKey ? 300 : e.shiftKey ? 60 : 10;
+    if (e.code === "Space" || e.key === "k") { e.preventDefault(); toggle(); }
+    else if (e.key === "ArrowRight") { e.preventDefault(); skip(step); }
+    else if (e.key === "ArrowLeft") { e.preventDefault(); skip(-step); }
+    else if (e.key === "f" || e.key === "F") { fullscreen(); }
+    else if (e.key === "m" || e.key === "M") { mute(); }
+  });
+
+  // Garde le focus clavier sur la page même si l'iframe Twitch le prend
+  window.addEventListener("blur", function () { setTimeout(function () { if (document.activeElement && document.activeElement.tagName === "IFRAME") { document.activeElement.blur(); window.focus(); } }, 0); });
+
+  player.addEventListener(Twitch.Player.PLAY, sync);
+  player.addEventListener(Twitch.Player.PAUSE, sync);
+  player.addEventListener(Twitch.Player.READY, sync);
+  setInterval(function () {
+    var cur; try { cur = player.getCurrentTime(); } catch (e) { return; }
+    if (typeof cur === "number" && !isNaN(cur)) clock.textContent = fmt(cur - start);
+  }, 500);
+})();
+</script>
+</body>
+</html>
