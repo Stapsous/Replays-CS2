@@ -29,6 +29,16 @@
   body.theater .help, body.theater .start-hint { display: none; }
   body.theater .bar { max-width: none; padding: 0 8px; }
   button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+  /* Mode théâtre « à la Twitch » : vidéo sur toute la fenêtre, boutons masqués en surimpression,
+     affichés en semi-transparence au survol, au toucher, au clavier, et toujours en pause. */
+  body.overlay { padding: 0; gap: 0; height: 100vh; justify-content: center; overflow: hidden; }
+  body.overlay .stage { width: min(100vw, calc(100vh * 16 / 9)); max-width: none; border-radius: 0; }
+  body.overlay .help, body.overlay .start-hint { display: none; }
+  body.overlay .bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; max-width: none; padding: 28px 12px calc(10px + env(safe-area-inset-bottom, 0px)); background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, .78) 45%); opacity: 0; transition: opacity .25s; }
+  body.overlay.show-ui .bar, body.overlay .bar:hover, body.overlay .bar:focus-within, body.overlay .stage.is-paused ~ .bar { opacity: 1; }
+  body.overlay .bar button, body.overlay .bar select { background: rgba(23, 24, 28, .72); }
+  body.overlay:not(.show-ui) .stage:not(.is-paused) .shield { cursor: none; }
+  @media (prefers-reduced-motion: reduce) { body.overlay .bar { transition: none; } }
   .stage:fullscreen { max-width: none; width: 100vw; height: 100vh; aspect-ratio: auto; border-radius: 0; }
   #player { position: absolute; left: 0; right: 0; top: calc(-1 * var(--crop)); bottom: calc(-1 * var(--crop)); }
   #player iframe { width: 100%; height: 100%; border: 0; display: block; }
@@ -252,7 +262,7 @@
   var thBtn = document.getElementById("b-th"), TH_KEY = "replays-theater";
   function theater(on) {
     if (EMBED) { try { window.parent.postMessage({ replays: "theater", on: on }, location.origin); } catch (e) {} }
-    else document.body.classList.toggle("theater", on);
+    else { document.body.classList.toggle("theater", on); document.body.classList.toggle("overlay", on); }
     thBtn.setAttribute("aria-pressed", on ? "true" : "false");
     try { localStorage.setItem(TH_KEY, on ? "1" : "0"); } catch (e) {}
   }
@@ -260,6 +270,21 @@
   theater(thSaved);
   function thOn() { return thBtn.getAttribute("aria-pressed") === "true"; }
   thBtn.addEventListener("click", function () { theater(!thOn()); });
+
+  // Surimpression : affiche les boutons 2,5 s après chaque mouvement, toucher ou touche
+  var uiTimer;
+  function showUi() {
+    if (!document.body.classList.contains("overlay")) return;
+    document.body.classList.add("show-ui");
+    clearTimeout(uiTimer); uiTimer = setTimeout(function () { document.body.classList.remove("show-ui"); }, 2500);
+  }
+  ["mousemove", "touchstart", "keydown"].forEach(function (ev) { document.addEventListener(ev, showUi, { passive: true }); });
+  if (EMBED) window.addEventListener("message", function (e) {
+    if (e.origin !== location.origin || !e.data || e.data.replays !== "wide") return;
+    document.body.classList.toggle("overlay", !!e.data.on);
+    thBtn.setAttribute("aria-pressed", e.data.on ? "true" : "false");
+    showUi();
+  });
 
   document.addEventListener("keydown", function (e) {
     var step = e.ctrlKey ? 300 : e.shiftKey ? 60 : 10;

@@ -265,7 +265,11 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
   // ----- Lecture dans la page -----
   var frame = document.getElementById("frame"), current = "";
   var TH_KEY = "replays-theater";
-  function setWide(on) { document.body.classList.toggle("wide", !!on); }
+  function setWide(on) {
+    document.body.classList.toggle("wide", !!on);
+    try { frame.contentWindow.postMessage({ replays: "wide", on: !!on }, location.origin); } catch (e) {}
+  }
+  frame.addEventListener("load", function () { if (document.body.classList.contains("watching")) setWide(document.body.classList.contains("wide")); });
   function markCurrent() {
     [].forEach.call(document.querySelectorAll(".row.current, a.map.current"), function (x) { x.classList.remove("current"); });
     if (!current) return;
