@@ -44,6 +44,8 @@
   button { font: inherit; font-weight: 600; background: var(--panel); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; cursor: pointer; min-width: 64px; font-variant-numeric: tabular-nums; }
   button:hover { border-color: var(--muted); }
   button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .qual { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; }
+  .qual select { font: inherit; font-weight: 600; background: var(--panel); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; }
   button.main { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); min-width: 96px; }
   .clock { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; color: var(--muted); min-width: 120px; text-align: center; font-variant-numeric: tabular-nums; }
   .help { color: var(--muted); font-size: 13px; text-align: center; max-width: 640px; }
@@ -71,6 +73,12 @@
   <button id="b-p300" type="button">+5 min</button>
   <span class="clock" id="clock" title="Temps écoulé depuis le repère de départ">+0:00:00</span>
   <button id="b-mute" type="button">Son</button>
+  <label class="qual" for="quality">Qualité
+    <select id="quality" title="Qualité de la vidéo (mémorisée pour les prochains replays)">
+      <option value="max">Maximale</option>
+      <option value="auto">Auto</option>
+    </select>
+  </label>
   <button id="b-fs" type="button">Plein écran</button>
 </div>
 
@@ -192,6 +200,40 @@
   window.addEventListener("blur", function () { setTimeout(function () { if (document.activeElement && document.activeElement.tagName === "IFRAME") { document.activeElement.blur(); window.focus(); } }, 0); });
 
   sync();
+
+  // Qualité : par défaut la plus haute disponible (Source), choix mémorisé dans ce navigateur.
+  // Le mode auto de Twitch choisit souvent une qualité basse dans un lecteur intégré.
+  var qSel = document.getElementById("quality");
+  var Q_KEY = "replays-quality";
+  var qPref = "max"; try { qPref = localStorage.getItem(Q_KEY) || "max"; } catch (e) {}
+  var qLoaded = false, qApplied = false;
+  function qList() { try { return (player.getQualities() || []).filter(function (x) { return x && (x.group || x.name) && (x.group || x.name) !== "auto"; }); } catch (e) { return []; } }
+  function qFill(list) {
+    var keep = qPref;
+    qSel.textContent = "";
+    var o1 = document.createElement("option"); o1.value = "max"; o1.textContent = "Maximale"; qSel.appendChild(o1);
+    var o2 = document.createElement("option"); o2.value = "auto"; o2.textContent = "Auto"; qSel.appendChild(o2);
+    list.forEach(function (x) { var o = document.createElement("option"); o.value = x.group || x.name; o.textContent = x.name || x.group; qSel.appendChild(o); });
+    qSel.value = [].some.call(qSel.options, function (o) { return o.value === keep; }) ? keep : "max";
+  }
+  function qApply() {
+    var list = qList(); if (!list.length) return false;
+    var target = qPref === "max" ? (list[0].group || list[0].name) : qPref;
+    if (qPref !== "auto" && !list.some(function (x) { return (x.group || x.name) === target; })) target = list[0].group || list[0].name;
+    try { player.setQuality(target); } catch (e) { return false; }
+    return true;
+  }
+  qSel.addEventListener("change", function () {
+    qPref = qSel.value; try { localStorage.setItem(Q_KEY, qPref); } catch (e) {}
+    qApply(); flash("Qualité : " + qSel.options[qSel.selectedIndex].textContent);
+  });
+  setInterval(function () {
+    if (!started) return;
+    var list = qList();
+    if (list.length && !qLoaded) { qLoaded = true; qFill(list); }
+    if (list.length && !qApplied) { qApplied = qApply(); }
+  }, 1000);
+
   setInterval(function () {
     var cur; try { cur = player.getCurrentTime(); } catch (e) { return; }
     if (typeof cur === "number" && !isNaN(cur)) clock.textContent = fmt(cur - start);
