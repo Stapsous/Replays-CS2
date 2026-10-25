@@ -4,195 +4,216 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
-<title>Replay sans spoiler</title>
+<title>Replays Vitality</title>
+<script>
+  // Anciens liens du lecteur (index.html?v=...) : redirection vers player.html
+  if (/[?&]v=/.test(location.search)) location.replace("player.html" + location.search);
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
+/* Layout: one narrow column, a list of match days, each with its replay links like a broadcast rundown */
+:root {
+  --bg: #f3f3f1; --surface: #ffffff; --fg: #17181b; --muted: #62656d; --line: #dcdcd8;
+  --accent: #b8860b; --accent-ink: #ffffff; --done: #2f7d4f;
+  --display: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0d0e10; --panel: #17181c; --fg: #ecebe6; --muted: #8f929a; --line: #2a2c31; --accent: #e3b341; --accent-ink: #17181b;
-    --crop: 72px; /* bandes masquées en haut et en bas du lecteur Twitch (titre, barre de progression) */
+    --bg: #121315; --surface: #1b1c20; --fg: #ecebe6; --muted: #9a9ca3;
+    --line: #2c2e33; --accent: #e3b341; --accent-ink: #17181b; --done: #5fbf85;
     color-scheme: dark;
   }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); font: 15px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
-  body { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 16px max(16px, env(safe-area-inset-left)) 24px max(16px, env(safe-area-inset-right)); }
-  .stage { position: relative; width: 100%; max-width: 1280px; aspect-ratio: 16 / 9; background: #000; overflow: hidden; border-radius: 8px; }
-  .stage:fullscreen { max-width: none; width: 100vw; height: 100vh; aspect-ratio: auto; border-radius: 0; }
-  #player { position: absolute; left: 0; right: 0; top: calc(-1 * var(--crop)); bottom: calc(-1 * var(--crop)); }
-  #player iframe { width: 100%; height: 100%; border: 0; display: block; }
-  /* Couche transparente : capte souris et clavier pour que le lecteur Twitch n'affiche jamais ses contrôles */
-  .shield { position: absolute; inset: 0; z-index: 2; cursor: pointer; }
-  .flash { position: absolute; z-index: 3; left: 50%; top: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,.65); color: #fff; padding: 10px 16px; border-radius: 8px; font-weight: 600; font-variant-numeric: tabular-nums; opacity: 0; transition: opacity .25s; pointer-events: none; }
-  .flash.on { opacity: 1; }
-    /* Twitch refuse de relancer la vidéo via son API : en pause, le clic doit arriver dans le lecteur Twitch lui-même.
-     Donc en pause le bouclier laisse passer les clics ; en lecture il les capte (pause via l'API, qui fonctionne). */
-  .stage.is-paused .shield { pointer-events: none; }
-  .gate { position: absolute; z-index: 3; left: 50%; bottom: 16px; transform: translateX(-50%); background: rgba(0,0,0,.75); color: #fff; padding: 8px 14px; border-radius: 8px; font-size: 13px; text-align: center; pointer-events: none; display: none; max-width: 90%; }
-  .stage.is-paused .gate { display: block; }
-  .stage.nudge .gate { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
-  /* Avant la première lecture : lecteur Twitch affiché en entier (non rogné) pour que l'écran « Start Watching »
-     reste visible et cliquable, surtout sur mobile où il occupe toute la hauteur. Le rognage reprend dès la lecture. */
-  .stage.not-started #player { top: 0; bottom: 0; }
-  /* L'écran d'avertissement de Twitch (surtout en français) est plus haut qu'un cadre 16:9 de téléphone :
-     on agrandit le cadre le temps du lancement, puis il revient en 16:9. */
-  .stage.not-started { aspect-ratio: auto; height: max(calc(min(100vw - 32px, 1280px) * 0.5625), 480px); max-height: 85vh; }
-  .stage.not-started .gate { display: none; }
-  .start-hint { width: 100%; max-width: 1280px; margin: 0; text-align: center; color: var(--accent); font-weight: 600; font-size: 14px; }
-  .start-hint[hidden] { display: none; }
-  .bar { width: 100%; max-width: 1280px; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; }
-  button { font: inherit; font-weight: 600; background: var(--panel); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; cursor: pointer; min-width: 64px; font-variant-numeric: tabular-nums; }
-  button:hover { border-color: var(--muted); }
-  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  button.main { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); min-width: 96px; }
-  .clock { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; color: var(--muted); min-width: 120px; text-align: center; font-variant-numeric: tabular-nums; }
-  .help { color: var(--muted); font-size: 13px; text-align: center; max-width: 640px; }
-  .empty { max-width: 560px; color: var(--muted); text-align: center; margin-top: 15vh; }
-  kbd { font-family: ui-monospace, Consolas, monospace; border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; color: var(--fg); }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.5;
+  padding: 32px max(16px, env(safe-area-inset-right, 0px)) 48px max(16px, env(safe-area-inset-left, 0px));
+}
+main { max-width: 620px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+header { display: flex; flex-direction: column; gap: 6px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+h1 { font-family: var(--display); font-weight: 700; font-size: 44px; line-height: 1; margin: 0; letter-spacing: .01em; text-wrap: balance; }
+.lede { color: var(--muted); margin: 0; max-width: 60ch; }
+.status { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.days { display: flex; flex-direction: column; gap: 20px; }
+.day { display: flex; flex-direction: column; gap: 8px; }
+.day h2 { font-family: var(--display); font-weight: 600; font-size: 22px; margin: 0; text-transform: capitalize; }
+.links { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); overflow: hidden; }
+.row { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 12px 14px; }
+.row + .row { border-top: 1px solid var(--line); }
+.row-main { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.kind { font-weight: 500; }
+.kind .tag { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; margin-left: 6px; vertical-align: 1px; }
+.tag.final { background: var(--accent); color: var(--accent-ink); }
+.tag.prov { border: 1px solid var(--line); color: var(--muted); }
+.meta { font-family: var(--mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+a.watch { font-weight: 500; text-decoration: none; color: var(--accent-ink); background: var(--accent); padding: 7px 14px; border-radius: 6px; white-space: nowrap; }
+a.watch:hover { filter: brightness(1.08); }
+a.alt { font-size: 13px; color: var(--muted); text-decoration: none; border: 1px solid var(--line); padding: 6px 10px; border-radius: 6px; white-space: nowrap; }
+a.alt:hover { color: var(--fg); border-color: var(--muted); }
+button.seen { font: inherit; font-size: 13px; background: none; border: 1px solid var(--line); color: var(--muted); border-radius: 6px; padding: 6px 10px; cursor: pointer; white-space: nowrap; }
+button.seen[aria-pressed="true"] { color: var(--done); border-color: var(--done); }
+.row.is-seen .kind, .row.is-seen .meta { opacity: .55; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.row.pending .kind { color: var(--muted); }
+.wait { font-family: var(--mono); font-size: 12px; color: var(--muted); border: 1px dashed var(--line); border-radius: 6px; padding: 6px 10px; white-space: nowrap; }
+.day-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.day-head .when { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+details.group { display: flex; flex-direction: column; }
+details.group > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 6px 0; user-select: none; }
+details.group > summary::-webkit-details-marker { display: none; }
+details.group > summary::before { content: ""; width: 0; height: 0; border-left: 5px solid currentColor; border-top: 4px solid transparent; border-bottom: 4px solid transparent; transition: transform .15s ease; }
+details.group[open] > summary::before { transform: rotate(90deg); }
+details.group > summary:hover { color: var(--fg); }
+details.group > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+details.group .count { color: var(--muted); opacity: .7; }
+.group-body { display: flex; flex-direction: column; gap: 20px; padding-top: 8px; }
+@media (prefers-reduced-motion: reduce) { details.group > summary::before { transition: none; } }
+.empty { border: 1px dashed var(--line); border-radius: 10px; padding: 20px; color: var(--muted); }
+.tips { font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; display: flex; flex-direction: column; gap: 4px; }
+@media (max-width: 440px) {
+  h1 { font-size: 36px; }
+  .row { grid-template-columns: 1fr; }
+}
 </style>
-<script src="https://player.twitch.tv/js/embed/v1.js"></script>
 </head>
 <body>
-<p class="start-hint" id="start-hint" hidden>Touche la vidéo pour lancer, puis « Start Watching » si Twitch l'affiche.</p>
-<div class="stage not-started" id="stage" hidden>
-  <div id="player"></div>
-  <div class="shield" id="shield" title="Lecture / pause"></div>
-  <div class="flash" id="flash"></div>
-  <div class="gate" id="gate"></div>
-</div>
+<main>
+  <header>
+    <div class="eyebrow">CS2 · sans spoiler</div>
+    <h1>Replays Vitality</h1>
+    <p class="lede">Les matchs à venir et les liens Twitch des replays, calés au début de la rencontre. Aucun score, aucun adversaire, aucune phase.</p>
+    <div class="status" id="status">Chargement…</div>
+  </header>
 
-<div class="bar" id="bar" hidden>
-  <button id="b-m300" type="button">-5 min</button>
-  <button id="b-m60" type="button">-1 min</button>
-  <button id="b-m10" type="button">-10 s</button>
-  <button id="b-play" class="main" type="button">Pause</button>
-  <button id="b-p10" type="button">+10 s</button>
-  <button id="b-p60" type="button">+1 min</button>
-  <button id="b-p300" type="button">+5 min</button>
-  <span class="clock" id="clock" title="Temps écoulé depuis le repère de départ">+0:00:00</span>
-  <button id="b-mute" type="button">Son</button>
-  <button id="b-fs" type="button">Plein écran</button>
-</div>
+  <section class="days" id="days">
+    <div class="empty">Les liens apparaîtront ici dès le premier match planifié : un lien à l'horaire prévu, puis le lien définitif au vrai début du match.</div>
+  </section>
 
-<p class="help" id="help" hidden>
-  <kbd>Espace</kbd> pause (pour reprendre : clic dans la vidéo, exigence de Twitch) · <kbd>←</kbd> <kbd>→</kbd> 10 s · <kbd>Maj</kbd>+<kbd>←</kbd> <kbd>→</kbd> 1 min · <kbd>Ctrl</kbd>+<kbd>←</kbd> <kbd>→</kbd> 5 min · <kbd>M</kbd> son · <kbd>F</kbd> plein écran.
-  La durée totale de la vidéo n'est jamais affichée.
-</p>
-
-<p class="empty" id="empty" hidden>Ouvre ce lecteur depuis la page Replays Vitality : il faut un lien de la forme <code>?v=&lt;id de la vidéo&gt;&amp;t=1h02m03s</code>.</p>
+  <div class="tips">
+    <span>Le lien « définitif » remplace le lien « horaire prévu » du même jour.</span>
+    <span>« Regarder » ouvre le lecteur sans spoiler : ni titre, ni chat, ni barre de progression, ni durée totale.</span>
+    <span>« Twitch » ouvre la vidéo sur Twitch, pratique pour caster depuis le téléphone : masque alors le chat, et méfie-toi du titre et de la durée.</span>
+    <span>La page se met à jour toute seule toutes les 3 minutes.</span>
+  </div>
+</main>
 
 <script>
 (function () {
-  var q = new URLSearchParams(location.search);
-  var vid = (q.get("v") || "").replace(/^v/, "");
-  var t = q.get("t") || "0s";
-  if (!/^\d+$/.test(vid)) { document.getElementById("empty").hidden = false; return; }
+  var daysEl = document.getElementById("days");
+  var statusEl = document.getElementById("status");
+  var SEEN_KEY = "replays-vitality-seen", FOLD_KEY = "replays-vitality-folded";
+  function load(k) { try { return JSON.parse(localStorage.getItem(k) || "{}") || {}; } catch (e) { return {}; } }
+  function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  var seen = load(SEEN_KEY), folded = load(FOLD_KEY);
 
-  function toSec(s) {
-    var m = String(s).match(/^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$/);
-    return m ? (+(m[1] || 0)) * 3600 + (+(m[2] || 0)) * 60 + (+(m[3] || 0)) : 0;
-  }
-  var start = toSec(t);
+  var KIND = {
+    prevu: { label: "Horaire prévu", tag: "provisoire", cls: "prov" },
+    definitif: { label: "Début réel", tag: "définitif", cls: "final" }
+  };
+  var TZ = "Europe/Paris";
+  var dayFmt = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric", month: "long", timeZone: TZ });
+  var timeFmt = new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit", timeZone: TZ });
+  function safeUrl(u) { return typeof u === "string" && /^https:\/\/(www\.)?twitch\.tv\//.test(u) ? u : null; }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  var lastSig = "";
 
-  ["stage", "bar", "help"].forEach(function (id) { document.getElementById(id).hidden = false; });
-  var stage = document.getElementById("stage");
-  var flashEl = document.getElementById("flash");
-  var clock = document.getElementById("clock");
-  var playBtn = document.getElementById("b-play");
-  var muteBtn = document.getElementById("b-mute");
-  var flashTimer;
+  function render(data) {
+    var sig = JSON.stringify(data);
+    var days = {};
+    function day(key) { return days[key] || (days[key] = { key: key, match: null, links: [] }); }
+    (data.matches || []).forEach(function (m) { if (m && typeof m.key === "string") day(m.key).match = m; });
+    var count = 0;
+    (data.links || []).forEach(function (x) {
+      var url = safeUrl(x && x.url); if (!url) return;
+      var key = typeof x.match === "string" ? x.match : (typeof x.matchDate === "string" ? x.matchDate : "");
+      day(key).links.push({ id: x.id || url, url: url, kind: x.kind, createdAt: x.createdAt });
+      count++;
+    });
+    var now = Date.now();
+    function startOf(d) { var t = d.match ? Date.parse(d.match.start) : Date.parse(d.key.slice(0, 10) + "T12:00:00Z"); return isNaN(t) ? 0 : t; }
+    var keys = Object.keys(days);
+    var upcoming = keys.filter(function (k) { return startOf(days[k]) > now && !days[k].links.length; }).sort(function (a, b) { return startOf(days[a]) - startOf(days[b]); });
+    var past = keys.filter(function (k) { return upcoming.indexOf(k) < 0; }).sort(function (a, b) { return startOf(days[b]) - startOf(days[a]); });
+    statusEl.textContent = upcoming.length + " match" + (upcoming.length > 1 ? "s" : "") + " à venir · " + count + " lien" + (count > 1 ? "s" : "") + " · vérifié à " + timeFmt.format(new Date());
+    if (sig === lastSig) return;
+    lastSig = sig;
 
-  function fmt(sec) {
-    var sign = sec < 0 ? "-" : "+"; sec = Math.abs(Math.floor(sec));
-    var h = Math.floor(sec / 3600), m = Math.floor(sec / 60) % 60, s = sec % 60;
-    return sign + h + ":" + String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
-  }
-  function flash(text, ms) {
-    flashEl.textContent = text; flashEl.classList.add("on");
-    clearTimeout(flashTimer); flashTimer = setTimeout(function () { flashEl.classList.remove("on"); }, ms || 700);
-  }
-
-  var player = new Twitch.Player("player", {
-    video: "v" + vid,
-    time: t,
-    parent: [location.hostname],
-    autoplay: true,
-    muted: false,
-    controls: false,
-    width: "100%",
-    height: "100%"
-  });
-
-  // État suivi nous-mêmes : player.isPaused() de Twitch renvoie une valeur fausse
-  var playing = false, started = false, mutedState = false, nudgeTimer;
-  var gate = document.getElementById("gate");
-  function paused() { return !playing; }
-  window.addEventListener("message", function (e) {
-    try { if (!/(^|\.)twitch\.tv$/.test(new URL(e.origin).hostname)) return; } catch (x) { return; }
-    var d = e.data; if (typeof d === "string") { try { d = JSON.parse(d); } catch (x) { return; } }
-    if (!d || d.eventName !== "UPDATE_STATE" || !d.params) return;
-    var pb = d.params.playback;
-    if (typeof d.params.muted === "boolean") mutedState = d.params.muted;
-    if (pb) {
-      var was = playing; playing = pb === "Playing" || pb === "Buffering";
-      if (playing) started = true;
-      if (was !== playing) sync();
+    function pendingRow(kind, when) {
+      var k = KIND[kind], row = el("div", "row pending"), main = el("div", "row-main");
+      var kd = el("div", "kind", k.label); kd.appendChild(el("span", "tag " + k.cls, k.tag));
+      main.appendChild(kd); main.appendChild(el("div", "meta", "Lien pas encore disponible"));
+      var actions = el("div", "actions"); actions.appendChild(el("span", "wait", "Lien " + when));
+      row.appendChild(main); row.appendChild(actions);
+      return row;
     }
-  });
-  var startHint = document.getElementById("start-hint");
-  function sync() {
-    var p = paused();
-    stage.classList.toggle("is-paused", p);
-    stage.classList.toggle("not-started", !started);
-    startHint.hidden = started;
-    gate.textContent = started ? "En pause · clique dans la vidéo pour reprendre"
-                               : "Clique dans la vidéo pour lancer (puis sur « Start Watching » si Twitch le demande)";
-    playBtn.textContent = p ? "Lecture" : "Pause";
-    muteBtn.textContent = mutedState ? "Son coupé" : "Son";
+    function linkRow(l) {
+      var k = KIND[l.kind] || KIND.prevu, row = el("div", "row"), main = el("div", "row-main");
+      var kd = el("div", "kind", k.label); kd.appendChild(el("span", "tag " + k.cls, k.tag));
+      var c = new Date(l.createdAt), tm = l.url.match(/[?&]t=([0-9hms]+)/), vm = l.url.match(/\/videos\/(\d+)/);
+      main.appendChild(kd);
+      main.appendChild(el("div", "meta", (isNaN(c) ? "" : "Ajouté à " + timeFmt.format(c)) + (tm ? " · repère " + tm[1] : "")));
+      var actions = el("div", "actions");
+      var a = el("a", "watch", "Regarder"); a.href = vm ? "player.html?v=" + vm[1] + "&t=" + (tm ? tm[1] : "0s") : l.url; a.target = "_blank"; a.rel = "noopener";
+      var tw = el("a", "alt", "Twitch"); tw.href = l.url; tw.target = "_blank"; tw.rel = "noopener"; tw.title = "Ouvrir sur Twitch (pratique pour caster depuis le téléphone)";
+      var b = el("button", "seen"); b.type = "button";
+      function mark() { var on = !!seen[l.id]; b.setAttribute("aria-pressed", on ? "true" : "false"); b.textContent = on ? "Vu" : "Marquer vu"; row.classList.toggle("is-seen", on); }
+      [a, tw].forEach(function (x) { x.addEventListener("click", function () { if (!seen[l.id]) { seen[l.id] = 1; save(SEEN_KEY, seen); mark(); } }); });
+      b.addEventListener("click", function () { if (seen[l.id]) delete seen[l.id]; else seen[l.id] = 1; save(SEEN_KEY, seen); mark(); });
+      mark();
+      actions.appendChild(a); actions.appendChild(tw); actions.appendChild(b);
+      row.appendChild(main); row.appendChild(actions);
+      return row;
+    }
+    function renderDay(d) {
+      var sec = el("div", "day"), head = el("div", "day-head");
+      var t = startOf(d), dt = new Date(t);
+      head.appendChild(el("h2", null, isNaN(dt) ? d.key : dayFmt.format(dt)));
+      if (d.match) head.appendChild(el("span", "when", timeFmt.format(dt) + " · " + (d.match.event || "")));
+      sec.appendChild(head);
+      var list = el("div", "links"), byKind = { prevu: [], definitif: [] };
+      d.links.forEach(function (l) { (byKind[l.kind] || byKind.prevu).push(l); });
+      var rows = [];
+      byKind.definitif.concat(byKind.prevu).forEach(function (l) { rows.push(linkRow(l)); });
+      if (!byKind.definitif.length && d.match) {
+        if (!byKind.prevu.length) rows.push(pendingRow("prevu", "à " + timeFmt.format(dt)));
+        rows.push(pendingRow("definitif", "au vrai début"));
+      }
+      if (!rows.length) return null;
+      rows.forEach(function (r) { list.appendChild(r); });
+      sec.appendChild(list);
+      return sec;
+    }
+    function group(id, title, list) {
+      if (!list.length) return;
+      var d = el("details", "group"); d.open = !folded[id];
+      var s = el("summary", null, title + " "); s.appendChild(el("span", "count", "(" + list.length + ")"));
+      d.appendChild(s);
+      var body = el("div", "group-body");
+      list.forEach(function (k) { var x = renderDay(days[k]); if (x) body.appendChild(x); });
+      d.appendChild(body);
+      d.addEventListener("toggle", function () { if (d.open) delete folded[id]; else folded[id] = 1; save(FOLD_KEY, folded); });
+      daysEl.appendChild(d);
+    }
+    daysEl.textContent = "";
+    if (!keys.length) { daysEl.appendChild(el("div", "empty", "Aucun match pour l'instant.")); return; }
+    group("avenir", "À venir", upcoming);
+    group("replays", "Replays", past);
   }
-  function toggle() {
-    if (paused()) {
-      // Twitch ignore play() hors d'un clic dans son lecteur : on tente quand même, et on indique où cliquer
-      try { player.play(); } catch (e) {}
-      stage.classList.add("nudge"); clearTimeout(nudgeTimer);
-      nudgeTimer = setTimeout(function () { stage.classList.remove("nudge"); }, 1500);
-    } else { player.pause(); playing = false; sync(); flash("Pause"); }
+
+  function refresh() {
+    fetch("data.json?nocache=" + Date.now(), { cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(render)
+      .catch(function () { statusEl.textContent = "Impossible de charger les liens pour le moment, nouvel essai dans 3 minutes."; });
   }
-  function skip(d) {
-    var cur = 0; try { cur = player.getCurrentTime(); } catch (e) {}
-    var target = Math.max(0, cur + d);
-    player.seek(target);
-    flash((d > 0 ? "+" : "-") + (Math.abs(d) >= 60 ? Math.abs(d) / 60 + " min" : Math.abs(d) + " s"));
-  }
-  function fullscreen() {
-    if (document.fullscreenElement) document.exitFullscreen().catch(function () {});
-    else if (stage.requestFullscreen) stage.requestFullscreen().catch(function () {});
-  }
-  function mute() { mutedState = !mutedState; try { player.setMuted(mutedState); } catch (e) {} sync(); }
-
-  document.getElementById("shield").addEventListener("click", toggle);
-  document.getElementById("shield").addEventListener("dblclick", fullscreen);
-  playBtn.addEventListener("click", toggle);
-  [["b-m300", -300], ["b-m60", -60], ["b-m10", -10], ["b-p10", 10], ["b-p60", 60], ["b-p300", 300]].forEach(function (b) {
-    document.getElementById(b[0]).addEventListener("click", function () { skip(b[1]); });
-  });
-  muteBtn.addEventListener("click", mute);
-  document.getElementById("b-fs").addEventListener("click", fullscreen);
-
-  document.addEventListener("keydown", function (e) {
-    var step = e.ctrlKey ? 300 : e.shiftKey ? 60 : 10;
-    if (e.code === "Space" || e.key === "k") { e.preventDefault(); toggle(); }
-    else if (e.key === "ArrowRight") { e.preventDefault(); skip(step); }
-    else if (e.key === "ArrowLeft") { e.preventDefault(); skip(-step); }
-    else if (e.key === "f" || e.key === "F") { fullscreen(); }
-    else if (e.key === "m" || e.key === "M") { mute(); }
-  });
-
-  // Garde le focus clavier sur la page même si l'iframe Twitch le prend
-  window.addEventListener("blur", function () { setTimeout(function () { if (document.activeElement && document.activeElement.tagName === "IFRAME") { document.activeElement.blur(); window.focus(); } }, 0); });
-
-  sync();
-  setInterval(function () {
-    var cur; try { cur = player.getCurrentTime(); } catch (e) { return; }
-    if (typeof cur === "number" && !isNaN(cur)) clock.textContent = fmt(cur - start);
-  }, 500);
+  refresh();
+  setInterval(refresh, 180000);
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) refresh(); });
 })();
 </script>
 </body>
