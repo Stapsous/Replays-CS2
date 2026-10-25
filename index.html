@@ -28,6 +28,12 @@
   .gate { position: absolute; z-index: 3; left: 50%; bottom: 16px; transform: translateX(-50%); background: rgba(0,0,0,.75); color: #fff; padding: 8px 14px; border-radius: 8px; font-size: 13px; text-align: center; pointer-events: none; display: none; max-width: 90%; }
   .stage.is-paused .gate { display: block; }
   .stage.nudge .gate { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  /* Avant la première lecture : lecteur Twitch affiché en entier (non rogné) pour que l'écran « Start Watching »
+     reste visible et cliquable, surtout sur mobile où il occupe toute la hauteur. Le rognage reprend dès la lecture. */
+  .stage.not-started #player { top: 0; bottom: 0; }
+  .stage.not-started .gate { display: none; }
+  .start-hint { width: 100%; max-width: 1280px; margin: 0; text-align: center; color: var(--accent); font-weight: 600; font-size: 14px; }
+  .start-hint[hidden] { display: none; }
   .bar { width: 100%; max-width: 1280px; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; }
   button { font: inherit; font-weight: 600; background: var(--panel); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; cursor: pointer; min-width: 64px; font-variant-numeric: tabular-nums; }
   button:hover { border-color: var(--muted); }
@@ -41,7 +47,8 @@
 <script src="https://player.twitch.tv/js/embed/v1.js"></script>
 </head>
 <body>
-<div class="stage" id="stage" hidden>
+<p class="start-hint" id="start-hint" hidden>Touche la vidéo pour lancer, puis « Start Watching » si Twitch l'affiche.</p>
+<div class="stage not-started" id="stage" hidden>
   <div id="player"></div>
   <div class="shield" id="shield" title="Lecture / pause"></div>
   <div class="flash" id="flash"></div>
@@ -126,9 +133,12 @@
       if (was !== playing) sync();
     }
   });
+  var startHint = document.getElementById("start-hint");
   function sync() {
     var p = paused();
     stage.classList.toggle("is-paused", p);
+    stage.classList.toggle("not-started", !started);
+    startHint.hidden = started;
     gate.textContent = started ? "En pause · clique dans la vidéo pour reprendre"
                                : "Clique dans la vidéo pour lancer (puis sur « Start Watching » si Twitch le demande)";
     playBtn.textContent = p ? "Lecture" : "Pause";
