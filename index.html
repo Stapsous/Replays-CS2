@@ -41,6 +41,13 @@ h1 { font-family: var(--display); font-weight: 700; font-size: 44px; line-height
 .account:empty { display: none; }
 .account button { font: inherit; font-size: 13px; background: none; border: 1px solid var(--line); color: inherit; border-radius: 6px; padding: 5px 10px; cursor: pointer; }
 .account .ok { color: var(--done); }
+.account details.notif { flex-basis: 100%; }
+.account details.notif summary { cursor: pointer; color: inherit; width: fit-content; }
+#notif-box { display: flex; flex-direction: column; gap: 8px; padding: 8px 0 4px 2px; }
+.notif-device { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.notif-types { display: flex; flex-direction: column; gap: 4px; }
+.notif-types label { display: flex; align-items: center; gap: 6px; cursor: pointer; color: inherit; }
+.notif-head { font-size: 12px; }
 .status { font-family: var(--mono); font-size: 12px; color: var(--muted); }
 .days { display: flex; flex-direction: column; gap: 20px; }
 .day { display: flex; flex-direction: column; gap: 8px; }

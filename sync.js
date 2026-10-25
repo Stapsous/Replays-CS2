@@ -12,7 +12,18 @@ const FIREBASE_CONFIG = {
   appId: "1:1026475466360:web:3369ffd372ffd561b0578d"
 };
 
+const VAPID_KEY = null; // clé « Web Push certificates » du projet Firebase
 const V = "10.12.2";
+// Types de notifications, au choix de chaque compte (tous activés par défaut)
+const NOTIF_TYPES = [
+  ["soon", "Environ 1 h avant un match (estimation)"],
+  ["prev", "Match précédent terminé : le match va bientôt commencer"],
+  ["m15", "15 min avant l'horaire prévu"],
+  ["started", "Début du match, si rien n'a prévenu avant"],
+  ["link", "Nouveau lien de replay"],
+  ["maps", "Liens par carte disponibles"]
+];
+const TOKEN_KEY = "replays-push-token";
 const KEYS = {
   seen: "replays-vitality-seen",
   resume: "replays-resume",
@@ -36,6 +47,12 @@ function renderAccount(state, user) {
     accountEl.append(btn("Se connecter avec Google", login), span("hint", "pour retrouver tes « vu » et ta position de lecture sur tous tes appareils"));
   } else if (state === "in") {
     accountEl.append(span("ok", "Synchronisé · " + (user.email || user.displayName || "compte connecté")), btn("Se déconnecter", logout));
+    if (VAPID_KEY) {
+      const det = document.createElement("details"); det.className = "notif"; det.id = "notif";
+      const sum = document.createElement("summary"); sum.textContent = "Notifications"; det.append(sum);
+      const box = document.createElement("div"); box.id = "notif-box"; det.append(box);
+      accountEl.append(det); renderNotif();
+    }
   } else if (state === "error") {
     accountEl.append(span("hint", "Synchronisation indisponible pour le moment"));
   }
@@ -46,7 +63,73 @@ async function login() {
   try { await fb.signInWithPopup(auth, new fb.GoogleAuthProvider()); }
   catch (e) { if (e && e.code !== "auth/popup-closed-by-user" && e.code !== "auth/cancelled-popup-request") renderAccount("error"); }
 }
-async function logout() { try { await fb.signOut(auth); } catch (e) {} }
+async function logout() { try { if (get(TOKEN_KEY)) await disablePush(); } catch (e) {} try { await fb.signOut(auth); } catch (e) {} }
+
+// ----- Notifications -----
+let userRef = null, notifPrefs = {}, messaging = null, pushOk = false, swReg = null;
+async function initMessaging(app) {
+  if (!VAPID_KEY || !("serviceWorker" in navigator) || !("Notification" in window)) return;
+  try {
+    const mM = await import(`https://www.gstatic.com/firebasejs/${V}/firebase-messaging.js`);
+    if (!(await mM.isSupported())) return;
+    Object.assign(fb, { getToken: mM.getToken, deleteToken: mM.deleteToken, onMessage: mM.onMessage });
+    messaging = mM.getMessaging(app); pushOk = true;
+    // Page ouverte : Firebase ne montre rien tout seul, on affiche la notification nous-mêmes
+    mM.onMessage(messaging, async (p) => {
+      const d = p.data || {}; const reg = await swRegister();
+      if (reg && Notification.permission === "granted") reg.showNotification(d.title || "Replays Vitality", { body: d.body || "", tag: d.tag || undefined, data: { link: d.link || location.href } });
+    });
+  } catch (e) {}
+}
+async function swRegister() {
+  if (swReg) return swReg;
+  try { swReg = await navigator.serviceWorker.register("firebase-messaging-sw.js"); await navigator.serviceWorker.ready; } catch (e) { swReg = null; }
+  return swReg;
+}
+async function saveToken() {
+  const reg = await swRegister(); if (!reg) throw new Error("sw");
+  const token = await fb.getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: reg });
+  if (!token) throw new Error("token");
+  const old = get(TOKEN_KEY);
+  if (old && old !== token) await fb.updateDoc(userRef, new fb.FieldPath("tokens", old), fb.deleteField()).catch(() => {});
+  await fb.setDoc(userRef, { tokens: { [token]: { at: Date.now(), ua: navigator.userAgent.slice(0, 150) } } }, { merge: true });
+  put(TOKEN_KEY, token);
+}
+async function enablePush() {
+  const perm = await Notification.requestPermission();
+  if (perm !== "granted") { renderNotif(); return; }
+  try { await saveToken(); } catch (e) { renderNotif("Impossible d'activer les notifications sur cet appareil"); return; }
+  renderNotif();
+}
+async function disablePush() {
+  const token = get(TOKEN_KEY);
+  try { await fb.deleteToken(messaging); } catch (e) {}
+  if (token && userRef) await fb.updateDoc(userRef, new fb.FieldPath("tokens", token), fb.deleteField()).catch(() => {});
+  put(TOKEN_KEY, null);
+  renderNotif();
+}
+function renderNotif(err) {
+  const box = document.getElementById("notif-box"); if (!box) return;
+  box.textContent = "";
+  const line = document.createElement("div"); line.className = "notif-device";
+  const b = (t, fn) => { const x = document.createElement("button"); x.type = "button"; x.textContent = t; x.addEventListener("click", fn); return x; };
+  const txt = (t) => { const x = document.createElement("span"); x.textContent = t; return x; };
+  if (!pushOk) line.append(txt("Ce navigateur ne gère pas les notifications (sur iPhone : ajoute d'abord le site à l'écran d'accueil)."));
+  else if (Notification.permission === "denied") line.append(txt("Notifications bloquées dans les réglages du navigateur pour ce site."));
+  else if (get(TOKEN_KEY) && Notification.permission === "granted") line.append(txt("Activées sur cet appareil"), b("Désactiver sur cet appareil", disablePush));
+  else line.append(b("Activer sur cet appareil", enablePush));
+  if (err) line.append(txt(err));
+  box.append(line);
+  const list = document.createElement("div"); list.className = "notif-types";
+  const head = document.createElement("div"); head.className = "notif-head"; head.textContent = "Pour ce compte, sur tous ses appareils :"; list.append(head);
+  NOTIF_TYPES.forEach(([k, label]) => {
+    const l = document.createElement("label"); const c = document.createElement("input"); c.type = "checkbox";
+    c.checked = notifPrefs[k] !== false;
+    c.addEventListener("change", () => { notifPrefs[k] = c.checked; if (userRef) fb.setDoc(userRef, { notif: { [k]: c.checked } }, { merge: true }).catch(() => {}); });
+    l.append(c, document.createTextNode(" " + label)); list.append(l);
+  });
+  box.append(list);
+}
 
 // Le lecteur intégré à la liste partage le localStorage de la page : seule la page principale synchronise.
 const TOP = window.top === window;
@@ -63,6 +146,7 @@ if (FIREBASE_CONFIG && TOP) {
       const app = appM.initializeApp(FIREBASE_CONFIG);
       auth = authM.getAuth(app);
       db = fsM.getFirestore(app);
+      await initMessaging(app);
       let stop = null, timer = null;
       authM.onAuthStateChanged(auth, async (user) => {
         if (stop) { stop(); stop = null; }
@@ -79,8 +163,12 @@ if (FIREBASE_CONFIG && TOP) {
 
 async function startSync(user) {
   const ref = fb.doc(db, "users", user.uid);
+  userRef = ref;
   const snap = await fb.getDoc(ref);
   const remote = snap.exists() ? snap.data() : {};
+  notifPrefs = remote.notif || {}; renderNotif();
+  // Le jeton d'un appareil peut changer : on le rafraîchit à chaque visite
+  if (pushOk && get(TOKEN_KEY) && Notification.permission === "granted") saveToken().catch(() => {});
 
   // Fusion à la connexion : « vu » = union, positions = la plus récente, réglages = ceux du compte s'ils existent
   const merged = {};
@@ -100,6 +188,7 @@ async function startSync(user) {
   // Compte → appareil
   const stop = fb.onSnapshot(ref, (s) => {
     const d = s.data() || {};
+    if (JSON.stringify(d.notif || {}) !== JSON.stringify(notifPrefs)) { notifPrefs = d.notif || {}; renderNotif(); }
     let changed = false;
     Object.keys(KEYS).forEach((f) => {
       if (d[f] != null && d[f] !== last[f]) { put(KEYS[f], d[f]); last[f] = d[f]; changed = true; }
