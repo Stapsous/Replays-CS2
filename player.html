@@ -12,9 +12,12 @@
     color-scheme: dark;
   }
   * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); font: 15px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--fg); font: 15px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
   body { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 16px max(16px, env(safe-area-inset-left)) 24px max(16px, env(safe-area-inset-right)); }
-  .stage { position: relative; width: 100%; max-width: 1280px; aspect-ratio: 16 / 9; background: #000; overflow: hidden; border-radius: 8px; }
+  /* flex-shrink: 0 : sans lui, le cadre (overflow hidden) était écrasé en hauteur dans la colonne flex quand la page dépassait
+     l'écran, ce qui sortait la vidéo du cadre 16:9 et la tronquait en haut et en bas (hors plein écran).
+     La largeur est aussi limitée pour que la vidéo et les boutons tiennent dans la hauteur de la fenêtre. */
+  .stage { position: relative; flex-shrink: 0; width: min(100%, 1280px, calc((100vh - 190px) * 16 / 9)); min-width: min(100%, 320px); aspect-ratio: 16 / 9; background: #000; overflow: hidden; border-radius: 8px; }
   .stage:fullscreen { max-width: none; width: 100vw; height: 100vh; aspect-ratio: auto; border-radius: 0; }
   #player { position: absolute; left: 0; right: 0; top: calc(-1 * var(--crop)); bottom: calc(-1 * var(--crop)); }
   #player iframe { width: 100%; height: 100%; border: 0; display: block; }
