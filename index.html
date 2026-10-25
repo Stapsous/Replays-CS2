@@ -55,6 +55,7 @@ a.watch { font-weight: 500; text-decoration: none; color: var(--accent-ink); bac
 a.watch:hover { filter: brightness(1.08); }
 a.alt { font-size: 13px; color: var(--muted); text-decoration: none; border: 1px solid var(--line); padding: 6px 10px; border-radius: 6px; white-space: nowrap; }
 a.alt:hover { color: var(--fg); border-color: var(--muted); }
+a.alt.map { color: var(--fg); font-weight: 500; }
 button.seen { font: inherit; font-size: 13px; background: none; border: 1px solid var(--line); color: var(--muted); border-radius: 6px; padding: 6px 10px; cursor: pointer; white-space: nowrap; }
 button.seen[aria-pressed="true"] { color: var(--done); border-color: var(--done); }
 .row.is-seen .kind, .row.is-seen .meta { opacity: .55; }
@@ -131,7 +132,8 @@ details.group .count { color: var(--muted); opacity: .7; }
     (data.links || []).forEach(function (x) {
       var url = safeUrl(x && x.url); if (!url) return;
       var key = typeof x.match === "string" ? x.match : (typeof x.matchDate === "string" ? x.matchDate : "");
-      day(key).links.push({ id: x.id || url, url: url, kind: x.kind, createdAt: x.createdAt });
+      day(key).links.push({ id: x.id || url, url: url, kind: x.kind, map: x.map, createdAt: x.createdAt });
+      if (x.kind === "map") return;
       count++;
     });
     var now = Date.now();
@@ -169,6 +171,22 @@ details.group .count { color: var(--muted); opacity: .7; }
       row.appendChild(main); row.appendChild(actions);
       return row;
     }
+    // Liens par carte : toujours le nombre maximal de cartes du format (Bo3 = 3), publiés seulement après la fin du match.
+    function mapsRow(list) {
+      list.sort(function (x, y) { return (x.map || 0) - (y.map || 0); });
+      var row = el("div", "row"), main = el("div", "row-main");
+      var kd = el("div", "kind", "Par carte"); main.appendChild(kd);
+      main.appendChild(el("div", "meta", "Début de chaque carte"));
+      var actions = el("div", "actions");
+      list.forEach(function (l, i) {
+        var tm = l.url.match(/[?&]t=([0-9hms]+)/), vm = l.url.match(/\/videos\/(\d+)/);
+        var a = el("a", "alt map", "Carte " + (l.map || i + 1));
+        a.href = vm ? "player.html?v=" + vm[1] + "&t=" + (tm ? tm[1] : "0s") : l.url; a.target = "_blank"; a.rel = "noopener";
+        actions.appendChild(a);
+      });
+      row.appendChild(main); row.appendChild(actions);
+      return row;
+    }
     function renderDay(d) {
       var sec = el("div", "day"), head = el("div", "day-head");
       var t = startOf(d), dt = new Date(t);
@@ -176,9 +194,12 @@ details.group .count { color: var(--muted); opacity: .7; }
       if (d.match) head.appendChild(el("span", "when", timeFmt.format(dt) + " · " + (d.match.event || "")));
       sec.appendChild(head);
       var list = el("div", "links"), byKind = { prevu: [], definitif: [] };
+      byKind.map = [];
       d.links.forEach(function (l) { (byKind[l.kind] || byKind.prevu).push(l); });
       var rows = [];
-      byKind.definitif.concat(byKind.prevu).forEach(function (l) { rows.push(linkRow(l)); });
+      byKind.definitif.forEach(function (l) { rows.push(linkRow(l)); });
+      if (byKind.map.length) rows.push(mapsRow(byKind.map));
+      byKind.prevu.forEach(function (l) { rows.push(linkRow(l)); });
       if (!byKind.definitif.length && d.match) {
         if (!byKind.prevu.length) rows.push(pendingRow("prevu", "à " + timeFmt.format(dt)));
         rows.push(pendingRow("definitif", "au vrai début"));

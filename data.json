@@ -1,11 +1,59 @@
 {
   "matches": [
-    { "key": "2026-10-24", "start": "2026-10-24T14:00:00Z", "event": "PGL Masters Bucharest" },
-    { "key": "2026-10-25", "start": "2026-10-25T09:50:00Z", "event": "PGL Masters Bucharest" },
-    { "key": "2026-11-11", "start": "2026-11-11T04:30:00Z", "event": "BLAST Rivals" }
+    {
+      "key": "2026-10-24",
+      "start": "2026-10-24T14:00:00Z",
+      "event": "PGL Masters Bucharest"
+    },
+    {
+      "key": "2026-10-25",
+      "start": "2026-10-25T09:50:00Z",
+      "event": "PGL Masters Bucharest"
+    },
+    {
+      "key": "2026-11-11",
+      "start": "2026-11-11T04:30:00Z",
+      "event": "BLAST Rivals"
+    }
   ],
   "links": [
-    { "id": "2026-10-24-definitif", "match": "2026-10-24", "kind": "definitif", "url": "https://www.twitch.tv/videos/2909252125?t=7h36m46s", "createdAt": "2026-10-25T06:28:00Z" },
-    { "id": "2026-10-25-definitif", "match": "2026-10-25", "kind": "definitif", "url": "https://www.twitch.tv/videos/2910240026?t=2h22m35s", "createdAt": "2026-10-25T10:39:47Z" }
+    {
+      "id": "2026-10-24-definitif",
+      "match": "2026-10-24",
+      "kind": "definitif",
+      "url": "https://www.twitch.tv/videos/2909252125?t=7h36m46s",
+      "createdAt": "2026-10-25T06:28:00Z"
+    },
+    {
+      "id": "2026-10-25-definitif",
+      "match": "2026-10-25",
+      "kind": "definitif",
+      "url": "https://www.twitch.tv/videos/2910240026?t=2h22m35s",
+      "createdAt": "2026-10-25T10:39:47Z"
+    },
+    {
+      "id": "2026-10-24-map1",
+      "match": "2026-10-24",
+      "kind": "map",
+      "map": 1,
+      "url": "https://www.twitch.tv/videos/2909252125?t=7h37m19s",
+      "createdAt": "2026-10-25T11:20:00Z"
+    },
+    {
+      "id": "2026-10-24-map2",
+      "match": "2026-10-24",
+      "kind": "map",
+      "map": 2,
+      "url": "https://www.twitch.tv/videos/2909252125?t=8h42m02s",
+      "createdAt": "2026-10-25T11:20:00Z"
+    },
+    {
+      "id": "2026-10-24-map3",
+      "match": "2026-10-24",
+      "kind": "map",
+      "map": 3,
+      "url": "https://www.twitch.tv/videos/2909252125?t=9h34m54s",
+      "createdAt": "2026-10-25T11:20:00Z"
+    }
   ]
 }
