@@ -12,7 +12,7 @@ const FIREBASE_CONFIG = {
   appId: "1:1026475466360:web:3369ffd372ffd561b0578d"
 };
 
-const VAPID_KEY = null; // clé « Web Push certificates » du projet Firebase
+const VAPID_KEY = "BKWAR112tulGwShAGMg_1C7cG9mE2SWICcuGOtcCLiKD5qYC2jLKzJik3AuMS2RqYeY6Fe9VBLn3a_eXwoF31fY"; // clé « Web Push certificates » du projet Firebase
 const V = "10.12.2";
 // Types de notifications, au choix de chaque compte (tous activés par défaut)
 const NOTIF_TYPES = [
