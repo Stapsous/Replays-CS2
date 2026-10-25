@@ -118,7 +118,7 @@ if (queue.length) {
         try {
           await fcm.send({
             token,
-            data: { title: "Replays Vitality", body: msg.body, link: msg.link, tag: msg.tag },
+            data: { title: "VitaCS Replays", body: msg.body, link: msg.link, tag: msg.tag },
             webpush: { headers: { Urgency: "high", TTL: msg.type === "link" || msg.type === "maps" ? "86400" : "3600" } }
           });
           sentCount++;

@@ -1,8 +1,8 @@
 {
   "packageId": "io.github.stapsous.replays",
   "host": "stapsous.github.io",
-  "name": "Replays Vitality",
-  "launcherName": "Replays",
+  "name": "VitaCS Replays",
+  "launcherName": "VCS Replays",
   "display": "standalone",
   "themeColor": "#121315",
   "themeColorDark": "#121315",

@@ -13,7 +13,7 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 messaging.onBackgroundMessage((p) => {
   const d = p.data || {};
-  return self.registration.showNotification(d.title || "Replays Vitality", {
+  return self.registration.showNotification(d.title || "VitaCS Replays", {
     body: d.body || "", icon: "icons/icon-192.png", tag: d.tag || undefined, data: { link: d.link || self.registration.scope }
   });
 });
