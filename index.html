@@ -53,6 +53,7 @@ h1 { font-family: var(--display); font-weight: 700; font-size: 44px; line-height
 .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 a.watch { font-weight: 500; text-decoration: none; color: var(--accent-ink); background: var(--accent); padding: 7px 14px; border-radius: 6px; white-space: nowrap; }
 a.watch:hover { filter: brightness(1.08); }
+a.map.resume::after { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-left: 6px; vertical-align: 2px; }
 a.alt { font-size: 13px; color: var(--muted); text-decoration: none; border: 1px solid var(--line); padding: 6px 10px; border-radius: 6px; white-space: nowrap; }
 a.alt:hover { color: var(--fg); border-color: var(--muted); }
 a.alt.map { color: var(--fg); font-weight: 500; }
@@ -112,7 +113,7 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
 </head>
 <body>
 <div class="app">
-<section class="watch-pane" id="watch" aria-label="Lecteur"><iframe id="frame" title="Lecteur sans spoiler" allow="autoplay; fullscreen" allowfullscreen></iframe></section>
+<section class="watch-pane" id="watch" aria-label="Lecteur"><iframe id="frame" title="Lecteur sans spoiler" allow="autoplay; fullscreen; clipboard-write" allowfullscreen></iframe></section>
 <aside class="side" id="side">
 <div class="side-head"><span class="label">Replays</span><span><button id="side-hide" type="button" title="Replier le menu (mode théâtre)">Replier ›</button> <button id="close" type="button" title="Fermer le lecteur">Fermer ✕</button></span></div>
 <main>
@@ -146,6 +147,21 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
   function load(k) { try { return JSON.parse(localStorage.getItem(k) || "{}") || {}; } catch (e) { return {}; } }
   function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   var seen = load(SEEN_KEY), folded = load(FOLD_KEY);
+  // Positions de reprise écrites par le lecteur (clé "<vidéo>@<repère en secondes>")
+  var R_KEY = "replays-resume";
+  function toSec(s) { var m = String(s || "").match(/^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$/); return m ? (+(m[1] || 0)) * 3600 + (+(m[2] || 0)) * 60 + (+(m[3] || 0)) : 0; }
+  function rKeyOf(href) { var v = String(href).match(/[?&]v=(\d+)/), t = String(href).match(/[?&]t=([0-9hms]+)/); return v ? v[1] + "@" + toSec(t ? t[1] : "0s") : ""; }
+  function updateResume() {
+    var all = load(R_KEY);
+    [].forEach.call(daysEl.querySelectorAll("a.watch, a.map"), function (a) {
+      var on = !!all[rKeyOf(a.getAttribute("href"))];
+      a.classList.toggle("resume", on);
+      if (a.classList.contains("watch")) a.textContent = on ? "Reprendre" : "Regarder";
+      a.title = on ? "Reprendre là où tu t'es arrêté" : "";
+    });
+  }
+  function clearResume(href) { var all = load(R_KEY), k = rKeyOf(href); if (all[k]) { delete all[k]; save(R_KEY, all); } }
+  window.addEventListener("storage", function (e) { if (e.key === R_KEY) updateResume(); });
 
   var KIND = {
     prevu: { label: "Horaire prévu", tag: "provisoire", cls: "prov" },
@@ -200,7 +216,11 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
       var b = el("button", "seen"); b.type = "button";
       function mark() { var on = !!seen[l.id]; b.setAttribute("aria-pressed", on ? "true" : "false"); b.textContent = on ? "Vu" : "Marquer vu"; row.classList.toggle("is-seen", on); }
       [a, tw].forEach(function (x) { x.addEventListener("click", function () { if (!seen[l.id]) { seen[l.id] = 1; save(SEEN_KEY, seen); mark(); } }); });
-      b.addEventListener("click", function () { if (seen[l.id]) delete seen[l.id]; else seen[l.id] = 1; save(SEEN_KEY, seen); mark(); });
+      b.addEventListener("click", function () {
+        if (seen[l.id]) delete seen[l.id];
+        else { seen[l.id] = 1; clearResume(a.getAttribute("href")); updateResume(); }
+        save(SEEN_KEY, seen); mark();
+      });
       mark();
       actions.appendChild(a); actions.appendChild(tw); actions.appendChild(b);
       row.appendChild(main); row.appendChild(actions);
@@ -260,6 +280,7 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
     group("avenir", "À venir", upcoming);
     group("replays", "Replays", past);
     if (typeof markCurrent === "function") markCurrent();
+    updateResume();
   }
 
   // ----- Lecture dans la page -----
@@ -294,6 +315,7 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
   }
   function closePlayer(push) {
     current = ""; frame.src = "about:blank";
+    setTimeout(updateResume, 300);
     document.body.classList.remove("watching", "wide");
     try { history[push ? "pushState" : "replaceState"]({}, "", location.pathname); } catch (e) {}
     markCurrent();

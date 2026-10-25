@@ -96,6 +96,7 @@
   <button id="b-p30" type="button">+30 s</button>
   <button id="b-p60" type="button">+1 min</button>
   <button id="b-p300" type="button">+5 min</button>
+  <button id="b-mark" type="button" title="Revenir au repère de départ du lien">Repère</button>
   <span class="clock" id="clock" title="Temps écoulé depuis le repère de départ">+0:00:00</span>
   <button id="b-mute" type="button">Son</button>
   <input id="volume" class="vol" type="range" min="0" max="100" step="5" value="100" aria-label="Volume" title="Volume (flèches haut / bas)">
@@ -106,6 +107,7 @@
     </select>
   </label>
   <button id="b-th" type="button" aria-pressed="false">Théâtre</button>
+  <button id="b-copy" type="button" title="Copier un lien qui reprend à la position actuelle (pour un autre appareil)">Copier le lien</button>
   <button id="b-fs" type="button">Plein écran</button>
 </div>
 
@@ -130,6 +132,16 @@
     return m ? (+(m[1] || 0)) * 3600 + (+(m[2] || 0)) * 60 + (+(m[3] || 0)) : 0;
   }
   var start = toSec(t);
+  function fmtT(sec) { sec = Math.max(0, Math.floor(sec)); return Math.floor(sec / 3600) + "h" + String(Math.floor(sec / 60) % 60).padStart(2, "0") + "m" + String(sec % 60).padStart(2, "0") + "s"; }
+
+  // Reprise : position mémorisée dans ce navigateur pour ce lien (vidéo + repère), ou paramètre at= d'un lien copié
+  var R_KEY = "replays-resume", rKey = vid + "@" + start;
+  function rLoad() { try { return JSON.parse(localStorage.getItem(R_KEY) || "{}") || {}; } catch (e) { return {}; } }
+  function rStore(all) { try { localStorage.setItem(R_KEY, JSON.stringify(all)); } catch (e) {} }
+  var initial = start, resumed = false;
+  var atParam = q.get("at");
+  if (atParam && /^(\d+h)?(\d+m)?(\d+s)?$/.test(atParam) && toSec(atParam) > 0) { initial = toSec(atParam); resumed = true; }
+  else { var sv0 = rLoad()[rKey]; if (sv0 && sv0.p > start + 15) { initial = sv0.p; resumed = true; } }
 
   ["stage", "bar", "help"].forEach(function (id) { document.getElementById(id).hidden = false; });
   var stage = document.getElementById("stage");
@@ -151,7 +163,7 @@
 
   var player = new Twitch.Player("player", {
     video: "v" + vid,
-    time: t,
+    time: fmtT(initial),
     parent: [location.hostname],
     autoplay: true,
     muted: false,
@@ -172,8 +184,9 @@
     if (typeof d.params.muted === "boolean") mutedState = d.params.muted;
     if (pb) {
       var was = playing; playing = pb === "Playing" || pb === "Buffering";
+      if (playing && !started && resumed) setTimeout(function () { flash("Reprise à " + fmt(initial - start) + " · bouton Repère pour revenir au début", 3500); }, 300);
       if (playing) started = true;
-      if (was !== playing) sync();
+      if (was !== playing) { sync(); if (!playing) savePos(); }
     }
   });
   var startHint = document.getElementById("start-hint");
@@ -304,6 +317,41 @@
 
   sync();
 
+  function curPos() {
+    var cur; try { cur = player.getCurrentTime(); } catch (e) { return NaN; }
+    if (Date.now() - seekAt < 2000) cur = seekTarget;
+    return typeof cur === "number" ? cur : NaN;
+  }
+  function savePos() {
+    if (!started) return;
+    var cur = curPos(); if (isNaN(cur) || cur < 1) return;
+    var all = rLoad(), now = Date.now();
+    Object.keys(all).forEach(function (k) { if (!all[k] || now - (all[k].at || 0) > 60 * 864e5) delete all[k]; });
+    if (Math.abs(cur - start) <= 15) delete all[rKey]; else all[rKey] = { p: Math.floor(cur), at: now };
+    rStore(all);
+  }
+  setInterval(function () { if (playing) savePos(); }, 5000);
+  window.addEventListener("pagehide", savePos);
+  document.addEventListener("visibilitychange", function () { if (document.hidden) savePos(); });
+
+  document.getElementById("b-mark").addEventListener("click", function () {
+    seekTarget = start; seekAt = Date.now(); seekSum = 0;
+    player.seek(start); flash("Repère de départ");
+    var all = rLoad(); delete all[rKey]; rStore(all);
+  });
+  document.getElementById("b-copy").addEventListener("click", function () {
+    var cur = curPos(); if (isNaN(cur)) cur = start;
+    var url = new URL("player.html?v=" + vid + "&t=" + fmtT(start) + "&at=" + fmtT(cur), location.href).href;
+    function done() { flash("Lien copié", 1500); }
+    function fallback() {
+      var ta = document.createElement("textarea"); ta.value = url; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      var ok = false; try { ok = document.execCommand("copy"); } catch (e) {}
+      ta.remove(); flash(ok ? "Lien copié" : "Copie impossible", 1500);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, fallback); else fallback();
+  });
+
   // Hauteur réservée sous et au-dessus de la vidéo = hauteur réelle des boutons et textes (qui varie selon la largeur,
   // le mode intégré ou théâtre). Évite une bande vide sous les boutons ou une page qui défile.
   function fitStage() {
@@ -360,9 +408,8 @@
   }, 1000);
 
   setInterval(function () {
-    var cur; try { cur = player.getCurrentTime(); } catch (e) { return; }
-    if (Date.now() - seekAt < 2000) cur = seekTarget;
-    if (typeof cur === "number" && !isNaN(cur)) clock.textContent = fmt(cur - start);
+    var cur = curPos();
+    if (!isNaN(cur)) clock.textContent = fmt(cur - start);
   }, 500);
 })();
 </script>
