@@ -17,15 +17,15 @@
   /* flex-shrink: 0 : sans lui, le cadre (overflow hidden) était écrasé en hauteur dans la colonne flex quand la page dépassait
      l'écran, ce qui sortait la vidéo du cadre 16:9 et la tronquait en haut et en bas (hors plein écran).
      La largeur est aussi limitée pour que la vidéo et les boutons tiennent dans la hauteur de la fenêtre. */
-  .stage { position: relative; flex-shrink: 0; width: min(100%, 1280px, calc((100vh - 190px) * 16 / 9)); min-width: min(100%, 320px); aspect-ratio: 16 / 9; background: #000; overflow: hidden; border-radius: 8px; }
+  .stage { position: relative; flex-shrink: 0; width: min(100%, 1280px, calc((100vh - var(--reserve, 190px)) * 16 / 9)); min-width: min(100%, 320px); aspect-ratio: 16 / 9; background: #000; overflow: hidden; border-radius: 8px; }
   /* Mode théâtre : la vidéo occupe toute la fenêtre (en gardant le 16:9), les boutons restent dessous, l'aide est masquée. */
   /* Mode intégré (ouvert dans la page des replays) : marges réduites, aide masquée ; le mode théâtre replie le menu de la page. */
   body.embedded { padding: 8px 8px 12px; gap: 10px; }
-  body.embedded .stage { width: min(100%, calc((100vh - 150px) * 16 / 9)); max-width: none; }
+  body.embedded .stage { width: min(100%, calc((100vh - var(--reserve, 150px)) * 16 / 9)); max-width: none; }
   body.embedded .help { display: none; }
   body.embedded .bar { max-width: none; }
   body.theater { padding: 0 0 8px; gap: 8px; }
-  body.theater .stage { width: min(100vw, calc((100vh - 64px) * 16 / 9)); max-width: none; border-radius: 0; }
+  body.theater .stage { width: min(100vw, calc((100vh - var(--reserve, 64px)) * 16 / 9)); max-width: none; border-radius: 0; }
   body.theater .help, body.theater .start-hint { display: none; }
   body.theater .bar { max-width: none; padding: 0 8px; }
   button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
@@ -277,6 +277,26 @@
   window.addEventListener("blur", function () { setTimeout(function () { if (document.activeElement && document.activeElement.tagName === "IFRAME") { document.activeElement.blur(); window.focus(); } }, 0); });
 
   sync();
+
+  // Hauteur réservée sous et au-dessus de la vidéo = hauteur réelle des boutons et textes (qui varie selon la largeur,
+  // le mode intégré ou théâtre). Évite une bande vide sous les boutons ou une page qui défile.
+  function fitStage() {
+    var stageEl = document.getElementById("stage");
+    if (!stageEl || stageEl.hidden) return;
+    var cs = getComputedStyle(document.body), gap = parseFloat(cs.rowGap) || 0;
+    var used = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom), shown = 0;
+    [].forEach.call(document.body.children, function (c) {
+      if (c === stageEl || c.tagName === "SCRIPT") return;
+      var h = c.getBoundingClientRect().height;
+      if (h > 0) { used += h; shown++; }
+    });
+    used += gap * shown; // un écart entre la vidéo et chaque autre bloc visible
+    var reserve = Math.max(40, Math.ceil(used) + 2);
+    document.documentElement.style.setProperty("--reserve", reserve + "px");
+  }
+  window.addEventListener("resize", function () { requestAnimationFrame(fitStage); });
+  new MutationObserver(function () { requestAnimationFrame(fitStage); }).observe(document.body, { attributes: true, attributeFilter: ["class"], subtree: true });
+  requestAnimationFrame(fitStage); setTimeout(fitStage, 500);
 
   // Qualité : par défaut la plus haute disponible (Source), choix mémorisé dans ce navigateur.
   // Le mode auto de Twitch choisit souvent une qualité basse dans un lecteur intégré.
