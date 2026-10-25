@@ -29,7 +29,7 @@
   "isChromeOSOnly": false,
   "isMetaQuest": false,
   "fullScopeUrl": "https://stapsous.github.io/Replays-CS2/",
-  "minSdkVersion": 21,
+  "minSdkVersion": 24,
   "orientation": "default",
   "fingerprints": [{ "name": "release", "value": "63:68:AE:CC:DB:05:4F:FC:D8:14:85:97:FB:75:98:3D:19:7B:37:07:6D:D2:78:CF:D0:57:49:A0:5F:98:3C:55" }],
   "additionalTrustedOrigins": [],
