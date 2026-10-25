@@ -3,17 +3,21 @@
     {
       "key": "2026-10-24",
       "start": "2026-10-24T14:00:00Z",
-      "event": "PGL Masters Bucharest"
+      "event": "PGL Masters Bucharest",
+      "done": true
     },
     {
       "key": "2026-10-25",
       "start": "2026-10-25T09:50:00Z",
-      "event": "PGL Masters Bucharest"
+      "event": "PGL Masters Bucharest",
+      "done": true
     },
     {
       "key": "2026-11-11",
       "start": "2026-11-11T04:30:00Z",
-      "event": "BLAST Rivals"
+      "event": "BLAST Rivals",
+      "pid": 1762451,
+      "ch": "blastpremier"
     }
   ],
   "links": [
