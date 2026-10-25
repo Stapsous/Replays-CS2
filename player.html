@@ -96,7 +96,6 @@
   <button id="b-p30" type="button">+30 s</button>
   <button id="b-p60" type="button">+1 min</button>
   <button id="b-p300" type="button">+5 min</button>
-  <button id="b-mark" type="button" title="Revenir au repère de départ du lien">Repère</button>
   <span class="clock" id="clock" title="Temps écoulé depuis le repère de départ">+0:00:00</span>
   <button id="b-mute" type="button">Son</button>
   <input id="volume" class="vol" type="range" min="0" max="100" step="5" value="100" aria-label="Volume" title="Volume (flèches haut / bas)">
@@ -184,7 +183,7 @@
     if (typeof d.params.muted === "boolean") mutedState = d.params.muted;
     if (pb) {
       var was = playing; playing = pb === "Playing" || pb === "Buffering";
-      if (playing && !started && resumed) setTimeout(function () { flash("Reprise à " + fmt(initial - start) + " · bouton Repère pour revenir au début", 3500); }, 300);
+      if (playing && !started && resumed) setTimeout(function () { flash("Reprise à " + fmt(initial - start), 2500); }, 300);
       if (playing) started = true;
       if (was !== playing) { sync(); if (!playing) savePos(); }
     }
@@ -334,11 +333,6 @@
   window.addEventListener("pagehide", savePos);
   document.addEventListener("visibilitychange", function () { if (document.hidden) savePos(); });
 
-  document.getElementById("b-mark").addEventListener("click", function () {
-    seekTarget = start; seekAt = Date.now(); seekSum = 0;
-    player.seek(start); flash("Repère de départ");
-    var all = rLoad(); delete all[rKey]; rStore(all);
-  });
   document.getElementById("b-copy").addEventListener("click", function () {
     var cur = curPos(); if (isNaN(cur)) cur = start;
     var url = new URL("player.html?v=" + vid + "&t=" + fmtT(start) + "&at=" + fmtT(cur), location.href).href;
