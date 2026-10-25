@@ -54,6 +54,30 @@
       "map": 3,
       "url": "https://www.twitch.tv/videos/2909252125?t=9h34m54s",
       "createdAt": "2026-10-25T11:20:00Z"
+    },
+    {
+      "id": "2026-10-25-map1",
+      "match": "2026-10-25",
+      "kind": "map",
+      "map": 1,
+      "url": "https://www.twitch.tv/videos/2910240026?t=2h23m06s",
+      "createdAt": "2026-10-25T12:31:17Z"
+    },
+    {
+      "id": "2026-10-25-map2",
+      "match": "2026-10-25",
+      "kind": "map",
+      "map": 2,
+      "url": "https://www.twitch.tv/videos/2910240026?t=3h26m01s",
+      "createdAt": "2026-10-25T12:31:17Z"
+    },
+    {
+      "id": "2026-10-25-map3",
+      "match": "2026-10-25",
+      "kind": "map",
+      "map": 3,
+      "url": "https://www.twitch.tv/videos/2910240026?t=4h01m16s",
+      "createdAt": "2026-10-25T12:31:17Z"
     }
   ]
 }
