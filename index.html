@@ -37,6 +37,10 @@ header { display: flex; flex-direction: column; gap: 6px; }
 .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
 h1 { font-family: var(--display); font-weight: 700; font-size: 44px; line-height: 1; margin: 0; letter-spacing: .01em; text-wrap: balance; }
 .lede { color: var(--muted); margin: 0; max-width: 60ch; }
+.account { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: 13px; color: var(--muted); }
+.account:empty { display: none; }
+.account button { font: inherit; font-size: 13px; background: none; border: 1px solid var(--line); color: inherit; border-radius: 6px; padding: 5px 10px; cursor: pointer; }
+.account .ok { color: var(--done); }
 .status { font-family: var(--mono); font-size: 12px; color: var(--muted); }
 .days { display: flex; flex-direction: column; gap: 20px; }
 .day { display: flex; flex-direction: column; gap: 8px; }
@@ -122,6 +126,7 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
     <h1>Replays Vitality</h1>
     <p class="lede">Les matchs à venir et les liens Twitch des replays, calés au début de la rencontre. Aucun score, aucun adversaire, aucune phase.</p>
     <div class="status" id="status">Chargement…</div>
+    <div class="account" id="account"></div>
   </header>
 
   <section class="days" id="days">
@@ -174,7 +179,14 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
   var lastSig = "";
 
+  var lastData = null;
+  // Données reçues d'un autre appareil (sync.js) : on relit les « vu » et les positions
+  window.addEventListener("replays-sync", function () {
+    seen = load(SEEN_KEY);
+    if (lastData) { lastSig = ""; render(lastData); } else updateResume();
+  });
   function render(data) {
+    lastData = data;
     var sig = JSON.stringify(data);
     var days = {};
     function day(key) { return days[key] || (days[key] = { key: key, match: null, links: [] }); }
@@ -365,5 +377,6 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
   document.addEventListener("visibilitychange", function () { if (!document.hidden) refresh(); });
 })();
 </script>
+<script type="module" src="sync.js"></script>
 </body>
 </html>
