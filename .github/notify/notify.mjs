@@ -7,7 +7,7 @@ const SITE = "https://stapsous.github.io/Replays-CS2/";
 const MIN = 60000, H = 60 * MIN;
 const now = Date.now();
 
-if (!process.env.FIREBASE_SA || !process.env.PANDASCORE_TOKEN) { console.log("Secrets FIREBASE_SA / PANDASCORE_TOKEN absents : rien à faire"); process.exit(0); }
+if (!process.env.FIREBASE_SA || !process.env.PANDASCORE_TOKEN) { console.log("::warning::Secrets FIREBASE_SA / PANDASCORE_TOKEN absents"); process.exit(0); }
 admin.initializeApp({ credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_SA)) });
 const db = admin.firestore();
 const fcm = admin.messaging();
@@ -102,11 +102,16 @@ for (const m of active) {
   }
 }
 
+// Test manuel (workflow_dispatch avec test=true) : une notification à tous les appareils abonnés
+if (process.env.NOTIFY_TEST === "true") queue.push({ type: "test", body: "Test : les notifications fonctionnent", link: SITE, tag: "test" });
+
 // 3. Envoi aux appareils abonnés, selon les choix de chaque compte
+let devices = 0, sentCount = 0, failCount = 0;
 if (queue.length) {
   const users = await db.collection("users").get();
   for (const doc of users.docs) {
     const d = doc.data(), prefs = d.notif || {}, tokens = Object.keys(d.tokens || {});
+    devices += tokens.length;
     for (const msg of queue) {
       if (prefs[msg.type] === false) continue;
       for (const token of tokens) {
@@ -116,7 +121,9 @@ if (queue.length) {
             data: { title: "Replays Vitality", body: msg.body, link: msg.link, tag: msg.tag },
             webpush: { headers: { Urgency: "high", TTL: msg.type === "link" || msg.type === "maps" ? "86400" : "3600" } }
           });
+          sentCount++;
         } catch (e) {
+          failCount++;
           const code = e.code || (e.errorInfo && e.errorInfo.code) || "";
           console.log("send failed", code);
           if (/registration-token-not-registered|invalid-registration-token|invalid-argument/.test(code)) {
@@ -126,8 +133,8 @@ if (queue.length) {
       }
     }
   }
-  console.log("sent", queue.map((q) => q.type).join(","));
 }
+console.log("::notice::ok · premier passage " + firstRun + " · appareils " + devices + " · envoyés " + sentCount + " · échecs " + failCount + " · file " + queue.map((q) => q.type).join(","));
 
 if (dirty) {
   for (const k of Object.keys(sent)) if (now - sent[k] > 60 * 24 * H) delete sent[k];
