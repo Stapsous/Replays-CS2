@@ -3,7 +3,14 @@
 // dans le document users/<uid> du compte connecté, et inversement.
 // La configuration Firebase n'est pas un secret : l'accès est protégé par les règles Firestore
 // (chacun ne lit et n'écrit que son propre document).
-const FIREBASE_CONFIG = null; // à remplir avec la configuration du projet Firebase
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCUZc33r0RzJA0S0v64DApDgTacE7O7Khg",
+  authDomain: "replays-cs2.firebaseapp.com",
+  projectId: "replays-cs2",
+  storageBucket: "replays-cs2.firebasestorage.app",
+  messagingSenderId: "1026475466360",
+  appId: "1:1026475466360:web:3369ffd372ffd561b0578d"
+};
 
 const V = "10.12.2";
 const KEYS = {
