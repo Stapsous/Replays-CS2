@@ -177,11 +177,17 @@
       nudgeTimer = setTimeout(function () { stage.classList.remove("nudge"); }, 1500);
     } else { player.pause(); playing = false; sync(); flash("Pause"); }
   }
+  // Clics rapides : Twitch met un moment à mettre à jour getCurrentTime() après un seek, donc chaque clic relisait
+  // la même position et les sauts ne se cumulaient pas. On part de la dernière cible demandée tant que le saut est récent.
+  var seekTarget = 0, seekAt = 0, seekSum = 0;
+  function fmtStep(n) { var a = Math.abs(n); return (n >= 0 ? "+" : "-") + (a >= 60 && a % 60 === 0 ? a / 60 + " min" : a >= 60 ? Math.floor(a / 60) + " min " + (a % 60) + " s" : a + " s"); }
   function skip(d) {
-    var cur = 0; try { cur = player.getCurrentTime(); } catch (e) {}
-    var target = Math.max(0, cur + d);
-    player.seek(target);
-    flash((d > 0 ? "+" : "-") + (Math.abs(d) >= 60 ? Math.abs(d) / 60 + " min" : Math.abs(d) + " s"));
+    var now = Date.now(), recent = now - seekAt < 2000;
+    var base = 0;
+    if (recent) base = seekTarget; else { try { base = player.getCurrentTime(); } catch (e) {} seekSum = 0; }
+    seekTarget = Math.max(0, base + d); seekAt = now; seekSum += d;
+    player.seek(seekTarget);
+    flash(fmtStep(seekSum));
   }
   function fullscreen() {
     if (document.fullscreenElement) document.exitFullscreen().catch(function () {});
@@ -298,6 +304,7 @@
 
   setInterval(function () {
     var cur; try { cur = player.getCurrentTime(); } catch (e) { return; }
+    if (Date.now() - seekAt < 2000) cur = seekTarget;
     if (typeof cur === "number" && !isNaN(cur)) clock.textContent = fmt(cur - start);
   }, 500);
 })();
