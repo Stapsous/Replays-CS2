@@ -77,11 +77,11 @@ details.group .count { color: var(--muted); opacity: .7; }
 .empty { border: 1px dashed var(--line); border-radius: 10px; padding: 20px; color: var(--muted); }
 .tips { font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; display: flex; flex-direction: column; gap: 4px; }
 /* Lecture dans la page : lecteur à gauche, liste des replays en menu à droite (repliable), empilés sur mobile */
-.watch, .side-head, .reopen { display: none; }
+.watch-pane, .side-head, .reopen { display: none; }
 body.watching { padding: 0; }
 body.watching .app { display: grid; grid-template-columns: minmax(0, 1fr) 360px; height: 100vh; }
-body.watching .watch { display: block; min-width: 0; }
-body.watching .watch iframe { width: 100%; height: 100%; border: 0; display: block; background: var(--bg); }
+body.watching .watch-pane { display: block; min-width: 0; }
+body.watching .watch-pane iframe { width: 100%; height: 100%; border: 0; display: block; background: var(--bg); }
 body.watching .side { overflow-y: auto; border-left: 1px solid var(--line); background: var(--bg); }
 body.watching .side-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--bg); z-index: 2; }
 .side-head .label { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
@@ -98,7 +98,7 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
 .row.current a.watch, a.map.current { outline: 2px solid var(--accent); outline-offset: 2px; }
 @media (max-width: 900px) {
   body.watching .app { display: block; height: auto; }
-  body.watching .watch { height: 100svh; }
+  body.watching .watch-pane { height: 100svh; }
   body.watching .side { border-left: 0; border-top: 1px solid var(--line); overflow: visible; }
   body.watching .side-head { position: static; }
   body.watching.wide .side { display: block; }
@@ -112,7 +112,7 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
 </head>
 <body>
 <div class="app">
-<section class="watch" id="watch" aria-label="Lecteur"><iframe id="frame" title="Lecteur sans spoiler" allow="autoplay; fullscreen" allowfullscreen></iframe></section>
+<section class="watch-pane" id="watch" aria-label="Lecteur"><iframe id="frame" title="Lecteur sans spoiler" allow="autoplay; fullscreen" allowfullscreen></iframe></section>
 <aside class="side" id="side">
 <div class="side-head"><span class="label">Replays</span><span><button id="side-hide" type="button" title="Replier le menu (mode théâtre)">Replier ›</button> <button id="close" type="button" title="Fermer le lecteur">Fermer ✕</button></span></div>
 <main>
