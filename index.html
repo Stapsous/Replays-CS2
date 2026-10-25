@@ -22,14 +22,12 @@
   .shield { position: absolute; inset: 0; z-index: 2; cursor: pointer; }
   .flash { position: absolute; z-index: 3; left: 50%; top: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,.65); color: #fff; padding: 10px 16px; border-radius: 8px; font-weight: 600; font-variant-numeric: tabular-nums; opacity: 0; transition: opacity .25s; pointer-events: none; }
   .flash.on { opacity: 1; }
-  .stage:not(.armed) .flash { top: auto; bottom: 56px; transform: translateX(-50%); }
-  .paused-veil { position: absolute; z-index: 1; inset: 0; background: #000; display: none; align-items: center; justify-content: center; color: var(--muted); font-size: 18px; }
-  .stage.is-paused .paused-veil { display: flex; }
-  /* Tant que la lecture n'a jamais démarré, on laisse cliquer dans Twitch (écran « Start Watching » des contenus classés) */
-  .stage:not(.armed) .shield { pointer-events: none; }
-  .stage:not(.armed) .paused-veil { display: none !important; }
-  .gate { position: absolute; z-index: 3; left: 50%; bottom: 16px; transform: translateX(-50%); background: rgba(0,0,0,.75); color: #fff; padding: 8px 14px; border-radius: 8px; font-size: 13px; text-align: center; pointer-events: none; }
-  .stage.armed .gate { display: none; }
+    /* Twitch refuse de relancer la vidéo via son API : en pause, le clic doit arriver dans le lecteur Twitch lui-même.
+     Donc en pause le bouclier laisse passer les clics ; en lecture il les capte (pause via l'API, qui fonctionne). */
+  .stage.is-paused .shield { pointer-events: none; }
+  .gate { position: absolute; z-index: 3; left: 50%; bottom: 16px; transform: translateX(-50%); background: rgba(0,0,0,.75); color: #fff; padding: 8px 14px; border-radius: 8px; font-size: 13px; text-align: center; pointer-events: none; display: none; max-width: 90%; }
+  .stage.is-paused .gate { display: block; }
+  .stage.nudge .gate { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
   .bar { width: 100%; max-width: 1280px; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; }
   button { font: inherit; font-weight: 600; background: var(--panel); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; cursor: pointer; min-width: 64px; font-variant-numeric: tabular-nums; }
   button:hover { border-color: var(--muted); }
@@ -45,10 +43,9 @@
 <body>
 <div class="stage" id="stage" hidden>
   <div id="player"></div>
-  <div class="paused-veil">En pause</div>
   <div class="shield" id="shield" title="Lecture / pause"></div>
   <div class="flash" id="flash"></div>
-  <div class="gate">Première lecture : clique dans la vidéo (et sur « Start Watching » si Twitch le demande).</div>
+  <div class="gate" id="gate"></div>
 </div>
 
 <div class="bar" id="bar" hidden>
@@ -65,7 +62,7 @@
 </div>
 
 <p class="help" id="help" hidden>
-  <kbd>Espace</kbd> lecture/pause · <kbd>←</kbd> <kbd>→</kbd> 10 s · <kbd>Maj</kbd>+<kbd>←</kbd> <kbd>→</kbd> 1 min · <kbd>Ctrl</kbd>+<kbd>←</kbd> <kbd>→</kbd> 5 min · <kbd>M</kbd> son · <kbd>F</kbd> plein écran.
+  <kbd>Espace</kbd> pause (pour reprendre : clic dans la vidéo, exigence de Twitch) · <kbd>←</kbd> <kbd>→</kbd> 10 s · <kbd>Maj</kbd>+<kbd>←</kbd> <kbd>→</kbd> 1 min · <kbd>Ctrl</kbd>+<kbd>←</kbd> <kbd>→</kbd> 5 min · <kbd>M</kbd> son · <kbd>F</kbd> plein écran.
   La durée totale de la vidéo n'est jamais affichée.
 </p>
 
@@ -114,7 +111,8 @@
   });
 
   // État suivi nous-mêmes : player.isPaused() de Twitch renvoie une valeur fausse
-  var playing = false, mutedState = false;
+  var playing = false, started = false, mutedState = false, nudgeTimer;
+  var gate = document.getElementById("gate");
   function paused() { return !playing; }
   window.addEventListener("message", function (e) {
     try { if (!/(^|\.)twitch\.tv$/.test(new URL(e.origin).hostname)) return; } catch (x) { return; }
@@ -124,19 +122,26 @@
     if (typeof d.params.muted === "boolean") mutedState = d.params.muted;
     if (pb) {
       var was = playing; playing = pb === "Playing" || pb === "Buffering";
-      if (playing) stage.classList.add("armed");
+      if (playing) started = true;
       if (was !== playing) sync();
     }
   });
   function sync() {
     var p = paused();
     stage.classList.toggle("is-paused", p);
+    gate.textContent = started ? "En pause · clique dans la vidéo pour reprendre"
+                               : "Clique dans la vidéo pour lancer (puis sur « Start Watching » si Twitch le demande)";
     playBtn.textContent = p ? "Lecture" : "Pause";
     muteBtn.textContent = mutedState ? "Son coupé" : "Son";
   }
   function toggle() {
-    if (!stage.classList.contains("armed")) { flash("Clique dans la vidéo pour la première lecture", 2500); return; }
-    if (paused()) { player.play(); flash("Lecture"); } else { player.pause(); flash("Pause"); } setTimeout(sync, 150); }
+    if (paused()) {
+      // Twitch ignore play() hors d'un clic dans son lecteur : on tente quand même, et on indique où cliquer
+      try { player.play(); } catch (e) {}
+      stage.classList.add("nudge"); clearTimeout(nudgeTimer);
+      nudgeTimer = setTimeout(function () { stage.classList.remove("nudge"); }, 1500);
+    } else { player.pause(); playing = false; sync(); flash("Pause"); }
+  }
   function skip(d) {
     var cur = 0; try { cur = player.getCurrentTime(); } catch (e) {}
     var target = Math.max(0, cur + d);
@@ -170,11 +175,7 @@
   // Garde le focus clavier sur la page même si l'iframe Twitch le prend
   window.addEventListener("blur", function () { setTimeout(function () { if (document.activeElement && document.activeElement.tagName === "IFRAME") { document.activeElement.blur(); window.focus(); } }, 0); });
 
-  function arm() { stage.classList.add("armed"); sync(); }
-  player.addEventListener(Twitch.Player.PLAYING, arm);
-  player.addEventListener(Twitch.Player.PLAY, sync);
-  player.addEventListener(Twitch.Player.PAUSE, sync);
-  player.addEventListener(Twitch.Player.READY, sync);
+  sync();
   setInterval(function () {
     var cur; try { cur = player.getCurrentTime(); } catch (e) { return; }
     if (typeof cur === "number" && !isNaN(cur)) clock.textContent = fmt(cur - start);
