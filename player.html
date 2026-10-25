@@ -22,7 +22,7 @@
   #player { position: absolute; left: 0; right: 0; top: calc(-1 * var(--crop)); bottom: calc(-1 * var(--crop)); }
   #player iframe { width: 100%; height: 100%; border: 0; display: block; }
   /* Couche transparente : capte souris et clavier pour que le lecteur Twitch n'affiche jamais ses contrôles */
-  .shield { position: absolute; inset: 0; z-index: 2; cursor: pointer; }
+  .shield { position: absolute; inset: 0; z-index: 2; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
   .flash { position: absolute; z-index: 3; left: 50%; top: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,.65); color: #fff; padding: 10px 16px; border-radius: 8px; font-weight: 600; font-variant-numeric: tabular-nums; opacity: 0; transition: opacity .25s; pointer-events: none; }
   .flash.on { opacity: 1; }
     /* Twitch refuse de relancer la vidéo via son API : en pause, le clic doit arriver dans le lecteur Twitch lui-même.
@@ -66,9 +66,11 @@
 <div class="bar" id="bar" hidden>
   <button id="b-m300" type="button">-5 min</button>
   <button id="b-m60" type="button">-1 min</button>
+  <button id="b-m30" type="button">-30 s</button>
   <button id="b-m10" type="button">-10 s</button>
   <button id="b-play" class="main" type="button">Pause</button>
   <button id="b-p10" type="button">+10 s</button>
+  <button id="b-p30" type="button">+30 s</button>
   <button id="b-p60" type="button">+1 min</button>
   <button id="b-p300" type="button">+5 min</button>
   <span class="clock" id="clock" title="Temps écoulé depuis le repère de départ">+0:00:00</span>
@@ -83,7 +85,7 @@
 </div>
 
 <p class="help" id="help" hidden>
-  <kbd>Espace</kbd> pause (pour reprendre : clic dans la vidéo, exigence de Twitch) · <kbd>←</kbd> <kbd>→</kbd> 10 s · <kbd>Maj</kbd>+<kbd>←</kbd> <kbd>→</kbd> 1 min · <kbd>Ctrl</kbd>+<kbd>←</kbd> <kbd>→</kbd> 5 min · <kbd>M</kbd> son · <kbd>F</kbd> plein écran.
+  <kbd>Espace</kbd> pause (pour reprendre : clic dans la vidéo, exigence de Twitch) · <kbd>←</kbd> <kbd>→</kbd> 10 s · <kbd>Maj</kbd>+<kbd>←</kbd> <kbd>→</kbd> 1 min · <kbd>Ctrl</kbd>+<kbd>←</kbd> <kbd>→</kbd> 5 min · <kbd>M</kbd> son · <kbd>F</kbd> plein écran. Sur mobile en plein écran : double tap à gauche (-10 s) ou à droite (+10 s).
   La durée totale de la vidéo n'est jamais affichée.
 </p>
 
@@ -178,10 +180,29 @@
   }
   function mute() { mutedState = !mutedState; try { player.setMuted(mutedState); } catch (e) {} sync(); }
 
-  document.getElementById("shield").addEventListener("click", toggle);
-  document.getElementById("shield").addEventListener("dblclick", fullscreen);
+  // Souris : clic = lecture/pause, double-clic = plein écran.
+  // Tactile : tap = lecture/pause ; double tap en plein écran = -10 s (moitié gauche) ou +10 s (moitié droite),
+  // double tap hors plein écran = plein écran. Le tap simple attend un court instant pour distinguer le double tap.
+  var shield = document.getElementById("shield");
+  var lastTap = 0, tapTimer = null, touchUsed = false;
+  shield.addEventListener("touchend", function (e) {
+    touchUsed = true; e.preventDefault();
+    var now = Date.now(), t = e.changedTouches && e.changedTouches[0];
+    if (now - lastTap < 300) {
+      clearTimeout(tapTimer); tapTimer = null; lastTap = 0;
+      if (document.fullscreenElement) {
+        var r = shield.getBoundingClientRect();
+        skip(t && t.clientX < r.left + r.width / 2 ? -10 : 10);
+      } else fullscreen();
+    } else {
+      lastTap = now;
+      tapTimer = setTimeout(function () { tapTimer = null; toggle(); }, 300);
+    }
+  }, { passive: false });
+  shield.addEventListener("click", function () { if (!touchUsed) toggle(); });
+  shield.addEventListener("dblclick", function () { if (!touchUsed) fullscreen(); });
   playBtn.addEventListener("click", toggle);
-  [["b-m300", -300], ["b-m60", -60], ["b-m10", -10], ["b-p10", 10], ["b-p60", 60], ["b-p300", 300]].forEach(function (b) {
+  [["b-m300", -300], ["b-m60", -60], ["b-m30", -30], ["b-m10", -10], ["b-p10", 10], ["b-p30", 30], ["b-p60", 60], ["b-p300", 300]].forEach(function (b) {
     document.getElementById(b[0]).addEventListener("click", function () { skip(b[1]); });
   });
   muteBtn.addEventListener("click", mute);
