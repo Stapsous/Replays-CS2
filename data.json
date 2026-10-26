@@ -26,6 +26,13 @@
       "pid": 1753706,
       "ch": "pgl",
       "done": true
+    },
+    {
+      "key": "2026-10-27",
+      "start": "2026-10-27T17:00:00Z",
+      "event": "PGL Masters Bucharest 2026",
+      "pid": 1753717,
+      "ch": "pgl"
     }
   ],
   "links": [
