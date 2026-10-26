@@ -21,6 +21,9 @@
   /* flex-shrink: 0 : sans lui, le cadre (overflow hidden) était écrasé en hauteur dans la colonne flex quand la page dépassait
      l'écran, ce qui sortait la vidéo du cadre 16:9 et la tronquait en haut et en bas (hors plein écran).
      La largeur est aussi limitée pour que la vidéo et les boutons tiennent dans la hauteur de la fenêtre. */
+  /* Plein écran : l'écran du téléphone est plus allongé que la vidéo ; on centre un cadre 16:9 (plus les bandes masquées) */
+  .stage:fullscreen { border-radius: 0; background: #000; }
+  .stage:fullscreen #player { left: 50%; right: auto; top: 50%; bottom: auto; width: min(100vw, calc(100vh * 16 / 9)); height: calc(min(100vw, calc(100vh * 16 / 9)) * 9 / 16 + 2 * var(--crop)); transform: translate(-50%, -50%); }
   .stage { position: relative; flex-shrink: 0; width: min(100%, 1280px, calc((100vh - var(--reserve, 190px)) * 16 / 9)); min-width: min(100%, 320px); aspect-ratio: 16 / 9; background: #000; overflow: hidden; border-radius: 8px; }
   /* Mode théâtre : la vidéo occupe toute la fenêtre (en gardant le 16:9), les boutons restent dessous, l'aide est masquée. */
   /* Mode intégré (ouvert dans la page des replays) : marges réduites, aide masquée ; le mode théâtre replie le menu de la page. */
@@ -91,7 +94,11 @@
     .seek { order: -1; width: 100%; justify-content: space-between; gap: 4px; }
     .seg button { min-width: 0; width: 35px; font-size: 12px; height: 38px; }
     button.main { width: 44px; height: 44px; }
-    #b-th, .vol { display: none; }
+    .vol { display: none; }
+    .ib { min-width: 34px; height: 36px; padding: 0 5px; }
+    .bar svg { width: 19px; height: 19px; }
+    .clock { font-size: 13px; padding: 0 4px; }
+    .q { max-width: 84px; font-size: 12px; padding: 0 2px; }
   }
   .help { color: var(--muted); font-size: 13px; text-align: center; max-width: 640px; }
   .unplayed { max-width: 520px; margin: 18vh auto 0; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px; font-size: 17px; }
@@ -123,7 +130,7 @@
   <button id="b-mute" class="ib" type="button" title="Couper le son (M)" aria-label="Son"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 9h4l5-4v14l-5-4H4z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/></svg></button>
   <input id="volume" class="vol" type="range" min="0" max="100" step="5" value="100" aria-label="Volume" title="Volume (flèches haut / bas)">
   <select id="quality" class="q" title="Qualité de la vidéo (mémorisée)" aria-label="Qualité">
-    <option value="max">Maximale</option>
+    <option value="max">Max</option>
     <option value="auto">Auto</option>
   </select>
   <button id="b-copy" class="ib" type="button" title="Copier un lien qui reprend à cette position" aria-label="Copier le lien"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/></svg></button>
@@ -132,7 +139,7 @@
 </div>
 
 <p class="help" id="help" hidden>
-  <kbd>Espace</kbd> pause (pour reprendre : clic dans la vidéo, exigence de Twitch) · <kbd>←</kbd> <kbd>→</kbd> 10 s · <kbd>Maj</kbd>+<kbd>←</kbd> <kbd>→</kbd> 1 min · <kbd>Ctrl</kbd>+<kbd>←</kbd> <kbd>→</kbd> 5 min · <kbd>M</kbd> son · <kbd>↑</kbd> <kbd>↓</kbd> volume · <kbd>T</kbd> théâtre · <kbd>F</kbd> plein écran · <kbd>I</kbd> infos de qualité. Sur mobile en plein écran : double tap à gauche (-10 s) ou à droite (+10 s).
+  <kbd>Espace</kbd> pause (pour reprendre : clic dans la vidéo, exigence de Twitch) · <kbd>←</kbd> <kbd>→</kbd> 10 s · <kbd>Maj</kbd>+<kbd>←</kbd> <kbd>→</kbd> 1 min · <kbd>Ctrl</kbd>+<kbd>←</kbd> <kbd>→</kbd> 5 min · <kbd>M</kbd> son · <kbd>↑</kbd> <kbd>↓</kbd> volume · <kbd>T</kbd> théâtre · <kbd>F</kbd> plein écran · <kbd>I</kbd> infos de qualité. Sur mobile : double tap à gauche (-10 s) ou à droite (+10 s).
   La durée totale de la vidéo n'est jamais affichée.
 </p>
 
@@ -290,8 +297,8 @@
   setInterval(function () { if (started && !volApplied) { volApplied = true; setVol(vol, false); } }, 1000);
 
   // Souris : clic = lecture/pause, double-clic = plein écran.
-  // Tactile : tap = lecture/pause ; double tap en plein écran = -10 s (moitié gauche) ou +10 s (moitié droite),
-  // double tap hors plein écran = plein écran. Le tap simple attend un court instant pour distinguer le double tap.
+  // Tactile : tap = lecture/pause ; double tap = -10 s (moitié gauche) ou +10 s (moitié droite),
+  // en plein écran ou non. Le tap simple attend un court instant pour distinguer le double tap.
   var shield = document.getElementById("shield");
   var lastTap = 0, tapTimer = null, touchUsed = false;
   shield.addEventListener("touchend", function (e) {
@@ -299,10 +306,8 @@
     var now = Date.now(), t = e.changedTouches && e.changedTouches[0];
     if (now - lastTap < 300) {
       clearTimeout(tapTimer); tapTimer = null; lastTap = 0;
-      if (document.fullscreenElement) {
-        var r = shield.getBoundingClientRect();
-        skip(t && t.clientX < r.left + r.width / 2 ? -10 : 10);
-      } else fullscreen();
+      var r = shield.getBoundingClientRect();
+      skip(t && t.clientX < r.left + r.width / 2 ? -10 : 10);
     } else {
       lastTap = now;
       tapTimer = setTimeout(function () { tapTimer = null; toggle(); }, 300);
@@ -460,7 +465,7 @@
   function qFill(list) {
     var keep = qPref;
     qSel.textContent = "";
-    var o1 = document.createElement("option"); o1.value = "max"; o1.textContent = "Maximale"; qSel.appendChild(o1);
+    var o1 = document.createElement("option"); o1.value = "max"; o1.textContent = "Max"; qSel.appendChild(o1);
     var o2 = document.createElement("option"); o2.value = "auto"; o2.textContent = "Auto"; qSel.appendChild(o2);
     list.forEach(function (x) { var o = document.createElement("option"); o.value = x.group || x.name; o.textContent = x.name || x.group; qSel.appendChild(o); });
     qSel.value = [].some.call(qSel.options, function (o) { return o.value === keep; }) ? keep : "max";
