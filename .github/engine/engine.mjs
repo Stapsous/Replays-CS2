@@ -7,7 +7,7 @@
 import fs from "node:fs";
 import admin from "firebase-admin";
 
-const DRY = process.env.ENGINE_DRY_RUN === "true";
+const DRY = process.env.ENGINE_DRY_RUN === "true" || !!process.env.ENGINE_RECHECK;
 const VITALITY = 3455;
 const MIN = 60000, H = 60 * MIN;
 const now = Date.now();
@@ -22,6 +22,14 @@ state.decoys = state.decoys || {}; // serieId -> { follow: teamId, after: ISO }
 
 const data = JSON.parse(fs.readFileSync("data.json", "utf8"));
 data.matches = data.matches || []; data.links = data.links || [];
+// Contrôle : recalcule les liens d'un match déjà traité (sans rien écrire) pour comparer avec ceux publiés
+const RECHECK = process.env.ENGINE_RECHECK || "";
+const published = data.links.filter((l) => l.match === RECHECK).map((l) => l.id + " " + l.url);
+if (RECHECK) {
+  const m = data.matches.find((x) => x.key === RECHECK);
+  if (m) { delete m.done; m.start = new Date(Date.now() - 3600e3).toISOString(); }
+  data.links = data.links.filter((l) => l.match !== RECHECK);
+}
 const changes = [];
 
 // ---------- Outils ----------
@@ -175,6 +183,7 @@ if (changes.length) {
   if (DRY) {
     console.log("::notice::Simulation, rien n'est écrit : " + changes.join(", "));
     for (const l of data.links.filter((l) => Date.parse(l.createdAt) >= now)) console.log("::notice::" + l.id + " " + l.url);
+    if (RECHECK) console.log("::notice::Publiés : " + published.join(" | "));
   } else {
     fs.writeFileSync("data.json", JSON.stringify(data, null, 2) + "\n");
     console.log("::notice::" + changes.length + " changement(s)");
