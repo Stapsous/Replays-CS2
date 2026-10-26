@@ -87,6 +87,8 @@ for (const m of active) {
   const prev = T.filter((x) => x.id !== M.id && channel(x) === ch && x.scheduled_at && Date.parse(x.scheduled_at) < sched && sched - Date.parse(x.scheduled_at) < 12 * H)
     .sort((a, b) => Date.parse(b.scheduled_at) - Date.parse(a.scheduled_at))[0];
   if (!prev) continue;
+  // Si le match précédent est lui-même un match suivi (vrai ou leurre), sa fin révélerait sa durée : pas d'alerte
+  if ((data.matches || []).some((mm) => mm.pid === prev.id)) continue;
 
   if (prev.status === "finished" && left > 20 * MIN && !sent["m15:" + pid]) {
     const recentEnd = prev.end_at && now - Date.parse(prev.end_at) < 90 * MIN;

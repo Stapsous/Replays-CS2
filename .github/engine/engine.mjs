@@ -76,10 +76,26 @@ async function vodFor(login, ref) {
 }
 async function vodById(login, id) { return (await vods(login)).find((v) => v.id === id) || null; }
 
+// ---------- 0. Embargo anti-spoiler ----------
+// Tout ce qui dépend de la FIN d'un match (match suivant, liens par carte, leurres) attend l'heure où le match
+// est forcément terminé quel que soit le score : début + durée maximale du format. Sinon l'heure d'apparition
+// révélerait la durée du match, donc le score (2-0 ou 2-1).
+const maxDur = (bo) => (bo <= 1 ? 2 : bo <= 3 ? 5 : 8) * H;
+const embargo = (x) => Date.parse(x.begin_at || x.scheduled_at) + maxDur(x.number_of_games || 1);
+const live = {};
+for (const m of data.matches) {
+  if (!m.pid || m.done) continue;
+  try { live[m.pid] = (await ps("/csgo/matches?filter[id]=" + m.pid))[0] || null; } catch (e) { console.log(m.key + " : " + e.message); }
+}
+let holdUntil = 0;
+for (const x of Object.values(live)) if (x && x.status !== "not_started" && x.begin_at && now < embargo(x)) holdUntil = Math.max(holdUntil, embargo(x));
+
 // ---------- 1. Découverte ----------
 const known = new Map(data.matches.filter((m) => m.pid).map((m) => [m.pid, m]));
 function addMatch(x) {
   if (known.has(x.id)) return;
+  // Pendant l'embargo, un nouveau match n'apparaît pas (sauf s'il commence dans moins de 90 min)
+  if (now < holdUntil && Date.parse(x.scheduled_at || x.begin_at) - now > 90 * MIN) return;
   const day = parisDate(x.scheduled_at || x.begin_at);
   let key = day, n = 2;
   while (data.matches.some((m) => m.key === key)) key = day + "-" + n++;
@@ -103,8 +119,8 @@ try {
     const future = all.filter((x) => x.status !== "finished" && x.status !== "canceled");
     const ids = (x) => (x.opponents || []).map((o) => o.opponent && o.opponent.id).filter(Boolean);
     const drawnAfter = future.filter((x) => ids(x).length === 2 && Date.parse(x.scheduled_at || 0) > Date.parse(last.end_at));
-    // Éliminée : défaite, plus aucun match prévu dans la série, au moins 2 h écoulées et des matchs suivants déjà tirés sans elle
-    if (!state.decoys[serie] && lost && !stillIn && future.length && now - Date.parse(last.end_at) > 2 * H && drawnAfter.length >= 1) {
+    // Éliminée : défaite, plus aucun match prévu dans la série, embargo passé et des matchs suivants déjà tirés sans elle
+    if (!state.decoys[serie] && lost && !stillIn && future.length && now >= embargo(last) && drawnAfter.length >= 1) {
       state.decoys[serie] = { follow: last.winner_id, after: last.end_at };
     }
     const d = state.decoys[serie];
@@ -132,8 +148,8 @@ const url = (vod, sec) => "https://www.twitch.tv/videos/" + vod + "?t=" + hms(se
 
 for (const m of data.matches) {
   if (!m.pid || m.done) continue;
-  let x;
-  try { x = (await ps("/csgo/matches?filter[id]=" + m.pid))[0]; } catch (e) { console.log(m.key + " : " + e.message); continue; }
+  let x = live[m.pid];
+  if (x === undefined) { try { x = (await ps("/csgo/matches?filter[id]=" + m.pid))[0]; } catch (e) { console.log(m.key + " : " + e.message); continue; } }
   if (!x) continue;
   if (!m.ch) { const c = channel(x); if (c) { m.ch = c; changes.push("chaîne " + m.key); } }
   if (x.scheduled_at && x.scheduled_at !== m.start && x.status === "not_started") { m.start = x.scheduled_at; changes.push("horaire " + m.key); }
@@ -158,7 +174,7 @@ for (const m of data.matches) {
       if (v) addLink({ id: m.key + "-definitif", match: m.key, kind: "definitif", url: url(v.id, (Date.parse(x.begin_at) - v.start) / 1000 - 90) });
     }
     // c) liens par carte, une fois le match terminé : toujours le nombre maximal de cartes du format
-    if (x.status === "finished" && !hasLink(m.key + "-map1")) {
+    if (x.status === "finished" && now >= embargo(x) && !hasLink(m.key + "-map1")) {
       const def = data.links.find((l) => l.id === m.key + "-definitif");
       const defId = def && (def.url.match(/\/videos\/(\d+)/) || [])[1];
       const v = (defId && await vodById(m.ch, defId)) || await vodFor(m.ch, Date.parse(x.begin_at));
