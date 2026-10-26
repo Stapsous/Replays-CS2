@@ -65,7 +65,8 @@
   .stage.nudge .gate { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
   /* Avant la première lecture : lecteur Twitch affiché en entier (non rogné) pour que l'écran « Start Watching »
      reste visible et cliquable, surtout sur mobile où il occupe toute la hauteur. Le rognage reprend dès la lecture. */
-  .stage.not-started #player { top: 0; bottom: 0; }
+  /* Avant lancement : on garde la bande du haut masquée (titre de la vidéo = spoiler possible), on libère seulement le bas pour « Start Watching » */
+  .stage.not-started #player { top: calc(-1 * var(--crop)); bottom: 0; }
   /* L'écran d'avertissement de Twitch (surtout en français) est plus haut qu'un cadre 16:9 de téléphone :
      on agrandit le cadre le temps du lancement, puis il revient en 16:9. */
   .stage.not-started { aspect-ratio: auto; height: max(calc(min(100vw - 32px, 1280px) * 0.5625), 480px); max-height: 85vh; }
