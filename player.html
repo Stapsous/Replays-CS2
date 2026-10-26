@@ -299,7 +299,7 @@
   var volApplied = false;
   setInterval(function () { if (started && !volApplied) { volApplied = true; setVol(vol, false); } }, 1000);
 
-  // Souris : clic = lecture/pause, double-clic = plein écran.
+  // Souris : clic = lecture/pause (le plein écran passe uniquement par son bouton ou la touche F).
   // Tactile : tap = lecture/pause ; double tap = -10 s (moitié gauche) ou +10 s (moitié droite),
   // en plein écran ou non. Le tap simple attend un court instant pour distinguer le double tap.
   var shield = document.getElementById("shield");
@@ -317,7 +317,6 @@
     }
   }, { passive: false });
   shield.addEventListener("click", function () { if (!touchUsed) toggle(); });
-  shield.addEventListener("dblclick", function () { if (!touchUsed) fullscreen(); });
   playBtn.addEventListener("click", toggle);
   [["b-m300", -300], ["b-m60", -60], ["b-m30", -30], ["b-m10", -10], ["b-p10", 10], ["b-p30", 30], ["b-p60", 60], ["b-p300", 300]].forEach(function (b) {
     document.getElementById(b[0]).addEventListener("click", function () { skip(b[1]); });
