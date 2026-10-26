@@ -144,6 +144,14 @@ try {
 // ---------- 3. Liens ----------
 const hasLink = (id) => data.links.some((l) => l.id === id);
 function addLink(l) { if (hasLink(l.id)) return false; data.links.push({ ...l, createdAt: new Date(now).toISOString() }); changes.push("lien " + l.id); return true; }
+function setMap(key, i, u, unplayed) {
+  const id = key + "-map" + i, l = data.links.find((x) => x.id === id);
+  if (!l) { addLink({ id, match: key, kind: "map", map: i, url: u, ...(unplayed ? { unplayed: true } : {}) }); return; }
+  if (l.url !== u || !!l.unplayed !== unplayed) {
+    l.url = u; if (unplayed) l.unplayed = true; else delete l.unplayed;
+    changes.push("carte " + id);
+  }
+}
 const url = (vod, sec) => "https://www.twitch.tv/videos/" + vod + "?t=" + hms(sec);
 
 for (const m of data.matches) {
@@ -173,22 +181,28 @@ for (const m of data.matches) {
       const v = await vodFor(m.ch, Date.parse(x.begin_at));
       if (v) addLink({ id: m.key + "-definitif", match: m.key, kind: "definitif", url: url(v.id, (Date.parse(x.begin_at) - v.start) / 1000 - 90) });
     }
-    // c) liens par carte, une fois le match terminé : toujours le nombre maximal de cartes du format
-    if (x.status === "finished" && now >= embargo(x) && !hasLink(m.key + "-map1")) {
-      const def = data.links.find((l) => l.id === m.key + "-definitif");
-      const defId = def && (def.url.match(/\/videos\/(\d+)/) || [])[1];
+    // c) liens par carte, affichés dès le début du match : toujours le nombre maximal de cartes du format.
+    //    Cartes forcément jouées (1-2 en Bo3, 1-3 en Bo5) : vrai début dès qu'elles commencent.
+    //    Cartes incertaines : début du match jusqu'à la fin, puis vrai début ou « pas jouée ».
+    const def = data.links.find((l) => l.id === m.key + "-definitif");
+    if (begun && def) {
+      const defId = (def.url.match(/\/videos\/(\d+)/) || [])[1];
       const v = (defId && await vodById(m.ch, defId)) || await vodFor(m.ch, Date.parse(x.begin_at));
       if (v) {
-        const bo = x.number_of_games || 1;
+        const bo = x.number_of_games || 1, sure = Math.ceil(bo / 2), fin = x.status === "finished";
         const played = (x.games || []).filter((g) => g.begin_at).sort((a, b) => a.position - b.position);
         const lastG = played[played.length - 1];
         const lastEnd = Date.parse((lastG && lastG.end_at) || x.end_at || x.begin_at);
+        const defUrl = url(v.id, (Date.parse(x.begin_at) - v.start) / 1000 - 90);
         for (let i = 1; i <= bo; i++) {
           const g = played.find((p) => p.position === i);
-          const t = g ? (Date.parse(g.begin_at) - v.start) / 1000 - 60 : (lastEnd - v.start) / 1000 + 30;
-          addLink({ id: m.key + "-map" + i, match: m.key, kind: "map", map: i, url: url(v.id, t), ...(g ? {} : { unplayed: true }) });
+          let u, unplayed = false;
+          if (g && (i <= sure || fin)) u = url(v.id, (Date.parse(g.begin_at) - v.start) / 1000 - 60);
+          else if (fin) { u = url(v.id, (lastEnd - v.start) / 1000 + 30); unplayed = true; }
+          else u = defUrl;
+          setMap(m.key, i, u, unplayed);
         }
-        m.done = true;
+        if (fin) m.done = true;
       }
     }
   } catch (e) { console.log(m.key + " : " + e.message); }
