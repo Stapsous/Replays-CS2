@@ -77,6 +77,8 @@
   button.main { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); min-width: 96px; }
   .clock { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; color: var(--muted); min-width: 120px; text-align: center; font-variant-numeric: tabular-nums; }
   .help { color: var(--muted); font-size: 13px; text-align: center; max-width: 640px; }
+  .unplayed { max-width: 520px; margin: 18vh auto 0; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px; font-size: 17px; }
+  .unplayed[hidden] { display: none; }
   .empty { max-width: 560px; color: var(--muted); text-align: center; margin-top: 15vh; }
   kbd { font-family: ui-monospace, Consolas, monospace; border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; color: var(--fg); }
 </style>
@@ -112,6 +114,7 @@
     </select>
   </label>
   <button id="b-th" type="button" aria-pressed="false">Théâtre</button>
+  <button id="b-restart" type="button" title="Revoir depuis le début (efface la position enregistrée)">Recommencer</button>
   <button id="b-copy" type="button" title="Copier un lien qui reprend à la position actuelle (pour un autre appareil)">Copier le lien</button>
   <button id="b-fs" type="button">Plein écran</button>
 </div>
@@ -121,6 +124,10 @@
   La durée totale de la vidéo n'est jamais affichée.
 </p>
 
+<div class="unplayed" id="unplayed" hidden>
+  <p>Cette carte n'a pas été jouée : le match s'est terminé avant.</p>
+  <button id="u-back" type="button">Retour à la liste</button>
+</div>
 <p class="empty" id="empty" hidden>Ouvre ce lecteur depuis la page VitaCS Replays : il faut un lien de la forme <code>?v=&lt;id de la vidéo&gt;&amp;t=1h02m03s</code>.</p>
 
 <script>
@@ -139,6 +146,26 @@
   var start = toSec(t);
   function fmtT(sec) { sec = Math.max(0, Math.floor(sec)); return Math.floor(sec / 3600) + "h" + String(Math.floor(sec / 60) % 60).padStart(2, "0") + "m" + String(sec % 60).padStart(2, "0") + "s"; }
 
+  // Carte non jouée (match terminé avant) : message au lieu de lancer la vidéo. data.json indique
+  // « unplayed » seulement sur ces liens ; l'information n'est révélée qu'au clic sur la carte.
+  fetch("data.json?_=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.json(); }).catch(function () { return null; }).then(function (d) {
+    var link = null;
+    ((d && d.links) || []).forEach(function (l) {
+      var v = (String(l.url).match(/\/videos\/(\d+)/) || [])[1], tt = (String(l.url).match(/[?&]t=([0-9hms]+)/) || [])[1];
+      if (v === vid && tt && toSec(tt) === start && (!link || l.unplayed)) link = l;
+    });
+    if (link && link.unplayed) {
+      document.getElementById("unplayed").hidden = false;
+      document.getElementById("u-back").addEventListener("click", function () {
+        if (EMBED) { try { window.parent.postMessage({ replays: "close" }, location.origin); } catch (e) {} }
+        else location.href = "./";
+      });
+      return;
+    }
+    run(link);
+  });
+
+  function run(link) {
   // Reprise : position mémorisée dans ce navigateur pour ce lien (vidéo + repère), ou paramètre at= d'un lien copié
   var R_KEY = "replays-resume", rKey = vid + "@" + start;
   function rLoad() { try { return JSON.parse(localStorage.getItem(R_KEY) || "{}") || {}; } catch (e) { return {}; } }
@@ -367,6 +394,13 @@
   window.addEventListener("pagehide", savePos);
   document.addEventListener("visibilitychange", function () { if (document.hidden) savePos(); });
 
+  var restartBtn = document.getElementById("b-restart");
+  restartBtn.textContent = link && link.kind === "map" ? "Début de la carte" : "Début du match";
+  restartBtn.addEventListener("click", function () {
+    seekTarget = start; seekAt = Date.now(); seekSum = 0;
+    player.seek(start); flash(restartBtn.textContent);
+    var all = rLoad(); delete all[rKey]; rStore(all);
+  });
   document.getElementById("b-copy").addEventListener("click", function () {
     var cur = curPos(); if (isNaN(cur)) cur = start;
     var url = new URL("player.html?v=" + vid + "&t=" + fmtT(start) + "&at=" + fmtT(cur), location.href).href;
@@ -439,6 +473,7 @@
     var cur = curPos();
     if (!isNaN(cur)) clock.textContent = fmt(cur - start);
   }, 500);
+  }
 })();
 </script>
 <script type="module" src="sync.js"></script>

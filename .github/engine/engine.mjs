@@ -170,7 +170,7 @@ for (const m of data.matches) {
         for (let i = 1; i <= bo; i++) {
           const g = played.find((p) => p.position === i);
           const t = g ? (Date.parse(g.begin_at) - v.start) / 1000 - 60 : (lastEnd - v.start) / 1000 + 30;
-          addLink({ id: m.key + "-map" + i, match: m.key, kind: "map", map: i, url: url(v.id, t) });
+          addLink({ id: m.key + "-map" + i, match: m.key, kind: "map", map: i, url: url(v.id, t), ...(g ? {} : { unplayed: true }) });
         }
         m.done = true;
       }

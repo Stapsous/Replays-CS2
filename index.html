@@ -365,6 +365,7 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
     try { frame.contentWindow.postMessage({ replays: "key", key: e.key, code: e.code, ctrlKey: e.ctrlKey, shiftKey: e.shiftKey }, location.origin); } catch (x) {}
   });
   window.addEventListener("message", function (e) {
+    if (e.origin === location.origin && e.data && e.data.replays === "close") { closePlayer(true); return; }
     if (e.origin !== location.origin || !e.data || e.data.replays !== "theater") return;
     setWide(e.data.on);
   });
