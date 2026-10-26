@@ -42,7 +42,7 @@
   body.overlay .stage { width: min(100vw, calc(100vh * 16 / 9)); max-width: none; border-radius: 0; }
   body.overlay .help, body.overlay .start-hint { display: none; }
   body.overlay .bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; max-width: none; padding: 28px 12px calc(10px + env(safe-area-inset-bottom, 0px)); background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, .78) 45%); opacity: 0; transition: opacity .25s; }
-  body.overlay.show-ui .bar, body.overlay .bar:hover, body.overlay .bar:focus-within, body.overlay .stage.is-paused ~ .bar { opacity: 1; }
+  body.overlay.show-ui .bar, body.overlay .bar:hover, body.overlay .bar:has(:focus-visible), body.overlay .stage.is-paused ~ .bar { opacity: 1; }
   body.overlay .bar button:not(.main), body.overlay .bar select { background: rgba(23, 24, 28, .72); }
   body.overlay .gate { bottom: 96px; }
   body.overlay:not(.show-ui) .stage:not(.is-paused) .shield { cursor: none; }
@@ -488,9 +488,15 @@
     if (list.length && !qApplied) { qApplied = qApply(); }
   }, 1000);
 
+  var lastRaw = null;
   setInterval(function () {
     var cur = curPos();
     if (!isNaN(cur)) clock.textContent = fmt(cur - start);
+    // Filet de sécurité : si la vidéo avance alors qu'on la croit en pause (message de Twitch manqué,
+    // fréquent après une reprise en plein écran), on repasse en lecture pour réactiver le double tap.
+    var raw; try { raw = player.getCurrentTime(); } catch (e) {}
+    if (typeof raw === "number" && lastRaw != null && raw > lastRaw + 0.2 && raw - lastRaw < 3 && !playing) { playing = true; started = true; sync(); }
+    lastRaw = raw;
   }, 500);
   }
 })();
