@@ -178,6 +178,14 @@ for (const m of data.matches) {
   } catch (e) { console.log(m.key + " : " + e.message); }
 }
 
+// Diagnostic en simulation : vérifie l'accès à l'API Twitch pour les chaînes des matchs actifs
+if (DRY) {
+  for (const ch of [...new Set(data.matches.filter((m) => m.pid && !m.done && m.ch).map((m) => m.ch))]) {
+    try { const v = await vods(ch); console.log("::notice::Twitch " + ch + " : " + v.length + " vidéo(s), la plus récente commencée " + (v[0] ? new Date(v[0].start).toISOString() : "?")); }
+    catch (e) { console.log("::warning::Twitch " + ch + " : " + e.message); }
+  }
+}
+
 // ---------- 4. Écriture ----------
 if (changes.length) {
   if (DRY) {
