@@ -91,6 +91,13 @@
       "url": "https://www.twitch.tv/videos/2910240026?t=4h01m16s",
       "createdAt": "2026-10-25T12:31:17Z",
       "unplayed": true
+    },
+    {
+      "id": "2026-10-26-definitif",
+      "match": "2026-10-26",
+      "kind": "definitif",
+      "url": "https://www.twitch.tv/videos/2911148898?t=2h54m49s",
+      "createdAt": "2026-10-26T10:21:47.206Z"
     }
   ]
 }
