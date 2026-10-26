@@ -1,0 +1,53 @@
+name: Automatisation
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  push:
+    branches: [main]
+    paths: [data.json]
+  workflow_dispatch:
+    inputs:
+      test:
+        description: "Envoyer une notification de test"
+        type: boolean
+        default: false
+permissions:
+  contents: write
+concurrency:
+  group: automate
+  cancel-in-progress: false
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: npm install --no-save --prefix .github/notify firebase-admin@12 && ln -s ../notify/node_modules .github/engine/node_modules
+      - name: Moteur (matchs et liens)
+        id: engine
+        if: github.event_name != 'push'
+        run: |
+          if [ -f .github/engine/DRY_RUN ]; then export ENGINE_DRY_RUN=true; fi
+          node .github/engine/engine.mjs
+        env:
+          FIREBASE_SA: ${{ secrets.FIREBASE_SA }}
+          PANDASCORE_TOKEN: ${{ secrets.PANDASCORE_TOKEN }}
+          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
+          TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
+      - name: Publication de data.json
+        if: steps.engine.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data.json
+          git commit -m "Mise à jour des liens"
+          for i in 1 2 3; do git push && break; git pull --rebase; done
+      - name: Notifications
+        run: node .github/notify/notify.mjs
+        env:
+          FIREBASE_SA: ${{ secrets.FIREBASE_SA }}
+          PANDASCORE_TOKEN: ${{ secrets.PANDASCORE_TOKEN }}
+          NOTIFY_TEST: ${{ inputs.test }}
