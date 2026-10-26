@@ -12,7 +12,7 @@ const VITALITY = 3455;
 const MIN = 60000, H = 60 * MIN;
 const now = Date.now();
 const PS = process.env.PANDASCORE_TOKEN, TW_ID = process.env.TWITCH_CLIENT_ID, TW_SECRET = process.env.TWITCH_CLIENT_SECRET;
-if (!PS || !TW_ID || !TW_SECRET || !process.env.FIREBASE_SA) { console.log("::warning::Secrets manquants, moteur inactif"); process.exit(0); }
+if (!PS || !TW_ID || !TW_SECRET || !process.env.FIREBASE_SA) { console.log("::warning::Secrets manquants, moteur inactif"); fs.writeFileSync(".engine-next", "1800"); process.exit(0); }
 
 admin.initializeApp({ credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_SA)) });
 const db = admin.firestore();
@@ -199,3 +199,7 @@ if (changes.length) {
 }
 if (!DRY) await stateRef.set(state);
 fs.writeFileSync(process.env.GITHUB_OUTPUT || "/dev/null", "changed=" + (changes.length && !DRY ? "true" : "false") + "\n", { flag: "a" });
+// Rythme conseillé pour le prochain passage : 5 min autour des matchs (de 6 h avant à la fin), sinon 30 min
+const busy = data.matches.some((m) => m.pid && !m.done && Date.parse(m.start) - now < 6 * H);
+fs.writeFileSync(".engine-next", String(busy ? 300 : 1800));
+fs.writeFileSync(".engine-changed", changes.length && !DRY ? "1" : "0");

@@ -3,3 +3,5 @@ android/android.keystore
 android/app/
 android/*.apk
 android/*.aab
+.engine-next
+.engine-changed
