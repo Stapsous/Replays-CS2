@@ -272,7 +272,7 @@
       try { player.play(); } catch (e) {}
       stage.classList.add("nudge"); clearTimeout(nudgeTimer);
       nudgeTimer = setTimeout(function () { stage.classList.remove("nudge"); }, 1500);
-    } else { player.pause(); playing = false; sync(); flash("Pause"); }
+    } else { player.pause(); playing = false; pausedAt = Date.now(); advances = 0; sync(); flash("Pause"); }
   }
   // Clics rapides : Twitch met un moment à mettre à jour getCurrentTime() après un seek, donc chaque clic relisait
   // la même position et les sauts ne se cumulaient pas. On part de la dernière cible demandée tant que le saut est récent.
@@ -516,14 +516,18 @@
     if (list.length && !qApplied) { qApplied = qApply(); }
   }, 1000);
 
-  var lastRaw = null;
+  var lastRaw = null, pausedAt = 0, advances = 0;
   setInterval(function () {
     var cur = curPos();
     if (!isNaN(cur)) clock.textContent = fmt(cur - start);
     // Filet de sécurité : si la vidéo avance alors qu'on la croit en pause (message de Twitch manqué,
     // fréquent après une reprise en plein écran), on repasse en lecture pour réactiver le double tap.
     var raw; try { raw = player.getCurrentTime(); } catch (e) {}
-    if (typeof raw === "number" && lastRaw != null && raw > lastRaw + 0.2 && raw - lastRaw < 3 && !playing) { playing = true; started = true; sync(); }
+    // Juste après une pause, la vidéo avance encore un instant : sans ces garde-fous, le lecteur se croyait
+    // reparti et bloquait le clic de reprise pendant plusieurs secondes.
+    var adv = typeof raw === "number" && lastRaw != null && raw > lastRaw + 0.2 && raw - lastRaw < 3;
+    advances = adv ? advances + 1 : 0;
+    if (adv && advances >= 3 && !playing && Date.now() - pausedAt > 3000) { playing = true; started = true; sync(); }
     lastRaw = raw;
   }, 500);
   }
