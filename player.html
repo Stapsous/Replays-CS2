@@ -431,7 +431,9 @@
     var cur = curPos(); if (isNaN(cur) || cur < 1) return;
     var all = rLoad(), now = Date.now();
     Object.keys(all).forEach(function (k) { if (!all[k] || now - (all[k].at || 0) > 60 * 864e5) delete all[k]; });
-    if (Math.abs(cur - start) <= 15) delete all[rKey]; else all[rKey] = { p: Math.floor(cur), at: now };
+    // p = position de reprise, max = point le plus avancé atteint (sert à « Vu » / « En cours » dans la liste)
+    var prev = all[rKey] || {};
+    all[rKey] = { p: Math.floor(cur), at: now, max: Math.max(prev.max || 0, prev.p || 0, Math.floor(cur)) };
     rStore(all);
   }
   setInterval(function () { if (playing) savePos(); }, 5000);
@@ -444,7 +446,7 @@
   restartBtn.addEventListener("click", function () {
     seekTarget = start; seekAt = Date.now(); seekSum = 0;
     player.seek(start); flash(restartLabel);
-    var all = rLoad(); delete all[rKey]; rStore(all);
+    var all = rLoad(); if (all[rKey]) { all[rKey].p = start; all[rKey].at = Date.now(); rStore(all); }
   });
   document.getElementById("b-copy").addEventListener("click", function () {
     var cur = curPos(); if (isNaN(cur)) cur = start;

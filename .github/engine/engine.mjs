@@ -202,6 +202,8 @@ for (const m of data.matches) {
           else u = defUrl;
           setMap(m.key, i, u, unplayed);
         }
+        // Fin du match (repère dans la vidéo) : sert seulement à savoir si le replay a été vu jusqu'au bout
+        if (fin && !def.end) { def.end = hms((lastEnd - v.start) / 1000); changes.push("fin " + m.key); }
         if (fin) m.done = true;
       }
     }
@@ -214,6 +216,23 @@ if (DRY) {
     try { const v = await vods(ch); console.log("::notice::Twitch " + ch + " : " + v.length + " vidéo(s), la plus récente commencée " + (v[0] ? new Date(v[0].start).toISOString() : "?")); }
     catch (e) { console.log("::warning::Twitch " + ch + " : " + e.message); }
   }
+}
+
+// Rattrapage : repère de fin pour les matchs déjà clos (30 derniers jours)
+for (const m of data.matches) {
+  const def = data.links.find((l) => l.id === m.key + "-definitif");
+  if (!m.pid || !m.done || !def || def.end || now - Date.parse(m.start) > 30 * 24 * H || !m.ch) continue;
+  try {
+    const x = (await ps("/csgo/matches?filter[id]=" + m.pid))[0];
+    if (!x || x.status !== "finished") continue;
+    const defId = (def.url.match(/\/videos\/(\d+)/) || [])[1];
+    const v = defId && await vodById(m.ch, defId);
+    if (!v) continue;
+    const played = (x.games || []).filter((g) => g.begin_at).sort((a, b) => a.position - b.position);
+    const lastG = played[played.length - 1];
+    const lastEnd = Date.parse((lastG && lastG.end_at) || x.end_at || x.begin_at);
+    def.end = hms((lastEnd - v.start) / 1000); changes.push("fin " + m.key);
+  } catch (e) { console.log(m.key + " : " + e.message); }
 }
 
 // ---------- 4. Écriture ----------

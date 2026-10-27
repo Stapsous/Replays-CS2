@@ -74,6 +74,7 @@ a.alt:hover { color: var(--fg); border-color: var(--muted); }
 a.alt.map { color: var(--fg); font-weight: 500; }
 button.seen { font: inherit; font-size: 13px; background: none; border: 1px solid var(--line); color: var(--muted); border-radius: 6px; padding: 6px 10px; cursor: pointer; white-space: nowrap; }
 button.seen[aria-pressed="true"] { color: var(--done); border-color: var(--done); }
+button.seen.partial { color: var(--warn, #e0912f); border-color: var(--warn, #e0912f); }
 .row.is-seen .kind, .row.is-seen .meta { opacity: .55; }
 a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .row.pending .kind { color: var(--muted); }
@@ -169,12 +170,32 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
   function rKeyOf(href) { var v = String(href).match(/[?&]v=(\d+)/), t = String(href).match(/[?&]t=([0-9hms]+)/); return v ? v[1] + "@" + toSec(t ? t[1] : "0s") : ""; }
   function updateResume() {
     var all = load(R_KEY);
+    markers.forEach(function (f) { try { f(); } catch (e) {} });
     [].forEach.call(daysEl.querySelectorAll("a.watch, a.map"), function (a) {
-      var on = !!all[rKeyOf(a.getAttribute("href"))];
+      var k = rKeyOf(a.getAttribute("href")), e = all[k];
+      var on = !!(e && e.p > (+k.split("@")[1] || 0) + 15);
       a.classList.toggle("resume", on);
       if (a.classList.contains("watch")) a.textContent = on ? "Reprendre" : "Regarder";
       a.title = on ? "Reprendre là où tu t'es arrêté" : "";
     });
+  }
+  var markers = [];
+  // Point le plus avancé atteint dans cette vidéo, entre le début du match et sa fin (liens du match et des cartes)
+  function watchState(l, vid, startSec) {
+    if (seen[l.id]) return "done";
+    if (!vid) return "";
+    var all = load(R_KEY), endSec = l.end ? toSec(l.end) : 0, best = 0;
+    Object.keys(all).forEach(function (k) {
+      if (k.indexOf(vid + "@") !== 0 || !all[k]) return;
+      var mx = Math.max(all[k].max || 0, all[k].p || 0);
+      if (mx >= startSec - 600 && (!endSec || mx <= endSec + 3600)) best = Math.max(best, mx);
+    });
+    if (endSec && best >= endSec - 90) return "done";
+    return best > startSec + 60 ? "partial" : "";
+  }
+  function clearProgress(vid) {
+    if (!vid) return;
+    var all = load(R_KEY); Object.keys(all).forEach(function (k) { if (k.indexOf(vid + "@") === 0) delete all[k]; }); save(R_KEY, all);
   }
   function clearResume(href) { var all = load(R_KEY), k = rKeyOf(href); if (all[k]) { delete all[k]; save(R_KEY, all); } }
   window.addEventListener("storage", function (e) { if (e.key === R_KEY) updateResume(); });
@@ -206,7 +227,7 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
     (data.links || []).forEach(function (x) {
       var url = safeUrl(x && x.url); if (!url) return;
       var key = typeof x.match === "string" ? x.match : (typeof x.matchDate === "string" ? x.matchDate : "");
-      day(key).links.push({ id: x.id || url, url: url, kind: x.kind, map: x.map, createdAt: x.createdAt });
+      day(key).links.push({ id: x.id || url, url: url, kind: x.kind, map: x.map, createdAt: x.createdAt, end: x.end });
       if (x.kind === "map") return;
       count++;
     });
@@ -237,12 +258,21 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
       var a = el("a", "watch", "Regarder"); a.href = vm ? "player.html?v=" + vm[1] + "&t=" + (tm ? tm[1] : "0s") : l.url; a.target = "_blank"; a.rel = "noopener";
       var tw = el("a", "alt", "Twitch"); tw.href = l.url; tw.target = "_blank"; tw.rel = "noopener"; tw.title = "Ouvrir sur Twitch (pratique pour caster depuis le téléphone)";
       var b = el("button", "seen"); b.type = "button";
-      function mark() { var on = !!seen[l.id]; b.setAttribute("aria-pressed", on ? "true" : "false"); b.textContent = on ? "Vu" : "Marquer vu"; row.classList.toggle("is-seen", on); }
-      [a, tw].forEach(function (x) { x.addEventListener("click", function () { if (!seen[l.id]) { seen[l.id] = 1; save(SEEN_KEY, seen); mark(); } }); });
+      // Vert « Vu » : marqué à la main, ou regardé jusqu'à la fin du match ; orange « En cours » : commencé
+      function mark() {
+        var st = watchState(l, vm && vm[1], tm ? toSec(tm[1]) : 0);
+        b.setAttribute("aria-pressed", st === "done" ? "true" : "false");
+        b.classList.toggle("partial", st === "partial");
+        b.textContent = st === "done" ? "Vu" : st === "partial" ? "En cours" : "Marquer vu";
+        b.title = st === "partial" ? "Commencé, pas vu jusqu'au bout (clic : marquer vu)" : st === "done" ? "Clic : remettre à zéro" : "";
+        row.classList.toggle("is-seen", st === "done");
+      }
+      markers.push(mark);
       b.addEventListener("click", function () {
-        if (seen[l.id]) delete seen[l.id];
-        else { seen[l.id] = 1; clearResume(a.getAttribute("href")); updateResume(); }
-        save(SEEN_KEY, seen); mark();
+        var st = watchState(l, vm && vm[1], tm ? toSec(tm[1]) : 0);
+        if (st === "done") { delete seen[l.id]; clearProgress(vm && vm[1]); }
+        else { seen[l.id] = 1; clearResume(a.getAttribute("href")); }
+        save(SEEN_KEY, seen); updateResume();
       });
       mark();
       actions.appendChild(a); actions.appendChild(tw); actions.appendChild(b);
@@ -299,6 +329,7 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
       d.addEventListener("toggle", function () { if (d.open) delete folded[id]; else folded[id] = 1; save(FOLD_KEY, folded); });
       daysEl.appendChild(d);
     }
+    markers = [];
     daysEl.textContent = "";
     if (!keys.length) { daysEl.appendChild(el("div", "empty", "Aucun match pour l'instant.")); return; }
     group("avenir", "À venir", upcoming);
