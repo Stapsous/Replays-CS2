@@ -238,6 +238,8 @@
 
   // État suivi nous-mêmes : player.isPaused() de Twitch renvoie une valeur fausse
   var playing = false, started = false, mutedState = false, nudgeTimer, passTimer;
+  // Appareil tactile (téléphone, tablette) : les correctifs du double tap ne s'appliquent qu'à eux
+  function TOUCH() { return (window.matchMedia && matchMedia("(pointer: coarse)").matches) || (typeof touchUsed !== "undefined" && touchUsed); }
   var gate = document.getElementById("gate");
   function paused() { return !playing; }
   window.addEventListener("message", function (e) {
@@ -258,7 +260,9 @@
     var p = paused();
     stage.classList.toggle("is-paused", p);
     clearTimeout(passTimer);
-    if (p) passTimer = setTimeout(function () { stage.classList.add("pass"); }, 600); else stage.classList.remove("pass");
+    // Téléphone : petit délai (double tap) ; PC : les clics passent tout de suite à Twitch, comme avant
+    if (p) { if (TOUCH()) passTimer = setTimeout(function () { stage.classList.add("pass"); }, 600); else stage.classList.add("pass"); }
+    else stage.classList.remove("pass");
     stage.classList.toggle("not-started", !started);
     startHint.hidden = started;
     gate.textContent = started ? "En pause · clique dans la vidéo pour reprendre"
@@ -527,7 +531,7 @@
     // reparti et bloquait le clic de reprise pendant plusieurs secondes.
     var adv = typeof raw === "number" && lastRaw != null && raw > lastRaw + 0.2 && raw - lastRaw < 3;
     advances = adv ? advances + 1 : 0;
-    if (adv && advances >= 3 && !playing && Date.now() - pausedAt > 3000) { playing = true; started = true; sync(); }
+    if (TOUCH() && adv && advances >= 3 && !playing && Date.now() - pausedAt > 3000) { playing = true; started = true; sync(); }
     lastRaw = raw;
   }, 500);
   }
