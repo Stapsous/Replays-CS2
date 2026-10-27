@@ -23,6 +23,10 @@
      La largeur est aussi limitée pour que la vidéo et les boutons tiennent dans la hauteur de la fenêtre. */
   /* Plein écran : l'écran du téléphone est plus allongé que la vidéo ; on centre un cadre 16:9 (plus les bandes masquées) */
   .stage:fullscreen { border-radius: 0; background: #000; }
+  /* Plein écran : bouton pour revenir au mode normal, visible en pause */
+  .fs-exit { display: none; position: absolute; z-index: 4; top: 16px; right: 16px; align-items: center; gap: 8px; background: rgba(0,0,0,.7); color: #fff; border: 1px solid rgba(255,255,255,.25); border-radius: 8px; padding: 10px 14px; font-size: 14px; }
+  .fs-exit svg { width: 20px; height: 20px; }
+  .stage:fullscreen.is-paused .fs-exit { display: inline-flex; }
   .stage:fullscreen #player { left: 50%; right: auto; top: 50%; bottom: auto; width: min(100vw, calc(100vh * 16 / 9)); height: calc(min(100vw, calc(100vh * 16 / 9)) * 9 / 16 + 2 * var(--crop)); transform: translate(-50%, -50%); }
   .stage { position: relative; flex-shrink: 0; width: min(100%, 1280px, calc((100vh - var(--reserve, 190px)) * 16 / 9)); min-width: min(100%, 320px); aspect-ratio: 16 / 9; background: #000; overflow: hidden; border-radius: 8px; }
   /* Mode théâtre : la vidéo occupe toute la fenêtre (en gardant le 16:9), les boutons restent dessous, l'aide est masquée. */
@@ -121,6 +125,7 @@
   <div class="flash" id="flash"></div>
   <div class="stats" id="stats" hidden></div>
   <div class="gate" id="gate"></div>
+  <button class="fs-exit" id="fs-exit" type="button" aria-label="Quitter le plein écran"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>Quitter le plein écran</button>
 </div>
 
 <div class="bar" id="bar" hidden>
@@ -341,6 +346,7 @@
   });
   muteBtn.addEventListener("click", mute);
   document.getElementById("b-fs").addEventListener("click", fullscreen);
+  document.getElementById("fs-exit").addEventListener("click", function () { if (document.fullscreenElement) document.exitFullscreen().catch(function () {}); });
 
   // Mode théâtre, mémorisé dans ce navigateur
   var thBtn = document.getElementById("b-th"), TH_KEY = "replays-theater";

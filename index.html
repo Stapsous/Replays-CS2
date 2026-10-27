@@ -277,7 +277,8 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
       var rows = [];
       byKind.definitif.forEach(function (l) { rows.push(linkRow(l)); });
       if (byKind.map.length) rows.push(mapsRow(byKind.map));
-      byKind.prevu.forEach(function (l) { rows.push(linkRow(l)); });
+      // Le lien définitif remplace le lien à l'horaire prévu : on n'affiche plus ce dernier
+      if (!byKind.definitif.length) byKind.prevu.forEach(function (l) { rows.push(linkRow(l)); });
       if (!byKind.definitif.length && d.match) {
         if (!byKind.prevu.length) rows.push(pendingRow("prevu", "à " + timeFmt.format(dt)));
         rows.push(pendingRow("definitif", "au vrai début"));
