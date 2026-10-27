@@ -84,7 +84,8 @@ const maxDur = (bo) => (bo <= 1 ? 2 : bo <= 3 ? 5 : 8) * H;
 const embargo = (x) => Date.parse(x.begin_at || x.scheduled_at) + maxDur(x.number_of_games || 1);
 const live = {};
 for (const m of data.matches) {
-  if (!m.pid || m.done) continue;
+  // Matchs actifs, et matchs clos depuis moins de 12 h (ils peuvent encore être sous embargo)
+  if (!m.pid || (m.done && now - Date.parse(m.start) > 12 * H)) continue;
   try { live[m.pid] = (await ps("/csgo/matches?filter[id]=" + m.pid))[0] || null; } catch (e) { console.log(m.key + " : " + e.message); }
 }
 let holdUntil = 0;
@@ -105,38 +106,39 @@ function addMatch(x) {
 const mine = [...(await ps("/csgo/matches/running?filter[opponent_id]=" + VITALITY)), ...(await ps("/csgo/matches/upcoming?filter[opponent_id]=" + VITALITY + "&per_page=20"))];
 for (const x of mine) if (x.scheduled_at || x.begin_at) addMatch(x);
 
-// ---------- 2. Leurres après élimination ----------
-// On suit « la chaîne des vainqueurs » : l'équipe qui a éliminé Vitality, puis celle qui l'élimine à son tour,
-// jusqu'à la finale de la série. Un leurre est ajouté exactement comme un vrai match.
+// ---------- 2. Leurres ----------
+// Chaque jour de compétition de la série où Vitality ne joue pas (éliminée, OU déjà qualifiée et en attente
+// de la phase suivante, comme en format suisse), on ajoute un match « leurre » exactement comme un vrai match.
+// Sinon, l'absence de match le lendemain révélerait le résultat. Prudence : un jour n'est traité que si TOUS
+// ses matchs sont tirés (deux équipes connues) et que Vitality n'y figure pas, et après l'embargo.
 try {
   const past = await ps("/csgo/matches/past?filter[opponent_id]=" + VITALITY + "&sort=-scheduled_at&per_page=5");
-  const last = past.find((x) => x.status === "finished");
-  if (last && last.serie_id) {
+  const last = past.find((x) => x.status === "finished" && x.serie_id);
+  if (last && now >= embargo(last)) {
     const serie = last.serie_id;
-    const stillIn = mine.some((x) => x.serie_id === serie);
-    const lost = last.winner_id && last.winner_id !== VITALITY;
     const all = await ps("/csgo/matches?filter[serie_id]=" + serie + "&per_page=100&sort=scheduled_at");
-    const future = all.filter((x) => x.status !== "finished" && x.status !== "canceled");
     const ids = (x) => (x.opponents || []).map((o) => o.opponent && o.opponent.id).filter(Boolean);
-    const drawnAfter = future.filter((x) => ids(x).length === 2 && Date.parse(x.scheduled_at || 0) > Date.parse(last.end_at));
-    // Éliminée : défaite, plus aucun match prévu dans la série, embargo passé et des matchs suivants déjà tirés sans elle
-    if (!state.decoys[serie] && lost && !stillIn && future.length && now >= embargo(last) && drawnAfter.length >= 1) {
-      state.decoys[serie] = { follow: last.winner_id, after: last.end_at };
-    }
-    const d = state.decoys[serie];
-    if (d && future.length + all.length) {
-      // Fait avancer la chaîne : si l'équipe suivie a perdu un match terminé après « after », on suit son vainqueur
-      for (let guard = 0; guard < 10; guard++) {
-        const done = all.filter((x) => x.status === "finished" && ids(x).includes(d.follow) && Date.parse(x.end_at) > Date.parse(d.after))
-          .sort((a, b) => Date.parse(a.end_at) - Date.parse(b.end_at));
-        if (!done.length) break;
-        const g = done[0];
-        if (!known.has(g.id)) addMatch(g);
-        d.after = g.end_at;
-        if (g.winner_id && g.winner_id !== d.follow) d.follow = g.winner_id;
-      }
-      const next = future.filter((x) => ids(x).includes(d.follow) && (x.scheduled_at || x.begin_at)).sort((a, b) => Date.parse(a.scheduled_at) - Date.parse(b.scheduled_at))[0];
-      if (next) addMatch(next);
+    // Jours où Vitality joue vraiment, et jours déjà couverts (vrai match ou leurre déjà publié)
+    const realDays = new Set([...mine, ...all.filter((x) => ids(x).includes(VITALITY))].map((x) => parisDate(x.scheduled_at || x.begin_at)));
+    const vitDays = new Set(realDays);
+    for (const m of data.matches) if (m.pid) vitDays.add(m.key.slice(0, 10));
+    const st = state.decoys[serie] || (state.decoys[serie] = { follow: (ids(last).find((id) => id !== VITALITY)) || null });
+    const lastDay = parisDate(last.scheduled_at || last.begin_at), horizon = parisDate(new Date(now + 2 * 24 * H).toISOString());
+    const days = [...new Set(all.filter((x) => x.status !== "canceled" && x.scheduled_at).map((x) => parisDate(x.scheduled_at)))]
+      .filter((d) => d > lastDay && d <= horizon).sort();
+    // Le prochain vrai match de Vitality dans la série met fin aux leurres à partir de ce jour-là
+    const nextReal = [...realDays].filter((d) => d > lastDay).sort()[0];
+    for (const d of days) {
+      if (nextReal && d >= nextReal) break;
+      if (vitDays.has(d)) continue;
+      const dayMatches = all.filter((x) => x.scheduled_at && parisDate(x.scheduled_at) === d && x.status !== "canceled");
+      if (!dayMatches.length || dayMatches.some((x) => ids(x).length < 2)) break; // jour pas encore entièrement tiré : on attend
+      // Équipe suivie : on garde la même tant qu'elle joue, sinon le vainqueur de son dernier match, sinon le 1er match du jour
+      const prevDecoy = all.filter((x) => x.status === "finished" && st.follow && ids(x).includes(st.follow) && parisDate(x.scheduled_at) < d).pop();
+      if (prevDecoy && prevDecoy.winner_id && prevDecoy.winner_id !== st.follow && known.has(prevDecoy.id)) st.follow = prevDecoy.winner_id;
+      const pick = dayMatches.find((x) => ids(x).includes(st.follow)) || dayMatches[0];
+      if (!ids(pick).includes(st.follow)) st.follow = ids(pick)[0];
+      addMatch(pick);
     }
   }
 } catch (e) { console.log("leurres : " + e.message); }
