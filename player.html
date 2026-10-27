@@ -309,17 +309,29 @@
   // Tactile : tap = lecture/pause ; double tap = -10 s (moitié gauche) ou +10 s (moitié droite),
   // en plein écran ou non. Le tap simple attend un court instant pour distinguer le double tap.
   var shield = document.getElementById("shield");
-  var lastTap = 0, tapTimer = null, touchUsed = false;
+  // Fenêtre de 400 ms mesurée depuis le début de chaque appui (plus tolérant qu'avant) ; après un double tap,
+  // chaque appui rapide suivant enchaîne un saut de plus (comme YouTube) au lieu de mettre en pause.
+  var WIN = 400, lastTap = 0, lastX = 0, tapTimer = null, touchUsed = false, chainUntil = 0, tStart = 0, moved = false, sx = 0, sy = 0;
+  shield.addEventListener("touchstart", function (e) {
+    var t = e.touches && e.touches[0]; tStart = Date.now(); moved = false;
+    if (t) { sx = t.clientX; sy = t.clientY; }
+  }, { passive: true });
+  shield.addEventListener("touchmove", function (e) {
+    var t = e.touches && e.touches[0];
+    if (t && (Math.abs(t.clientX - sx) > 25 || Math.abs(t.clientY - sy) > 25)) moved = true;
+  }, { passive: true });
   shield.addEventListener("touchend", function (e) {
     touchUsed = true; e.preventDefault();
-    var now = Date.now(), t = e.changedTouches && e.changedTouches[0];
-    if (now - lastTap < 300) {
+    if (moved) return;
+    var now = tStart || Date.now(), t = e.changedTouches && e.changedTouches[0];
+    var x = t ? t.clientX : 0, r = shield.getBoundingClientRect(), left = x < r.left + r.width / 2;
+    if (now < chainUntil || (now - lastTap < WIN && Math.abs(x - lastX) < 120)) {
       clearTimeout(tapTimer); tapTimer = null; lastTap = 0;
-      var r = shield.getBoundingClientRect();
-      skip(t && t.clientX < r.left + r.width / 2 ? -10 : 10);
+      skip(left ? -10 : 10);
+      chainUntil = now + 700;
     } else {
-      lastTap = now;
-      tapTimer = setTimeout(function () { tapTimer = null; toggle(); }, 300);
+      lastTap = now; lastX = x;
+      tapTimer = setTimeout(function () { tapTimer = null; toggle(); }, WIN);
     }
   }, { passive: false });
   shield.addEventListener("click", function () { if (!touchUsed) toggle(); });
