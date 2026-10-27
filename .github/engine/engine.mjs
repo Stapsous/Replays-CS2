@@ -107,38 +107,47 @@ const mine = [...(await ps("/csgo/matches/running?filter[opponent_id]=" + VITALI
 for (const x of mine) if (x.scheduled_at || x.begin_at) addMatch(x);
 
 // ---------- 2. Leurres ----------
-// Chaque jour de compétition de la série où Vitality ne joue pas (éliminée, OU déjà qualifiée et en attente
-// de la phase suivante, comme en format suisse), on ajoute un match « leurre » exactement comme un vrai match.
-// Sinon, l'absence de match le lendemain révélerait le résultat. Prudence : un jour n'est traité que si TOUS
-// ses matchs sont tirés (deux équipes connues) et que Vitality n'y figure pas, et après l'embargo.
+// Après chaque match de Vitality, il y a TOUJOURS un « match suivant » dans la série : le vrai s'il existe,
+// sinon un leurre (Vitality éliminée, ou qualifiée et en attente, comme en format suisse). Même règle de temps
+// pour les deux : il apparaît après l'embargo du match précédent, ou plus tôt s'il commence dans moins de 90 min.
+// Ainsi, ni la présence, ni le jour, ni l'heure d'apparition du match suivant ne révèlent le résultat.
+// Prudence : un leurre n'est choisi que si tous les matchs de son tour (± 6 h) sont tirés et sans Vitality.
 try {
   const past = await ps("/csgo/matches/past?filter[opponent_id]=" + VITALITY + "&sort=-scheduled_at&per_page=5");
   const last = past.find((x) => x.status === "finished" && x.serie_id);
-  if (last && now >= embargo(last)) {
+  if (last) {
     const serie = last.serie_id;
     const all = await ps("/csgo/matches?filter[serie_id]=" + serie + "&per_page=100&sort=scheduled_at");
+    const byId = new Map(all.map((x) => [x.id, x]));
     const ids = (x) => (x.opponents || []).map((o) => o.opponent && o.opponent.id).filter(Boolean);
-    // Jours où Vitality joue vraiment, et jours déjà couverts (vrai match ou leurre déjà publié)
-    const realDays = new Set([...mine, ...all.filter((x) => ids(x).includes(VITALITY))].map((x) => parisDate(x.scheduled_at || x.begin_at)));
-    const vitDays = new Set(realDays);
-    for (const m of data.matches) if (m.pid) vitDays.add(m.key.slice(0, 10));
-    const st = state.decoys[serie] || (state.decoys[serie] = { follow: (ids(last).find((id) => id !== VITALITY)) || null });
-    const lastDay = parisDate(last.scheduled_at || last.begin_at), horizon = parisDate(new Date(now + 2 * 24 * H).toISOString());
-    const days = [...new Set(all.filter((x) => x.status !== "canceled" && x.scheduled_at).map((x) => parisDate(x.scheduled_at)))]
-      .filter((d) => d > lastDay && d <= horizon).sort();
-    // Le prochain vrai match de Vitality dans la série met fin aux leurres à partir de ce jour-là
-    const nextReal = [...realDays].filter((d) => d > lastDay).sort()[0];
-    for (const d of days) {
-      if (nextReal && d >= nextReal) break;
-      if (vitDays.has(d)) continue;
-      const dayMatches = all.filter((x) => x.scheduled_at && parisDate(x.scheduled_at) === d && x.status !== "canceled");
-      if (!dayMatches.length || dayMatches.some((x) => ids(x).length < 2)) break; // jour pas encore entièrement tiré : on attend
-      // Équipe suivie : on garde la même tant qu'elle joue, sinon le vainqueur de son dernier match, sinon le 1er match du jour
-      const prevDecoy = all.filter((x) => x.status === "finished" && st.follow && ids(x).includes(st.follow) && parisDate(x.scheduled_at) < d).pop();
-      if (prevDecoy && prevDecoy.winner_id && prevDecoy.winner_id !== st.follow && known.has(prevDecoy.id)) st.follow = prevDecoy.winner_id;
-      const pick = dayMatches.find((x) => ids(x).includes(st.follow)) || dayMatches[0];
+    const T = (x) => Date.parse(x.scheduled_at || x.begin_at);
+    const st = state.decoys[serie] || (state.decoys[serie] = {});
+    st.ids = st.ids || [];
+    if (!st.follow) st.follow = ids(last).find((id) => id !== VITALITY) || null;
+    for (let guard = 0; guard < 6; guard++) {
+      // Point de départ : le plus récent entre le dernier vrai match terminé et le dernier leurre publié
+      const anchor = [last, ...st.ids.map((id) => byId.get(id)).filter(Boolean)].sort((a, b) => T(b) - T(a))[0];
+      // Un vrai match de Vitality prévu après ce point : c'est lui le match suivant, pas de leurre
+      if (mine.some((x) => x.serie_id === serie && T(x) > T(anchor))) break;
+      if (all.some((x) => ids(x).includes(VITALITY) && x.status !== "finished" && T(x) > T(anchor))) break;
+      const cands = all.filter((x) => x.status !== "canceled" && x.scheduled_at && T(x) > T(anchor) + 30 * MIN && !ids(x).includes(VITALITY)
+        && T(x) < now + 3 * 24 * H).sort((a, b) => T(a) - T(b));
+      if (!cands.length) break; // série terminée
+      const first = T(cands[0]);
+      const round = all.filter((x) => x.status !== "canceled" && x.scheduled_at && T(x) > T(anchor) + 30 * MIN && T(x) - first <= 6 * H);
+      if (round.some((x) => ids(x).length < 2)) break; // tour pas entièrement tiré (une place peut être celle de Vitality)
+      // Après la fin d'un leurre : si l'équipe suivie l'a perdu, on suit son vainqueur
+      if (anchor !== last && anchor.status === "finished" && anchor.winner_id && anchor.winner_id !== st.follow && ids(anchor).includes(st.follow)) st.follow = anchor.winner_id;
+      const inRound = cands.filter((x) => T(x) - first <= 6 * H);
+      const pick = inRound.find((x) => ids(x).includes(st.follow)) || inRound[0];
+      // Même règle de temps qu'un vrai match suivant
+      if (!(now >= embargo(anchor) || T(pick) - now <= 90 * MIN)) break;
       if (!ids(pick).includes(st.follow)) st.follow = ids(pick)[0];
+      const before = known.has(pick.id);
       addMatch(pick);
+      if (!known.has(pick.id)) break;
+      if (!st.ids.includes(pick.id)) st.ids.push(pick.id);
+      if (before && st.ids.length > 20) break;
     }
   }
 } catch (e) { console.log("leurres : " + e.message); }
