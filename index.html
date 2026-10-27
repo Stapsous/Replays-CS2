@@ -190,7 +190,7 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
       var mx = Math.max(all[k].max || 0, all[k].p || 0);
       if (mx >= startSec - 600 && (!endSec || mx <= endSec + 3600)) best = Math.max(best, mx);
     });
-    if (endSec && best >= endSec - 90) return "done";
+    if (endSec && best >= endSec - 300) return "done"; // vu à 5 min de la fin
     return best > startSec + 60 ? "partial" : "";
   }
   function clearProgress(vid) {
