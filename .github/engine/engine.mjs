@@ -49,9 +49,10 @@ async function tw(path) {
   return r.json();
 }
 function channel(x) {
-  const l = x.streams_list || [];
-  const s = l.find((s) => s.main && s.official) || l.find((s) => s.main) || l.find((s) => s.official) || l[0];
-  if (!s || !s.raw_url || !/twitch\.tv/i.test(s.raw_url)) return "";
+  // Chaîne Twitch du match : la principale officielle, sinon une officielle anglaise, sinon n'importe quelle chaîne Twitch
+  const l = (x.streams_list || []).filter((s) => s && s.raw_url && /twitch\.tv/i.test(s.raw_url));
+  const s = l.find((s) => s.main && s.official) || l.find((s) => s.main) || l.find((s) => s.official && /^en/i.test(s.language || "")) || l.find((s) => s.official) || l[0];
+  if (!s) return "";
   return s.raw_url.toLowerCase().replace(/[?#].*$/, "").replace(/\/+$/, "").split("/").pop();
 }
 const parisDate = (iso) => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Paris", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(iso));
@@ -199,7 +200,8 @@ try {
       if (all.some((x) => ids(x).includes(TEAM) && x.status !== "finished" && T(x) > T(anchor))) break;
       // Un leurre maximum par jour : le suivant est pris un jour plus tard que le match précédent (vrai ou leurre)
       const anchorDay = parisDate(anchor.scheduled_at || anchor.begin_at);
-      const cands = all.filter((x) => x.status !== "canceled" && x.scheduled_at && T(x) > T(anchor) + 30 * MIN && parisDate(x.scheduled_at) > anchorDay && !ids(x).includes(TEAM)
+      // Jamais de leurre dans le passé (équipe suivie depuis peu : pas de rattrapage d'anciens jours)
+      const cands = all.filter((x) => x.status !== "canceled" && x.scheduled_at && T(x) > T(anchor) + 30 * MIN && T(x) > now - 3 * H && parisDate(x.scheduled_at) > anchorDay && !ids(x).includes(TEAM)
         && T(x) < now + 3 * 24 * H).sort((a, b) => T(a) - T(b));
       if (!cands.length) break; // série terminée
       const first = T(cands[0]);
