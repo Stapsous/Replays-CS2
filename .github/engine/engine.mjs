@@ -185,7 +185,9 @@ try {
       // Un vrai match de Vitality prévu après ce point : c'est lui le match suivant, pas de leurre
       if (mine.some((x) => x.serie_id === serie && T(x) > T(anchor))) break;
       if (all.some((x) => ids(x).includes(TEAM) && x.status !== "finished" && T(x) > T(anchor))) break;
-      const cands = all.filter((x) => x.status !== "canceled" && x.scheduled_at && T(x) > T(anchor) + 30 * MIN && !ids(x).includes(TEAM)
+      // Un leurre maximum par jour : le suivant est pris un jour plus tard que le match précédent (vrai ou leurre)
+      const anchorDay = parisDate(anchor.scheduled_at || anchor.begin_at);
+      const cands = all.filter((x) => x.status !== "canceled" && x.scheduled_at && T(x) > T(anchor) + 30 * MIN && parisDate(x.scheduled_at) > anchorDay && !ids(x).includes(TEAM)
         && T(x) < now + 3 * 24 * H).sort((a, b) => T(a) - T(b));
       if (!cands.length) break; // série terminée
       const first = T(cands[0]);
