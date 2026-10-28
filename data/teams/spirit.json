@@ -5,7 +5,8 @@
       "start": "2026-10-28T16:00:00Z",
       "event": "PGL Masters Bucharest 2026",
       "pid": 1753721,
-      "ch": "pgl"
+      "ch": "pgl",
+      "done": true
     },
     {
       "key": "2026-11-11",
@@ -23,7 +24,8 @@
       "match": "2026-10-28",
       "kind": "definitif",
       "url": "https://www.twitch.tv/videos/2912945755?t=5h38m16s",
-      "createdAt": "2026-10-28T16:03:37.025Z"
+      "createdAt": "2026-10-28T16:03:37.025Z",
+      "end": "8h11m32s"
     },
     {
       "id": "2026-10-28-map1",
@@ -46,7 +48,7 @@
       "match": "2026-10-28",
       "kind": "map",
       "map": 3,
-      "url": "https://www.twitch.tv/videos/2912945755?t=5h38m16s",
+      "url": "https://www.twitch.tv/videos/2912945755?t=7h36m07s",
       "createdAt": "2026-10-28T16:03:37.025Z"
     }
   ],
