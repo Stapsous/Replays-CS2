@@ -410,11 +410,14 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
       if (a.last || b.last) return a.last ? -1 : 1;
       return a.first - b.first;
     });
+    // Les compteurs ne comptent que ce qui est affiché (les leurres masqués ne comptent pas)
     function sub(title, list, parent) {
-      if (!list.length) return;
-      var h = el("div", "sub-head", title + " "); h.appendChild(el("span", "count", "(" + list.length + ")"));
+      var items = list.map(function (k) { return renderDay(days[k]); }).filter(Boolean);
+      if (!items.length) return 0;
+      var h = el("div", "sub-head", title + " "); h.appendChild(el("span", "count", "(" + items.length + ")"));
       parent.appendChild(h);
-      list.forEach(function (k) { var x = renderDay(days[k]); if (x) parent.appendChild(x); });
+      items.forEach(function (x) { parent.appendChild(x); });
+      return items.length;
     }
     markers = [];
     daysEl.textContent = "";
@@ -422,8 +425,8 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
     order.forEach(function (T) {
       var id = "tour:" + T.name;
       var det = el("details", "group tour"); det.open = !folded[id];
-      var summ = el("summary", null, T.label + " ");
-      summ.appendChild(el("span", "count", "(" + (T.up.length + T.past.length) + ")"));
+      var summ = el("summary", null, T.label + " "), cnt = el("span", "count");
+      summ.appendChild(cnt);
       det.appendChild(summ);
       var body = el("div", "group-body");
       if (T.decoys) {
@@ -438,8 +441,8 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
       }
       T.up.sort(function (a, b) { return startOf(days[a]) - startOf(days[b]); });
       T.past.sort(function (a, b) { return startOf(days[b]) - startOf(days[a]); });
-      sub("À venir", T.up, body);
-      sub("Replays", T.past, body);
+      var shown = sub("À venir", T.up, body) + sub("Replays", T.past, body);
+      cnt.textContent = "(" + shown + ")";
       det.appendChild(body);
       det.addEventListener("toggle", function () { if (det.open) delete folded[id]; else folded[id] = 1; save(FOLD_KEY, folded); });
       daysEl.appendChild(det);
