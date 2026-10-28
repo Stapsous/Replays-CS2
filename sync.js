@@ -31,7 +31,8 @@ const KEYS = {
   quality: "replays-quality",
   theater: "replays-theater",
   decoys: "replays-decoys",
-  decoyHide: "replays-decoy-hide"
+  decoyHide: "replays-decoy-hide",
+  teams: "replays-teams"
 };
 const RESUME_EVERY = 20000; // la position de lecture change toutes les 5 s : on ne l'envoie qu'une fois toutes les 20 s
 
@@ -179,7 +180,7 @@ async function startSync(user) {
   const res = obj(remote.resume), loc = obj(get(KEYS.resume));
   Object.keys(loc).forEach((k) => { if (!res[k] || (loc[k] && loc[k].at > res[k].at)) res[k] = loc[k]; });
   merged.resume = JSON.stringify(res);
-  ["volume", "quality", "theater", "decoyHide"].forEach((f) => { merged[f] = remote[f] != null ? remote[f] : get(KEYS[f]); });
+  ["volume", "quality", "theater", "decoyHide", "teams"].forEach((f) => { merged[f] = remote[f] != null ? remote[f] : get(KEYS[f]); });
 
   const last = {};
   Object.keys(KEYS).forEach((f) => { if (merged[f] != null) put(KEYS[f], merged[f]); last[f] = get(KEYS[f]); });

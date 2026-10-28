@@ -157,7 +157,7 @@
 </p>
 
 <div class="unplayed" id="decoy" hidden>
-  <p><strong>Ce match est un leurre</strong> : Vitality ne jouait pas ce jour-là. Il sert à ne rien révéler dans la liste.</p>
+  <p><strong>Ce match est un leurre</strong> : <span id="d-team">l'équipe</span> ne jouait pas ce jour-là. Il sert à ne rien révéler dans la liste.</p>
   <div class="u-actions">
     <button id="d-back" type="button">Retour à la liste</button>
     <button id="d-watch" type="button">Regarder quand même</button>
@@ -188,7 +188,10 @@
 
   // Carte non jouée (match terminé avant) : message au lieu de lancer la vidéo. data.json indique
   // « unplayed » seulement sur ces liens ; l'information n'est révélée qu'au clic sur la carte.
-  fetch("data.json?_=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.json(); }).catch(function () { return null; }).then(function (d) {
+  // Fichier de l'équipe (paramètre team, Vitality par défaut ; data.json en secours)
+  var TEAM = (q.get("team") || "vitality").replace(/[^a-z0-9-]/g, ""), PRE = TEAM === "vitality" ? "" : TEAM + "/";
+  function getJ(u) { return fetch(u + "?_=" + Date.now(), { cache: "no-store" }).then(function (r) { if (!r.ok) throw 0; return r.json(); }); }
+  getJ("data/teams/" + TEAM + ".json").catch(function () { return TEAM === "vitality" ? getJ("data.json") : null; }).catch(function () { return null; }).then(function (d) {
     var link = null;
     ((d && d.links) || []).forEach(function (l) {
       var v = (String(l.url).match(/\/videos\/(\d+)/) || [])[1], tt = (String(l.url).match(/[?&]t=([0-9hms]+)/) || [])[1];
@@ -197,8 +200,9 @@
     // Leurre : on prévient au lieu de lancer (une seule fois révélé ; « Regarder quand même » reste possible)
     var mt = link && ((d && d.matches) || []).filter(function (m) { return m.key === link.match; })[0];
     if (mt && mt.decoy && q.get("force") !== "1") {
-      try { var dk = JSON.parse(localStorage.getItem("replays-decoys") || "{}") || {}; dk[mt.key] = 1; localStorage.setItem("replays-decoys", JSON.stringify(dk)); } catch (e) {}
+      try { var dk = JSON.parse(localStorage.getItem("replays-decoys") || "{}") || {}; dk[PRE + mt.key] = 1; localStorage.setItem("replays-decoys", JSON.stringify(dk)); } catch (e) {}
       document.getElementById("decoy").hidden = false;
+      document.getElementById("d-team").textContent = String((d.team && d.team.name) || (TEAM === "vitality" ? "Vitality" : TEAM)).replace(/^Team\s+/i, "");
       document.getElementById("d-back").addEventListener("click", function () {
         if (EMBED) { try { window.parent.postMessage({ replays: "close" }, location.origin); } catch (e) {} } else location.href = "./";
       });

@@ -41,6 +41,21 @@ header { display: flex; flex-direction: column; gap: 6px; }
 .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
 h1 { font-family: var(--display); font-weight: 700; font-size: 44px; line-height: 1; margin: 0; letter-spacing: .01em; text-wrap: balance; }
 .lede { color: var(--muted); margin: 0; max-width: 60ch; }
+.teams { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+.teams .chip { border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; color: var(--fg); }
+.teams button { font: inherit; font-size: 13px; background: none; border: 0; color: var(--accent); cursor: pointer; padding: 3px 4px; text-decoration: underline; }
+.picker { border: 1px solid var(--line); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 10px; background: var(--surface); }
+.picker[hidden] { display: none; }
+.picker-head { font-weight: 600; }
+.picker input[type=search] { font: inherit; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--fg); }
+.picker-list { max-height: 320px; overflow: auto; display: flex; flex-direction: column; gap: 2px; }
+.picker-list label { display: flex; align-items: center; gap: 10px; padding: 6px 4px; border-radius: 6px; cursor: pointer; }
+.picker-list label:hover { background: var(--bg); }
+.picker-list img { width: 22px; height: 22px; object-fit: contain; }
+.picker-actions { display: flex; gap: 8px; }
+.picker-actions button { font: inherit; font-size: 14px; border: 1px solid var(--line); border-radius: 8px; padding: 7px 14px; background: none; color: var(--fg); cursor: pointer; }
+.picker-actions button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+.team-tag { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; color: var(--muted); }
 .account { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: 13px; color: var(--muted); }
 .account:empty { display: none; }
 .account button { font: inherit; font-size: 13px; background: none; border: 1px solid var(--line); color: inherit; border-radius: 6px; padding: 5px 10px; cursor: pointer; }
@@ -142,6 +157,13 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
     <div class="eyebrow">CS2 · sans spoiler</div>
     <h1>VitaCS Replays</h1>
     <p class="lede">Les matchs à venir et les liens Twitch des replays, calés au début de la rencontre. Aucun score, aucun adversaire, aucune phase.</p>
+    <div class="teams" id="teams"></div>
+    <div class="picker" id="picker" hidden>
+      <div class="picker-head">Choisis les équipes à suivre</div>
+      <input id="picker-q" type="search" placeholder="Rechercher une équipe" autocomplete="off">
+      <div class="picker-list" id="picker-list"></div>
+      <div class="picker-actions"><button id="picker-ok" type="button" class="primary">Enregistrer</button><button id="picker-cancel" type="button">Annuler</button></div>
+    </div>
     <div class="status" id="status">Chargement…</div>
     <div class="account" id="account"></div>
   </header>
@@ -241,7 +263,7 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
     (data.links || []).forEach(function (x) {
       var url = safeUrl(x && x.url); if (!url) return;
       var key = typeof x.match === "string" ? x.match : (typeof x.matchDate === "string" ? x.matchDate : "");
-      day(key).links.push({ id: x.id || url, url: url, kind: x.kind, map: x.map, createdAt: x.createdAt, end: x.end });
+      day(key).links.push({ id: x.id || url, url: url, kind: x.kind, map: x.map, createdAt: x.createdAt, end: x.end, team: x.team });
       if (x.kind === "map") return;
       count++;
     });
@@ -296,7 +318,7 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
       main.appendChild(kd);
       main.appendChild(el("div", "meta", (isNaN(c) ? "" : "Ajouté à " + timeFmt.format(c)) + (tm ? " · repère " + tm[1] : "")));
       var actions = el("div", "actions");
-      var a = el("a", "watch", "Regarder"); a.href = vm ? "player.html?v=" + vm[1] + "&t=" + (tm ? tm[1] : "0s") : l.url; a.target = "_blank"; a.rel = "noopener";
+      var a = el("a", "watch", "Regarder"); a.href = vm ? "player.html?v=" + vm[1] + "&t=" + (tm ? tm[1] : "0s") + teamQ(l.team) : l.url; a.target = "_blank"; a.rel = "noopener";
       var tw = el("a", "alt", "Twitch"); tw.href = l.url; tw.target = "_blank"; tw.rel = "noopener"; tw.title = "Ouvrir sur Twitch (pratique pour caster depuis le téléphone)";
       var b = el("button", "seen"); b.type = "button";
       // Vert « Vu » : marqué à la main, ou regardé jusqu'à la fin du match ; orange « En cours » : commencé
@@ -332,7 +354,7 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
       list.forEach(function (l, i) {
         var tm = l.url.match(/[?&]t=([0-9hms]+)/), vm = l.url.match(/\/videos\/(\d+)/);
         var a = el("a", "alt map", "Carte " + (l.map || i + 1));
-        a.href = vm ? "player.html?v=" + vm[1] + "&t=" + (tm ? tm[1] : "0s") : l.url; a.target = "_blank"; a.rel = "noopener";
+        a.href = vm ? "player.html?v=" + vm[1] + "&t=" + (tm ? tm[1] : "0s") + teamQ(l.team) : l.url; a.target = "_blank"; a.rel = "noopener";
         actions.appendChild(a);
       });
       row.appendChild(main); row.appendChild(actions);
@@ -345,13 +367,15 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
         var box = el("div", "decoy-box");
         box.appendChild(el("span", "decoy-tag", "Leurre"));
         box.appendChild(el("span", null, (isNaN(dt) ? d.key : dayFmt.format(dt)) + " · " + timeFmt.format(dt)));
-        box.title = "Vitality ne jouait pas ce jour-là";
+        if (followed.length > 1) box.appendChild(el("span", "team-tag", m.teamName || m.team || ""));
+        box.title = (m.teamName || "L'équipe") + " ne jouait pas ce jour-là";
         return box;
       }
       var sec = el("div", "day"), head = el("div", "day-head");
       if (m && m.decoy) sec.setAttribute("data-decoy", m.key);
       head.appendChild(el("h2", null, isNaN(dt) ? d.key : dayFmt.format(dt)));
       if (d.match) head.appendChild(el("span", "when", timeFmt.format(dt)));
+      if (d.match && followed.length > 1) head.appendChild(el("span", "team-tag", d.match.teamName || d.match.team || ""));
       sec.appendChild(head);
       var list = el("div", "links"), byKind = { prevu: [], definitif: [] };
       byKind.map = [];
@@ -441,15 +465,16 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
     });
   }
   function play(href, push) {
-    var m = href.match(/[?&]v=(\d+)/), t = href.match(/[?&]t=([0-9hms]+)/);
+    var m = href.match(/[?&]v=(\d+)/), t = href.match(/[?&]t=([0-9hms]+)/), tmq = href.match(/[?&]team=([a-z0-9-]+)/);
     if (!m) return false;
+    var tq = tmq ? "&team=" + tmq[1] : "";
     current = href;
     document.body.classList.add("watching");
     var th = false; try { th = localStorage.getItem(TH_KEY) === "1"; } catch (e) {}
     setWide(th);
     // "_" contourne le cache de GitHub Pages : le lecteur intégré est toujours la dernière version
-    frame.src = "player.html?embed=1&v=" + m[1] + "&t=" + (t ? t[1] : "0s") + "&_=" + Date.now();
-    try { history[push ? "pushState" : "replaceState"]({ href: href }, "", "?play=" + m[1] + "&t=" + (t ? t[1] : "0s")); } catch (e) {}
+    frame.src = "player.html?embed=1&v=" + m[1] + "&t=" + (t ? t[1] : "0s") + tq + "&_=" + Date.now();
+    try { history[push ? "pushState" : "replaceState"]({ href: href }, "", "?play=" + m[1] + "&t=" + (t ? t[1] : "0s") + tq); } catch (e) {}
     markCurrent();
     window.scrollTo(0, 0);
     return true;
@@ -494,17 +519,87 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
   });
   window.addEventListener("popstate", function () {
     var p = new URLSearchParams(location.search);
-    if (p.get("play")) play("player.html?v=" + p.get("play") + "&t=" + (p.get("t") || "0s"), false); else closePlayer(false);
+    if (p.get("play")) play("player.html?v=" + p.get("play") + "&t=" + (p.get("t") || "0s") + (p.get("team") ? "&team=" + p.get("team") : ""), false); else closePlayer(false);
   });
   (function () {
     var p = new URLSearchParams(location.search);
-    if (p.get("play")) play("player.html?v=" + p.get("play") + "&t=" + (p.get("t") || "0s"), false);
+    if (p.get("play")) play("player.html?v=" + p.get("play") + "&t=" + (p.get("t") || "0s") + (p.get("team") ? "&team=" + p.get("team") : ""), false);
   })();
 
+  // ----- Équipes -----
+  var TEAMS_KEY = "replays-teams", registry = [{ slug: "vitality", name: "Team Vitality", acronym: "VIT" }];
+  var followed = (function () { try { var f = JSON.parse(localStorage.getItem(TEAMS_KEY) || "null"); return Array.isArray(f) && f.length ? f : null; } catch (e) { return null; } })();
+  var firstVisit = !followed;
+  if (!followed) followed = ["vitality"];
+  function teamOf(slug) { return registry.filter(function (t) { return t.slug === slug; })[0] || { slug: slug, name: slug }; }
+  function shortName(t) { return String(t.name || t.slug).replace(/^Team\s+/i, ""); }
+  function teamQ(slug) { return slug && slug !== "vitality" ? "&team=" + slug : ""; }
+  var teamsEl = document.getElementById("teams"), picker = document.getElementById("picker");
+  function renderTeams() {
+    teamsEl.textContent = "";
+    teamsEl.appendChild(el("span", null, followed.length > 1 ? "Équipes suivies :" : "Équipe suivie :"));
+    followed.forEach(function (s) { teamsEl.appendChild(el("span", "chip", shortName(teamOf(s)))); });
+    var b = el("button", null, "Modifier"); b.type = "button"; b.addEventListener("click", openPicker); teamsEl.appendChild(b);
+  }
+  var pickSel = {};
+  function drawPicker() {
+    var q = document.getElementById("picker-q").value.trim().toLowerCase(), list = document.getElementById("picker-list");
+    list.textContent = "";
+    registry.filter(function (t) { return !q || (t.name + " " + (t.acronym || "")).toLowerCase().indexOf(q) >= 0; }).forEach(function (t) {
+      var lab = el("label"), c = el("input"); c.type = "checkbox"; c.checked = !!pickSel[t.slug];
+      c.addEventListener("change", function () { if (c.checked) pickSel[t.slug] = 1; else delete pickSel[t.slug]; });
+      lab.appendChild(c);
+      if (t.image) { var im = el("img"); im.src = t.image; im.alt = ""; im.loading = "lazy"; lab.appendChild(im); }
+      lab.appendChild(el("span", null, t.name + (t.acronym ? " (" + t.acronym + ")" : "")));
+      list.appendChild(lab);
+    });
+  }
+  function openPicker() { pickSel = {}; followed.forEach(function (s) { pickSel[s] = 1; }); picker.hidden = false; document.getElementById("picker-q").value = ""; drawPicker(); }
+  document.getElementById("picker-q").addEventListener("input", drawPicker);
+  document.getElementById("picker-cancel").addEventListener("click", function () { picker.hidden = true; });
+  document.getElementById("picker-ok").addEventListener("click", function () {
+    var sel = Object.keys(pickSel);
+    if (!sel.length) return;
+    followed = registry.map(function (t) { return t.slug; }).filter(function (s) { return pickSel[s]; });
+    save(TEAMS_KEY, followed); picker.hidden = true; renderTeams(); lastSig = ""; refresh();
+  });
+  window.addEventListener("replays-sync", function () {
+    try { var f = JSON.parse(localStorage.getItem(TEAMS_KEY) || "null"); if (Array.isArray(f) && f.length && f.join() !== followed.join()) { followed = f; renderTeams(); lastSig = ""; refresh(); } } catch (e) {}
+  });
+
+  function getJson(u) { return fetch(u + "?nocache=" + Date.now(), { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }); }
+  // Fusionne les fichiers des équipes suivies. Les clés des autres équipes que Vitality sont préfixées
+  // (« navi/2026-11-02 ») ; celles de Vitality restent inchangées pour garder l'historique des « vu ».
+  function merge(files) {
+    var out = { matches: [], links: [] };
+    files.forEach(function (f) {
+      if (!f || !f.data) return;
+      var slug = f.slug, pre = slug === "vitality" ? "" : slug + "/", name = shortName(teamOf(slug));
+      (f.data.matches || []).forEach(function (m) {
+        var c = {}; for (var k in m) c[k] = m[k];
+        c.key = pre + m.key; if (m.after) c.after = pre + m.after; c.team = slug; c.teamName = name;
+        out.matches.push(c);
+      });
+      (f.data.links || []).forEach(function (l) {
+        var c = {}; for (var k in l) c[k] = l[k];
+        c.id = pre + l.id; c.match = pre + (l.match || l.matchDate || ""); c.team = slug;
+        out.links.push(c);
+      });
+    });
+    return out;
+  }
   function refresh() {
-    fetch("data.json?nocache=" + Date.now(), { cache: "no-store" })
-      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
-      .then(render)
+    getJson("data/teams.json").then(function (r) { if (r && r.teams && r.teams.length) registry = r.teams; }).catch(function () {})
+      .then(function () {
+        renderTeams();
+        if (firstVisit) { firstVisit = false; openPicker(); }
+        return Promise.all(followed.map(function (slug) {
+          return getJson("data/teams/" + slug + ".json")
+            .catch(function () { return slug === "vitality" ? getJson("data.json") : null; })
+            .then(function (d) { return { slug: slug, data: d }; });
+        }));
+      })
+      .then(function (files) { render(merge(files)); })
       .catch(function () { statusEl.textContent = "Impossible de charger les liens pour le moment, nouvel essai dans 3 minutes."; });
   }
   refresh();
