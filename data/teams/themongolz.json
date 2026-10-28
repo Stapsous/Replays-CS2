@@ -14,6 +14,15 @@
       "event": "IEM Beijing 2026",
       "pid": 1761567,
       "ch": "eslcs"
+    },
+    {
+      "key": "2026-10-29",
+      "start": "2026-10-29T08:00:00Z",
+      "event": "PGL Masters Bucharest 2026",
+      "pid": 1753682,
+      "ch": "pgl",
+      "decoy": true,
+      "after": "2026-10-28"
     }
   ],
   "links": [

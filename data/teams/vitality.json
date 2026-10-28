@@ -45,6 +45,15 @@
       "ch": "pgl",
       "decoy": true,
       "done": true
+    },
+    {
+      "key": "2026-10-29",
+      "start": "2026-10-29T11:00:00Z",
+      "event": "PGL Masters Bucharest 2026",
+      "pid": 1753683,
+      "ch": "pgl",
+      "prevPid": 1753682,
+      "prevUntil": "2026-10-29T13:00:00.000Z"
     }
   ],
   "links": [
@@ -230,6 +239,6 @@
     "slug": "vitality",
     "name": "Team Vitality",
     "acronym": "VIT",
-    "image": ""
+    "image": "https://cdn-api.pandascore.co/images/team/image/3455/team_vitalitylogo_square.png"
   }
 }

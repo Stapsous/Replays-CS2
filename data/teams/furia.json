@@ -21,6 +21,15 @@
       "event": "BLAST Rivals Fall 2026",
       "pid": 1762450,
       "ch": "blastpremier"
+    },
+    {
+      "key": "2026-10-29",
+      "start": "2026-10-29T17:00:00Z",
+      "event": "PGL Masters Bucharest 2026",
+      "pid": 1753685,
+      "ch": "pgl",
+      "prevPid": 1753684,
+      "prevUntil": "2026-10-29T19:00:00.000Z"
     }
   ],
   "links": [
