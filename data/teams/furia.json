@@ -22,7 +22,15 @@
       "ch": "blastpremier"
     }
   ],
-  "links": [],
+  "links": [
+    {
+      "id": "2026-10-28-prevu",
+      "match": "2026-10-28",
+      "kind": "prevu",
+      "url": "https://www.twitch.tv/videos/2912945755?t=3h15m03s",
+      "createdAt": "2026-10-28T13:43:54.789Z"
+    }
+  ],
   "team": {
     "id": 124530,
     "slug": "furia",
