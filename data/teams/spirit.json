@@ -15,7 +15,39 @@
       "ch": "blastpremier"
     }
   ],
-  "links": [],
+  "links": [
+    {
+      "id": "2026-10-28-definitif",
+      "match": "2026-10-28",
+      "kind": "definitif",
+      "url": "https://www.twitch.tv/videos/2912945755?t=5h38m16s",
+      "createdAt": "2026-10-28T16:03:37.025Z"
+    },
+    {
+      "id": "2026-10-28-map1",
+      "match": "2026-10-28",
+      "kind": "map",
+      "map": 1,
+      "url": "https://www.twitch.tv/videos/2912945755?t=5h38m48s",
+      "createdAt": "2026-10-28T16:03:37.025Z"
+    },
+    {
+      "id": "2026-10-28-map2",
+      "match": "2026-10-28",
+      "kind": "map",
+      "map": 2,
+      "url": "https://www.twitch.tv/videos/2912945755?t=5h38m16s",
+      "createdAt": "2026-10-28T16:03:37.025Z"
+    },
+    {
+      "id": "2026-10-28-map3",
+      "match": "2026-10-28",
+      "kind": "map",
+      "map": 3,
+      "url": "https://www.twitch.tv/videos/2912945755?t=5h38m16s",
+      "createdAt": "2026-10-28T16:03:37.025Z"
+    }
+  ],
   "team": {
     "id": 124523,
     "slug": "spirit",
