@@ -36,6 +36,13 @@
       "image": "https://cdn-api.pandascore.co/images/team/image/133458/bet_boom_team_2024_allmode.png"
     },
     {
+      "id": 3222,
+      "slug": "envyus",
+      "name": "Envy",
+      "acronym": "ENVY",
+      "image": "https://cdn-api.pandascore.co/images/team/image/3222/600px_team_envy_2018_lightmode.png"
+    },
+    {
       "id": 3212,
       "slug": "faze",
       "name": "FaZe",
@@ -55,6 +62,13 @@
       "name": "G2",
       "acronym": "G2",
       "image": "https://cdn-api.pandascore.co/images/team/image/3210/5995.png"
+    },
+    {
+      "id": 128519,
+      "slug": "genone",
+      "name": "GenOne",
+      "acronym": "G1",
+      "image": "https://cdn-api.pandascore.co/images/team/image/128519/genone_csgo.png"
     },
     {
       "id": 3246,

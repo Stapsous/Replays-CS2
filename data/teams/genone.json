@@ -1,0 +1,41 @@
+{
+  "matches": [
+    {
+      "key": "2026-10-23",
+      "start": "2026-10-23T11:10:00Z",
+      "event": "CCT Europe Series #11 2026",
+      "pid": 1733090,
+      "ch": "",
+      "decoy": true,
+      "done": true
+    },
+    {
+      "key": "2026-10-24",
+      "start": "2026-10-24T08:00:00Z",
+      "event": "CCT Europe Series #11 2026",
+      "pid": 1733095,
+      "ch": "",
+      "decoy": true,
+      "after": "2026-10-23",
+      "done": true
+    },
+    {
+      "key": "2026-10-25",
+      "start": "2026-10-25T11:15:00Z",
+      "event": "CCT Europe Series #11 2026",
+      "pid": 1733098,
+      "ch": "",
+      "decoy": true,
+      "after": "2026-10-24",
+      "done": true
+    }
+  ],
+  "links": [],
+  "team": {
+    "id": 128519,
+    "slug": "genone",
+    "name": "GenOne",
+    "acronym": "G1",
+    "image": "https://cdn-api.pandascore.co/images/team/image/128519/genone_csgo.png"
+  }
+}

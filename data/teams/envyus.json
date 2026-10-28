@@ -1,0 +1,19 @@
+{
+  "matches": [
+    {
+      "key": "2026-10-28",
+      "start": "2026-10-28T17:00:00Z",
+      "event": "Tesla Cup 2026",
+      "pid": 1763055,
+      "ch": ""
+    }
+  ],
+  "links": [],
+  "team": {
+    "id": 3222,
+    "slug": "envyus",
+    "name": "Envy",
+    "acronym": "ENVY",
+    "image": "https://cdn-api.pandascore.co/images/team/image/3222/600px_team_envy_2018_lightmode.png"
+  }
+}
