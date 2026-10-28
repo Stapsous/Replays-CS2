@@ -1,0 +1,26 @@
+{
+  "matches": [
+    {
+      "key": "2026-11-02",
+      "start": "2026-11-02T07:00:00Z",
+      "event": "IEM Beijing 2026",
+      "pid": 1761567,
+      "ch": "eslcs"
+    },
+    {
+      "key": "2026-11-11",
+      "start": "2026-11-11T03:00:00Z",
+      "event": "BLAST Rivals Fall 2026",
+      "pid": 1762450,
+      "ch": "blastpremier"
+    }
+  ],
+  "links": [],
+  "team": {
+    "id": 133708,
+    "slug": "legacy-48cb0f61-07e7-4b0d-85a0-5f837e29c807",
+    "name": "Legacy",
+    "acronym": "LGC",
+    "image": "https://cdn-api.pandascore.co/images/team/image/133708/593px_legacy_allmode.png"
+  }
+}

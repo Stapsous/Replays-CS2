@@ -1,0 +1,58 @@
+{
+  "matches": [
+    {
+      "key": "2026-10-28",
+      "start": "2026-10-28T11:00:00Z",
+      "event": "PGL Masters Bucharest 2026",
+      "pid": 1753718,
+      "ch": "pgl"
+    },
+    {
+      "key": "2026-11-02",
+      "start": "2026-11-02T07:00:00Z",
+      "event": "IEM Beijing 2026",
+      "pid": 1761567,
+      "ch": "eslcs"
+    }
+  ],
+  "links": [
+    {
+      "id": "2026-10-28-definitif",
+      "match": "2026-10-28",
+      "kind": "definitif",
+      "url": "https://www.twitch.tv/videos/2912945755?t=0h38m23s",
+      "createdAt": "2026-10-28T13:10:47.978Z"
+    },
+    {
+      "id": "2026-10-28-map1",
+      "match": "2026-10-28",
+      "kind": "map",
+      "map": 1,
+      "url": "https://www.twitch.tv/videos/2912945755?t=0h38m55s",
+      "createdAt": "2026-10-28T13:10:47.978Z"
+    },
+    {
+      "id": "2026-10-28-map2",
+      "match": "2026-10-28",
+      "kind": "map",
+      "map": 2,
+      "url": "https://www.twitch.tv/videos/2912945755?t=1h35m28s",
+      "createdAt": "2026-10-28T13:10:47.978Z"
+    },
+    {
+      "id": "2026-10-28-map3",
+      "match": "2026-10-28",
+      "kind": "map",
+      "map": 3,
+      "url": "https://www.twitch.tv/videos/2912945755?t=0h38m23s",
+      "createdAt": "2026-10-28T13:10:47.978Z"
+    }
+  ],
+  "team": {
+    "id": 3272,
+    "slug": "themongolz",
+    "name": "TheMongolz",
+    "acronym": "MGLZ",
+    "image": "https://cdn-api.pandascore.co/images/team/image/3272/702px_the_mongol_z_2024_03_allmode.png"
+  }
+}

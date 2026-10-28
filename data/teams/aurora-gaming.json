@@ -1,0 +1,19 @@
+{
+  "matches": [
+    {
+      "key": "2026-11-02",
+      "start": "2026-11-02T07:00:00Z",
+      "event": "IEM Beijing 2026",
+      "pid": 1761577,
+      "ch": "eslcs"
+    }
+  ],
+  "links": [],
+  "team": {
+    "id": 131505,
+    "slug": "aurora-gaming",
+    "name": "Aurora Gaming",
+    "acronym": "AUR",
+    "image": "https://cdn-api.pandascore.co/images/team/image/131505/600px_aurora_gaming_2025_allmode.png"
+  }
+}

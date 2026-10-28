@@ -1,0 +1,19 @@
+{
+  "matches": [
+    {
+      "key": "2026-11-02",
+      "start": "2026-11-02T07:00:00Z",
+      "event": "IEM Beijing 2026",
+      "pid": 1761578,
+      "ch": "eslcs"
+    }
+  ],
+  "links": [],
+  "team": {
+    "id": 133719,
+    "slug": "parivision",
+    "name": "PARIVISION",
+    "acronym": "PRV",
+    "image": "https://cdn-api.pandascore.co/images/team/image/133719/250px_parivision_allmode.png"
+  }
+}

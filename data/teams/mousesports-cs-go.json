@@ -1,0 +1,26 @@
+{
+  "matches": [
+    {
+      "key": "2026-11-02",
+      "start": "2026-11-02T07:00:00Z",
+      "event": "IEM Beijing 2026",
+      "pid": 1761575,
+      "ch": "eslcs"
+    },
+    {
+      "key": "2026-11-11",
+      "start": "2026-11-11T10:30:00Z",
+      "event": "BLAST Rivals Fall 2026",
+      "pid": 1762460,
+      "ch": "blastpremier"
+    }
+  ],
+  "links": [],
+  "team": {
+    "id": 3240,
+    "slug": "mousesports-cs-go",
+    "name": "MOUZ",
+    "acronym": "MOUZ",
+    "image": "https://cdn-api.pandascore.co/images/team/image/3240/208px_mouz_2021_allmode.png"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "matches": [
+    {
+      "key": "2026-11-02",
+      "start": "2026-11-02T07:00:00Z",
+      "event": "IEM Beijing 2026",
+      "pid": 1761571,
+      "ch": "eslcs"
+    }
+  ],
+  "links": [],
+  "team": {
+    "id": 3246,
+    "slug": "heroic",
+    "name": "Heroic",
+    "acronym": "HERO",
+    "image": "https://cdn-api.pandascore.co/images/team/image/3246/680px_heroic_2023_allmode.png"
+  }
+}

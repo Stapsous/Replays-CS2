@@ -1,0 +1,26 @@
+{
+  "matches": [
+    {
+      "key": "2026-10-29",
+      "start": "2026-10-29T16:00:00Z",
+      "event": "Circuito Retake Season 13 2026",
+      "pid": 1774359,
+      "ch": "rtparenacs"
+    },
+    {
+      "key": "2026-11-02",
+      "start": "2026-11-02T07:00:00Z",
+      "event": "IEM Beijing 2026",
+      "pid": 1761575,
+      "ch": "eslcs"
+    }
+  ],
+  "links": [],
+  "team": {
+    "id": 3248,
+    "slug": "tyloo-cs-go",
+    "name": "TYLOO",
+    "acronym": "TYLOO",
+    "image": "https://cdn-api.pandascore.co/images/team/image/3248/TYLOO.png"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "matches": [
+    {
+      "key": "2026-10-28",
+      "start": "2026-10-28T17:00:00Z",
+      "event": "PGL Masters Bucharest 2026",
+      "pid": 1753721,
+      "ch": "pgl"
+    },
+    {
+      "key": "2026-10-30",
+      "start": "2026-10-30T10:15:00Z",
+      "event": "Circuito Retake Season 13 2026",
+      "pid": 1774351,
+      "ch": "rtparenacs"
+    },
+    {
+      "key": "2026-11-02",
+      "start": "2026-11-02T07:00:00Z",
+      "event": "IEM Beijing 2026",
+      "pid": 1761573,
+      "ch": "eslcs"
+    }
+  ],
+  "links": [],
+  "team": {
+    "id": 3216,
+    "slug": "natus-vincere-cs-go",
+    "name": "Natus Vincere",
+    "acronym": "NAVI",
+    "image": "https://cdn-api.pandascore.co/images/team/image/3216/1022px_natus_vincere_2021_lightmode.png"
+  }
+}

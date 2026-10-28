@@ -1,0 +1,33 @@
+{
+  "matches": [
+    {
+      "key": "2026-10-28",
+      "start": "2026-10-28T14:00:00Z",
+      "event": "PGL Masters Bucharest 2026",
+      "pid": 1753719,
+      "ch": "pgl"
+    },
+    {
+      "key": "2026-11-02",
+      "start": "2026-11-02T07:00:00Z",
+      "event": "IEM Beijing 2026",
+      "pid": 1761572,
+      "ch": "eslcs"
+    },
+    {
+      "key": "2026-11-11",
+      "start": "2026-11-11T03:00:00Z",
+      "event": "BLAST Rivals Fall 2026",
+      "pid": 1762450,
+      "ch": "blastpremier"
+    }
+  ],
+  "links": [],
+  "team": {
+    "id": 124530,
+    "slug": "furia",
+    "name": "FURIA",
+    "acronym": "FURIA",
+    "image": "https://cdn-api.pandascore.co/images/team/image/124530/8297.png"
+  }
+}

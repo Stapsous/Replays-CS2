@@ -1,0 +1,19 @@
+{
+  "matches": [
+    {
+      "key": "2026-11-02",
+      "start": "2026-11-02T07:00:00Z",
+      "event": "IEM Beijing 2026",
+      "pid": 1761576,
+      "ch": "eslcs"
+    }
+  ],
+  "links": [],
+  "team": {
+    "id": 126709,
+    "slug": "9z",
+    "name": "9z",
+    "acronym": "9z",
+    "image": "https://cdn-api.pandascore.co/images/team/image/126709/9z_team_2024_lightmode.png"
+  }
+}

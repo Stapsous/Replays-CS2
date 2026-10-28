@@ -1,0 +1,19 @@
+{
+  "matches": [
+    {
+      "key": "2026-11-02",
+      "start": "2026-11-02T07:00:00Z",
+      "event": "IEM Beijing 2026",
+      "pid": 1761572,
+      "ch": "eslcs"
+    }
+  ],
+  "links": [],
+  "team": {
+    "id": 3212,
+    "slug": "faze",
+    "name": "FaZe",
+    "acronym": "FaZe",
+    "image": "https://cdn-api.pandascore.co/images/team/image/3212/285px_fa_ze_esports_october_2025_lightmode.png"
+  }
+}

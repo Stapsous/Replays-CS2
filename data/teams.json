@@ -1,0 +1,137 @@
+{
+  "teams": [
+    {
+      "id": 3455,
+      "slug": "vitality",
+      "name": "Team Vitality",
+      "acronym": "VIT",
+      "image": ""
+    },
+    {
+      "id": 126709,
+      "slug": "9z",
+      "name": "9z",
+      "acronym": "9z",
+      "image": "https://cdn-api.pandascore.co/images/team/image/126709/9z_team_2024_lightmode.png"
+    },
+    {
+      "id": 131505,
+      "slug": "aurora-gaming",
+      "name": "Aurora Gaming",
+      "acronym": "AUR",
+      "image": "https://cdn-api.pandascore.co/images/team/image/131505/600px_aurora_gaming_2025_allmode.png"
+    },
+    {
+      "id": 129381,
+      "slug": "b8-cs-go",
+      "name": "B8",
+      "acronym": "B8",
+      "image": "https://cdn-api.pandascore.co/images/team/image/129381/b8_lightmode.png"
+    },
+    {
+      "id": 133458,
+      "slug": "betboom-team-cs-go",
+      "name": "BetBoom Team",
+      "acronym": "BB",
+      "image": "https://cdn-api.pandascore.co/images/team/image/133458/bet_boom_team_2024_allmode.png"
+    },
+    {
+      "id": 3212,
+      "slug": "faze",
+      "name": "FaZe",
+      "acronym": "FaZe",
+      "image": "https://cdn-api.pandascore.co/images/team/image/3212/285px_fa_ze_esports_october_2025_lightmode.png"
+    },
+    {
+      "id": 124530,
+      "slug": "furia",
+      "name": "FURIA",
+      "acronym": "FURIA",
+      "image": "https://cdn-api.pandascore.co/images/team/image/124530/8297.png"
+    },
+    {
+      "id": 3210,
+      "slug": "g2",
+      "name": "G2",
+      "acronym": "G2",
+      "image": "https://cdn-api.pandascore.co/images/team/image/3210/5995.png"
+    },
+    {
+      "id": 3246,
+      "slug": "heroic",
+      "name": "Heroic",
+      "acronym": "HERO",
+      "image": "https://cdn-api.pandascore.co/images/team/image/3246/680px_heroic_2023_allmode.png"
+    },
+    {
+      "id": 133708,
+      "slug": "legacy-48cb0f61-07e7-4b0d-85a0-5f837e29c807",
+      "name": "Legacy",
+      "acronym": "LGC",
+      "image": "https://cdn-api.pandascore.co/images/team/image/133708/593px_legacy_allmode.png"
+    },
+    {
+      "id": 3213,
+      "slug": "liquid-cs-go",
+      "name": "Liquid",
+      "acronym": "TL",
+      "image": "https://cdn-api.pandascore.co/images/team/image/3213/463px_team_liquid_2024_full_lightmode.png"
+    },
+    {
+      "id": 3240,
+      "slug": "mousesports-cs-go",
+      "name": "MOUZ",
+      "acronym": "MOUZ",
+      "image": "https://cdn-api.pandascore.co/images/team/image/3240/208px_mouz_2021_allmode.png"
+    },
+    {
+      "id": 3216,
+      "slug": "natus-vincere-cs-go",
+      "name": "Natus Vincere",
+      "acronym": "NAVI",
+      "image": "https://cdn-api.pandascore.co/images/team/image/3216/1022px_natus_vincere_2021_lightmode.png"
+    },
+    {
+      "id": 124522,
+      "slug": "nemiga",
+      "name": "Nemiga",
+      "acronym": "NEMI",
+      "image": "https://cdn-api.pandascore.co/images/team/image/124522/NEMIGA.png"
+    },
+    {
+      "id": 133719,
+      "slug": "parivision",
+      "name": "PARIVISION",
+      "acronym": "PRV",
+      "image": "https://cdn-api.pandascore.co/images/team/image/133719/250px_parivision_allmode.png"
+    },
+    {
+      "id": 124523,
+      "slug": "spirit",
+      "name": "Spirit",
+      "acronym": "TS",
+      "image": "https://cdn-api.pandascore.co/images/team/image/124523/153px_team_spirit_2022_lightmode.png"
+    },
+    {
+      "id": 130564,
+      "slug": "falcons-esports",
+      "name": "Team Falcons",
+      "acronym": "FAL",
+      "image": "https://cdn-api.pandascore.co/images/team/image/130564/team_falconslogo_square.png"
+    },
+    {
+      "id": 3272,
+      "slug": "themongolz",
+      "name": "TheMongolz",
+      "acronym": "MGLZ",
+      "image": "https://cdn-api.pandascore.co/images/team/image/3272/702px_the_mongol_z_2024_03_allmode.png"
+    },
+    {
+      "id": 3248,
+      "slug": "tyloo-cs-go",
+      "name": "TYLOO",
+      "acronym": "TYLOO",
+      "image": "https://cdn-api.pandascore.co/images/team/image/3248/TYLOO.png"
+    }
+  ]
+}

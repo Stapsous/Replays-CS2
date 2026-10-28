@@ -1,0 +1,26 @@
+{
+  "matches": [
+    {
+      "key": "2026-10-28",
+      "start": "2026-10-28T17:00:00Z",
+      "event": "PGL Masters Bucharest 2026",
+      "pid": 1753721,
+      "ch": "pgl"
+    },
+    {
+      "key": "2026-11-11",
+      "start": "2026-11-11T08:00:00Z",
+      "event": "BLAST Rivals Fall 2026",
+      "pid": 1762459,
+      "ch": "blastpremier"
+    }
+  ],
+  "links": [],
+  "team": {
+    "id": 124523,
+    "slug": "spirit",
+    "name": "Spirit",
+    "acronym": "TS",
+    "image": "https://cdn-api.pandascore.co/images/team/image/124523/153px_team_spirit_2022_lightmode.png"
+  }
+}

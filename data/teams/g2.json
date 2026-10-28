@@ -1,0 +1,26 @@
+{
+  "matches": [
+    {
+      "key": "2026-11-02",
+      "start": "2026-11-02T07:00:00Z",
+      "event": "IEM Beijing 2026",
+      "pid": 1761578,
+      "ch": "eslcs"
+    },
+    {
+      "key": "2026-11-11",
+      "start": "2026-11-11T10:30:00Z",
+      "event": "BLAST Rivals Fall 2026",
+      "pid": 1762460,
+      "ch": "blastpremier"
+    }
+  ],
+  "links": [],
+  "team": {
+    "id": 3210,
+    "slug": "g2",
+    "name": "G2",
+    "acronym": "G2",
+    "image": "https://cdn-api.pandascore.co/images/team/image/3210/5995.png"
+  }
+}

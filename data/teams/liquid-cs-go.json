@@ -1,0 +1,26 @@
+{
+  "matches": [
+    {
+      "key": "2026-10-28",
+      "start": "2026-10-28T14:00:00Z",
+      "event": "PGL Masters Bucharest 2026",
+      "pid": 1753719,
+      "ch": "pgl"
+    },
+    {
+      "key": "2026-11-02",
+      "start": "2026-11-02T07:00:00Z",
+      "event": "IEM Beijing 2026",
+      "pid": 1761577,
+      "ch": "eslcs"
+    }
+  ],
+  "links": [],
+  "team": {
+    "id": 3213,
+    "slug": "liquid-cs-go",
+    "name": "Liquid",
+    "acronym": "TL",
+    "image": "https://cdn-api.pandascore.co/images/team/image/3213/463px_team_liquid_2024_full_lightmode.png"
+  }
+}

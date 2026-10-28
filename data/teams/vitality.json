@@ -1,0 +1,230 @@
+{
+  "matches": [
+    {
+      "key": "2026-10-24",
+      "start": "2026-10-24T14:00:00Z",
+      "event": "PGL Masters Bucharest",
+      "done": true
+    },
+    {
+      "key": "2026-10-25",
+      "start": "2026-10-25T09:50:00Z",
+      "event": "PGL Masters Bucharest",
+      "done": true
+    },
+    {
+      "key": "2026-11-11",
+      "start": "2026-11-11T05:30:00Z",
+      "event": "BLAST Rivals",
+      "pid": 1762451,
+      "ch": "blastpremier"
+    },
+    {
+      "key": "2026-10-26",
+      "start": "2026-10-26T10:25:00Z",
+      "event": "PGL Masters Bucharest",
+      "pid": 1753706,
+      "ch": "pgl",
+      "done": true
+    },
+    {
+      "key": "2026-10-27",
+      "start": "2026-10-27T17:45:00Z",
+      "event": "PGL Masters Bucharest 2026",
+      "pid": 1753717,
+      "ch": "pgl",
+      "done": true
+    },
+    {
+      "key": "2026-10-28",
+      "start": "2026-10-28T11:00:00Z",
+      "event": "PGL Masters Bucharest 2026",
+      "pid": 1753718,
+      "ch": "pgl",
+      "decoy": true
+    }
+  ],
+  "links": [
+    {
+      "id": "2026-10-24-definitif",
+      "match": "2026-10-24",
+      "kind": "definitif",
+      "url": "https://www.twitch.tv/videos/2909252125?t=7h36m46s",
+      "createdAt": "2026-10-25T06:28:00Z"
+    },
+    {
+      "id": "2026-10-25-definitif",
+      "match": "2026-10-25",
+      "kind": "definitif",
+      "url": "https://www.twitch.tv/videos/2910240026?t=2h22m35s",
+      "createdAt": "2026-10-25T10:39:47Z"
+    },
+    {
+      "id": "2026-10-24-map1",
+      "match": "2026-10-24",
+      "kind": "map",
+      "map": 1,
+      "url": "https://www.twitch.tv/videos/2909252125?t=7h37m19s",
+      "createdAt": "2026-10-25T11:20:00Z"
+    },
+    {
+      "id": "2026-10-24-map2",
+      "match": "2026-10-24",
+      "kind": "map",
+      "map": 2,
+      "url": "https://www.twitch.tv/videos/2909252125?t=8h42m02s",
+      "createdAt": "2026-10-25T11:20:00Z"
+    },
+    {
+      "id": "2026-10-24-map3",
+      "match": "2026-10-24",
+      "kind": "map",
+      "map": 3,
+      "url": "https://www.twitch.tv/videos/2909252125?t=9h34m54s",
+      "createdAt": "2026-10-25T11:20:00Z",
+      "unplayed": true
+    },
+    {
+      "id": "2026-10-25-map1",
+      "match": "2026-10-25",
+      "kind": "map",
+      "map": 1,
+      "url": "https://www.twitch.tv/videos/2910240026?t=2h23m06s",
+      "createdAt": "2026-10-25T12:31:17Z"
+    },
+    {
+      "id": "2026-10-25-map2",
+      "match": "2026-10-25",
+      "kind": "map",
+      "map": 2,
+      "url": "https://www.twitch.tv/videos/2910240026?t=3h26m01s",
+      "createdAt": "2026-10-25T12:31:17Z"
+    },
+    {
+      "id": "2026-10-25-map3",
+      "match": "2026-10-25",
+      "kind": "map",
+      "map": 3,
+      "url": "https://www.twitch.tv/videos/2910240026?t=4h01m16s",
+      "createdAt": "2026-10-25T12:31:17Z",
+      "unplayed": true
+    },
+    {
+      "id": "2026-10-26-definitif",
+      "match": "2026-10-26",
+      "kind": "definitif",
+      "url": "https://www.twitch.tv/videos/2911148898?t=2h54m49s",
+      "createdAt": "2026-10-26T10:21:47.206Z",
+      "end": "5h55m24s"
+    },
+    {
+      "id": "2026-10-26-map1",
+      "match": "2026-10-26",
+      "kind": "map",
+      "map": 1,
+      "url": "https://www.twitch.tv/videos/2911148898?t=2h55m22s",
+      "createdAt": "2026-10-26T13:24:28.223Z"
+    },
+    {
+      "id": "2026-10-26-map2",
+      "match": "2026-10-26",
+      "kind": "map",
+      "map": 2,
+      "url": "https://www.twitch.tv/videos/2911148898?t=4h00m52s",
+      "createdAt": "2026-10-26T13:24:28.223Z"
+    },
+    {
+      "id": "2026-10-26-map3",
+      "match": "2026-10-26",
+      "kind": "map",
+      "map": 3,
+      "url": "https://www.twitch.tv/videos/2911148898?t=5h04m13s",
+      "createdAt": "2026-10-26T13:24:28.223Z"
+    },
+    {
+      "id": "2026-10-27-prevu",
+      "match": "2026-10-27",
+      "kind": "prevu",
+      "url": "https://www.twitch.tv/videos/2912065706?t=7h21m41s",
+      "createdAt": "2026-10-27T17:48:40.540Z"
+    },
+    {
+      "id": "2026-10-27-definitif",
+      "match": "2026-10-27",
+      "kind": "definitif",
+      "url": "https://www.twitch.tv/videos/2912065706?t=7h32m18s",
+      "createdAt": "2026-10-27T17:58:57.900Z",
+      "end": "9h13m06s"
+    },
+    {
+      "id": "2026-10-27-map1",
+      "match": "2026-10-27",
+      "kind": "map",
+      "map": 1,
+      "url": "https://www.twitch.tv/videos/2912065706?t=7h32m50s",
+      "createdAt": "2026-10-27T17:58:57.900Z"
+    },
+    {
+      "id": "2026-10-27-map2",
+      "match": "2026-10-27",
+      "kind": "map",
+      "map": 2,
+      "url": "https://www.twitch.tv/videos/2912065706?t=8h26m39s",
+      "createdAt": "2026-10-27T17:58:57.900Z"
+    },
+    {
+      "id": "2026-10-27-map3",
+      "match": "2026-10-27",
+      "kind": "map",
+      "map": 3,
+      "url": "https://www.twitch.tv/videos/2912065706?t=9h13m36s",
+      "createdAt": "2026-10-27T17:58:57.900Z",
+      "unplayed": true
+    },
+    {
+      "id": "2026-10-28-prevu",
+      "match": "2026-10-28",
+      "kind": "prevu",
+      "url": "https://www.twitch.tv/videos/2912945755?t=0h35m03s",
+      "createdAt": "2026-10-28T11:01:07.192Z"
+    },
+    {
+      "id": "2026-10-28-definitif",
+      "match": "2026-10-28",
+      "kind": "definitif",
+      "url": "https://www.twitch.tv/videos/2912945755?t=0h38m23s",
+      "createdAt": "2026-10-28T11:06:15.742Z"
+    },
+    {
+      "id": "2026-10-28-map1",
+      "match": "2026-10-28",
+      "kind": "map",
+      "map": 1,
+      "url": "https://www.twitch.tv/videos/2912945755?t=0h38m55s",
+      "createdAt": "2026-10-28T11:06:15.742Z"
+    },
+    {
+      "id": "2026-10-28-map2",
+      "match": "2026-10-28",
+      "kind": "map",
+      "map": 2,
+      "url": "https://www.twitch.tv/videos/2912945755?t=1h35m28s",
+      "createdAt": "2026-10-28T11:06:15.742Z"
+    },
+    {
+      "id": "2026-10-28-map3",
+      "match": "2026-10-28",
+      "kind": "map",
+      "map": 3,
+      "url": "https://www.twitch.tv/videos/2912945755?t=0h38m23s",
+      "createdAt": "2026-10-28T11:06:15.742Z"
+    }
+  ],
+  "team": {
+    "id": 3455,
+    "slug": "vitality",
+    "name": "Team Vitality",
+    "acronym": "VIT",
+    "image": ""
+  }
+}
