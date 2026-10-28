@@ -12,7 +12,9 @@
       "start": "2026-11-11T10:30:00Z",
       "event": "BLAST Rivals Fall 2026",
       "pid": 1762460,
-      "ch": "blastpremier"
+      "ch": "blastpremier",
+      "prevPid": 1762459,
+      "prevUntil": "2026-11-11T13:00:00.000Z"
     }
   ],
   "links": [],

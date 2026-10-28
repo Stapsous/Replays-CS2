@@ -12,7 +12,9 @@
       "start": "2026-10-30T10:15:00Z",
       "event": "Circuito Retake Season 13 2026",
       "pid": 1774351,
-      "ch": "rtparenacs"
+      "ch": "rtparenacs",
+      "prevPid": 1774350,
+      "prevUntil": "2026-10-30T11:00:00.000Z"
     },
     {
       "key": "2026-11-02",
