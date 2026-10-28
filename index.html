@@ -362,8 +362,8 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
     }
     function renderDay(d) {
       var m = d.match, t = startOf(d), dt = new Date(t);
-      if (m && m.decoy && decoyHide[tourOf(m)]) return null;
-      if (m && m.decoy && revealed(m)) {
+      // « Leurres masqués » : ils restent affichés comme de vrais matchs, sans jamais être révélés dans la liste
+      if (m && m.decoy && !decoyHide[tourOf(m)] && revealed(m)) {
         var box = el("div", "decoy-box");
         box.appendChild(el("span", "decoy-tag", "Leurre"));
         box.appendChild(el("span", null, (isNaN(dt) ? d.key : dayFmt.format(dt)) + " · " + timeFmt.format(dt)));
@@ -431,8 +431,8 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
       var body = el("div", "group-body");
       if (T.decoys) {
         var tg = el("button", "decoy-toggle"); tg.type = "button";
-        tg.textContent = decoyHide[T.name] ? "Afficher les leurres" : "Masquer les leurres";
-        tg.title = decoyHide[T.name] ? "Les matchs leurres de ce tournoi sont masqués" : "Masque tous les matchs leurres de ce tournoi (cela révèle lesquels sont des leurres)";
+        tg.textContent = decoyHide[T.name] ? "Révéler les leurres" : "Masquer les leurres";
+        tg.title = decoyHide[T.name] ? "Les leurres de ce tournoi sont déguisés en vrais matchs : clic pour les révéler quand c'est possible (match d'avant vu, ou leurre déjà ouvert)" : "Déguise tous les leurres de ce tournoi en vrais matchs";
         tg.addEventListener("click", function () {
           if (decoyHide[T.name]) delete decoyHide[T.name]; else decoyHide[T.name] = 1;
           save(DHIDE_KEY, decoyHide); lastSig = ""; render(lastData);
