@@ -1,14 +1,17 @@
-// Moteur VitaCS Replays : découvre les matchs de Team Vitality (PandaScore), calcule les liens de replay
-// Twitch (API officielle Helix) et met à jour data.json. Lancé par GitHub Actions toutes les 5 minutes.
+// Moteur des replays sans spoiler (CS2) : pour chaque équipe suivie, découvre ses matchs (PandaScore), calcule
+// les liens de replay Twitch (API officielle Helix) et écrit data/teams/<équipe>.json. Lancé en boucle par
+// GitHub Actions. Équipes suivies : Vitality, les équipes des tournois de rang S et A, et celles choisies par les
+// utilisateurs. data.json reste la copie de Vitality (ancienne version du site, branche vitacs-v1).
 //
-// RÈGLE ANTI-SPOILER : ce dépôt et ses journaux sont publics. Rien de ce qui est écrit (data.json,
-// journaux, messages de commit) ne doit révéler score, vainqueur, adversaire, phase ou nombre de cartes
-// jouées. L'état privé (suivi des leurres) est stocké dans Firestore, pas dans le dépôt.
+// RÈGLE ANTI-SPOILER : ce dépôt et ses journaux sont publics. Rien de ce qui est écrit (fichiers, journaux,
+// messages de commit) ne doit révéler score, vainqueur, adversaire, phase ou nombre de cartes jouées.
+// L'état privé (suivi des leurres) est stocké dans Firestore, pas dans le dépôt.
 import fs from "node:fs";
 import admin from "firebase-admin";
 
-const DRY = process.env.ENGINE_DRY_RUN === "true" || !!process.env.ENGINE_RECHECK;
+const DRY = process.env.ENGINE_DRY_RUN === "true";
 const VITALITY = 3455;
+const TIERS = ["s", "a"];
 const MIN = 60000, H = 60 * MIN;
 const now = Date.now();
 const PS = process.env.PANDASCORE_TOKEN, TW_ID = process.env.TWITCH_CLIENT_ID, TW_SECRET = process.env.TWITCH_CLIENT_SECRET;
@@ -18,19 +21,15 @@ admin.initializeApp({ credential: admin.credential.cert(JSON.parse(process.env.F
 const db = admin.firestore();
 const stateRef = db.doc("meta/engine");
 const state = (await stateRef.get()).data() || {};
-state.decoys = state.decoys || {}; // serieId -> { follow: teamId, after: ISO }
+state.teamDecoys = state.teamDecoys || {};
+// Migration : ancien suivi des leurres (Vitality seule)
+if (state.decoys && !state.teamDecoys[VITALITY]) state.teamDecoys[VITALITY] = state.decoys;
+delete state.decoys;
 
-const data = JSON.parse(fs.readFileSync("data.json", "utf8"));
-data.matches = data.matches || []; data.links = data.links || [];
-// Contrôle : recalcule les liens d'un match déjà traité (sans rien écrire) pour comparer avec ceux publiés
-const RECHECK = process.env.ENGINE_RECHECK || "";
-const published = data.links.filter((l) => l.match === RECHECK).map((l) => l.id + " " + l.url);
-if (RECHECK) {
-  const m = data.matches.find((x) => x.key === RECHECK);
-  if (m) { delete m.done; m.start = new Date(Date.now() - 3600e3).toISOString(); }
-  data.links = data.links.filter((l) => l.match !== RECHECK);
-}
-const changes = [];
+const readJson = (f, d) => { try { return JSON.parse(fs.readFileSync(f, "utf8")); } catch (e) { return d; } };
+fs.mkdirSync("data/teams", { recursive: true });
+const registry = readJson("data/teams.json", { teams: [] });
+const allChanges = [];
 
 // ---------- Outils ----------
 async function ps(path) {
@@ -76,6 +75,62 @@ async function vodFor(login, ref) {
 }
 async function vodById(login, id) { return (await vods(login)).find((v) => v.id === id) || null; }
 
+
+// ---------- Requêtes groupées (une poignée d'appels pour toutes les équipes) ----------
+const teamIds = (x) => (x.opponents || []).map((o) => o.opponent && o.opponent.id).filter(Boolean);
+const tierOf = (x) => String((x.tournament && x.tournament.tier) || "").toLowerCase();
+const byIdCache = new Map();
+const remember = (list) => { for (const x of list || []) byIdCache.set(x.id, x); return list || []; };
+async function bulk(path, ids) {
+  const out = [];
+  for (let i = 0; i < ids.length; i += 50) {
+    try { out.push(...remember(await ps(path + (path.includes("?") ? "&" : "?") + "filter[opponent_id]=" + ids.slice(i, i + 50).join(",")))); }
+    catch (e) { console.log("bulk : " + e.message); }
+  }
+  return out;
+}
+async function matchById(id) {
+  if (byIdCache.has(id)) return byIdCache.get(id);
+  try { const x = (await ps("/csgo/matches?filter[id]=" + id))[0] || null; byIdCache.set(id, x); return x; } catch (e) { console.log("match : " + e.message); return undefined; }
+}
+const serieCache = {};
+async function serieMatches(serie) {
+  if (!serieCache[serie]) serieCache[serie] = remember(await ps("/csgo/matches?filter[serie_id]=" + serie + "&per_page=100&sort=scheduled_at"));
+  return serieCache[serie];
+}
+
+// ---------- Équipes suivies ----------
+const reg = new Map(registry.teams.map((t) => [t.id, t]));
+let regChanged = false;
+function registerTeam(o) {
+  if (!o || !o.id) return;
+  const slug = o.id === VITALITY ? "vitality" : String(o.slug || o.acronym || o.id).toLowerCase().replace(/[^a-z0-9-]/g, "-");
+  const t = { id: o.id, slug, name: o.name || slug, acronym: o.acronym || "", image: o.image_url || "" };
+  const old = reg.get(o.id);
+  if (!old) { reg.set(o.id, t); regChanged = true; allChanges.push("équipe " + slug); }
+  else if (!old.image && t.image) { old.image = t.image; regChanged = true; }
+}
+registerTeam({ id: VITALITY, slug: "vitality", name: "Team Vitality", acronym: "VIT" });
+// Découverte : toutes les équipes des tournois de rang S et A en cours ou à venir
+try {
+  const disc = [...remember(await ps("/csgo/matches/running?per_page=100")), ...remember(await ps("/csgo/matches/upcoming?per_page=100&sort=scheduled_at")),
+    ...remember(await ps("/csgo/matches/upcoming?per_page=100&page=2&sort=scheduled_at"))];
+  for (const x of disc) if (TIERS.includes(tierOf(x))) for (const o of x.opponents || []) registerTeam(o.opponent);
+} catch (e) { console.log("découverte : " + e.message); }
+const trackedIds = [...reg.keys()];
+const bulkRunning = await bulk("/csgo/matches/running?per_page=100", trackedIds);
+const bulkUpcoming = await bulk("/csgo/matches/upcoming?per_page=100&sort=scheduled_at", trackedIds);
+const bulkPast = await bulk("/csgo/matches/past?per_page=100&sort=-scheduled_at", trackedIds);
+
+// ---------- Traitement d'une équipe ----------
+async function processTeam(team) {
+const TEAM = team.id;
+const file = "data/teams/" + team.slug + ".json";
+const data = readJson(file, null) || (TEAM === VITALITY ? readJson("data.json", null) : null) || { matches: [], links: [] };
+data.team = { id: team.id, slug: team.slug, name: team.name, acronym: team.acronym, image: team.image };
+data.matches = data.matches || []; data.links = data.links || [];
+const decoys = state.teamDecoys[TEAM] || (state.teamDecoys[TEAM] = {});
+const changes = [];
 // ---------- 0. Embargo anti-spoiler ----------
 // Tout ce qui dépend de la FIN d'un match (match suivant, liens par carte, leurres) attend l'heure où le match
 // est forcément terminé quel que soit le score : début + durée maximale du format. Sinon l'heure d'apparition
@@ -86,7 +141,7 @@ const live = {};
 for (const m of data.matches) {
   // Matchs actifs, et matchs clos depuis moins de 12 h (ils peuvent encore être sous embargo)
   if (!m.pid || (m.done && now - Date.parse(m.start) > 12 * H)) continue;
-  try { live[m.pid] = (await ps("/csgo/matches?filter[id]=" + m.pid))[0] || null; } catch (e) { console.log(m.key + " : " + e.message); }
+  live[m.pid] = await matchById(m.pid);
 }
 let holdUntil = 0;
 for (const x of Object.values(live)) if (x && x.status !== "not_started" && x.begin_at && now < embargo(x)) holdUntil = Math.max(holdUntil, embargo(x));
@@ -103,7 +158,7 @@ function addMatch(x) {
   const m = { key, start: x.scheduled_at || x.begin_at, event: eventName(x), pid: x.id, ch: channel(x) };
   data.matches.push(m); known.set(x.id, m); changes.push("match " + key);
 }
-const mine = [...(await ps("/csgo/matches/running?filter[opponent_id]=" + VITALITY)), ...(await ps("/csgo/matches/upcoming?filter[opponent_id]=" + VITALITY + "&per_page=20"))];
+const mine = [...bulkRunning, ...bulkUpcoming].filter((x) => teamIds(x).includes(TEAM));
 for (const x of mine) if (x.scheduled_at || x.begin_at) addMatch(x);
 
 // ---------- 2. Leurres ----------
@@ -113,24 +168,24 @@ for (const x of mine) if (x.scheduled_at || x.begin_at) addMatch(x);
 // Ainsi, ni la présence, ni le jour, ni l'heure d'apparition du match suivant ne révèlent le résultat.
 // Prudence : un leurre n'est choisi que si tous les matchs de son tour (± 6 h) sont tirés et sans Vitality.
 try {
-  const past = await ps("/csgo/matches/past?filter[opponent_id]=" + VITALITY + "&sort=-scheduled_at&per_page=5");
+  const past = bulkPast.filter((x) => teamIds(x).includes(TEAM));
   const last = past.find((x) => x.status === "finished" && x.serie_id);
   if (last) {
     const serie = last.serie_id;
-    const all = await ps("/csgo/matches?filter[serie_id]=" + serie + "&per_page=100&sort=scheduled_at");
+    const all = await serieMatches(serie);
     const byId = new Map(all.map((x) => [x.id, x]));
     const ids = (x) => (x.opponents || []).map((o) => o.opponent && o.opponent.id).filter(Boolean);
     const T = (x) => Date.parse(x.scheduled_at || x.begin_at);
-    const st = state.decoys[serie] || (state.decoys[serie] = {});
+    const st = decoys[serie] || (decoys[serie] = {});
     st.ids = st.ids || [];
-    if (!st.follow) st.follow = ids(last).find((id) => id !== VITALITY) || null;
+    if (!st.follow) st.follow = ids(last).find((id) => id !== TEAM) || null;
     for (let guard = 0; guard < 6; guard++) {
       // Point de départ : le plus récent entre le dernier vrai match terminé et le dernier leurre publié
       const anchor = [last, ...st.ids.map((id) => byId.get(id)).filter(Boolean)].sort((a, b) => T(b) - T(a))[0];
       // Un vrai match de Vitality prévu après ce point : c'est lui le match suivant, pas de leurre
       if (mine.some((x) => x.serie_id === serie && T(x) > T(anchor))) break;
-      if (all.some((x) => ids(x).includes(VITALITY) && x.status !== "finished" && T(x) > T(anchor))) break;
-      const cands = all.filter((x) => x.status !== "canceled" && x.scheduled_at && T(x) > T(anchor) + 30 * MIN && !ids(x).includes(VITALITY)
+      if (all.some((x) => ids(x).includes(TEAM) && x.status !== "finished" && T(x) > T(anchor))) break;
+      const cands = all.filter((x) => x.status !== "canceled" && x.scheduled_at && T(x) > T(anchor) + 30 * MIN && !ids(x).includes(TEAM)
         && T(x) < now + 3 * 24 * H).sort((a, b) => T(a) - T(b));
       if (!cands.length) break; // série terminée
       const first = T(cands[0]);
@@ -156,7 +211,7 @@ try {
 } catch (e) { console.log("leurres : " + e.message); }
 
 // Rattrapage : marque les leurres publiés avant l'ajout du marquage
-for (const sd of Object.values(state.decoys || {})) for (const id of (sd.ids || [])) {
+for (const sd of Object.values(decoys)) for (const id of (sd.ids || [])) {
   const dm = known.get(id);
   if (dm && !dm.decoy) { dm.decoy = true; changes.push("leurre " + dm.key); }
 }
@@ -177,7 +232,7 @@ const url = (vod, sec) => "https://www.twitch.tv/videos/" + vod + "?t=" + hms(se
 for (const m of data.matches) {
   if (!m.pid || m.done) continue;
   let x = live[m.pid];
-  if (x === undefined) { try { x = (await ps("/csgo/matches?filter[id]=" + m.pid))[0]; } catch (e) { console.log(m.key + " : " + e.message); continue; } }
+  if (x === undefined) x = await matchById(m.pid);
   if (!x) continue;
   if (!m.ch) { const c = channel(x); if (c) { m.ch = c; changes.push("chaîne " + m.key); } }
   if (x.scheduled_at && x.scheduled_at !== m.start && x.status === "not_started") { m.start = x.scheduled_at; changes.push("horaire " + m.key); }
@@ -230,20 +285,12 @@ for (const m of data.matches) {
   } catch (e) { console.log(m.key + " : " + e.message); }
 }
 
-// Diagnostic en simulation : vérifie l'accès à l'API Twitch pour les chaînes des matchs actifs
-if (DRY) {
-  for (const ch of [...new Set(data.matches.filter((m) => m.pid && !m.done && m.ch).map((m) => m.ch))]) {
-    try { const v = await vods(ch); console.log("::notice::Twitch " + ch + " : " + v.length + " vidéo(s), la plus récente commencée " + (v[0] ? new Date(v[0].start).toISOString() : "?")); }
-    catch (e) { console.log("::warning::Twitch " + ch + " : " + e.message); }
-  }
-}
-
 // Rattrapage : repère de fin pour les matchs déjà clos (30 derniers jours)
 for (const m of data.matches) {
   const def = data.links.find((l) => l.id === m.key + "-definitif");
   if (!m.pid || !m.done || !def || def.end || now - Date.parse(m.start) > 30 * 24 * H || !m.ch) continue;
   try {
-    const x = (await ps("/csgo/matches?filter[id]=" + m.pid))[0];
+    const x = await matchById(m.pid);
     if (!x || x.status !== "finished") continue;
     const defId = (def.url.match(/\/videos\/(\d+)/) || [])[1];
     const v = defId && await vodById(m.ch, defId);
@@ -255,20 +302,34 @@ for (const m of data.matches) {
   } catch (e) { console.log(m.key + " : " + e.message); }
 }
 
-// ---------- 4. Écriture ----------
+
 if (changes.length) {
-  if (DRY) {
-    console.log("::notice::Simulation, rien n'est écrit : " + changes.join(", "));
-    for (const l of data.links.filter((l) => Date.parse(l.createdAt) >= now)) console.log("::notice::" + l.id + " " + l.url);
-    if (RECHECK) console.log("::notice::Publiés : " + published.join(" | "));
-  } else {
-    fs.writeFileSync("data.json", JSON.stringify(data, null, 2) + "\n");
-    console.log("::notice::" + changes.length + " changement(s)");
+  allChanges.push(team.slug + " : " + changes.length);
+  if (!DRY) {
+    fs.writeFileSync(file, JSON.stringify(data, null, 2) + "\n");
+    if (TEAM === VITALITY) { const legacy = { ...data }; delete legacy.team; fs.writeFileSync("data.json", JSON.stringify(legacy, null, 2) + "\n"); }
   }
+} else if (!fs.existsSync(file) && !DRY) fs.writeFileSync(file, JSON.stringify(data, null, 2) + "\n");
+return data;
 }
+
+const busyTeams = [];
+for (const team of reg.values()) {
+  try {
+    const d = await processTeam(team);
+    if (d.matches.some((m) => m.pid && !m.done && Date.parse(m.start) - now < 6 * H)) busyTeams.push(team.slug);
+  } catch (e) { console.log(team.slug + " : " + e.message); }
+}
+
+// ---------- Écriture ----------
+if (regChanged || !fs.existsSync("data/teams.json")) {
+  const teams = [...reg.values()].sort((a, b) => (a.id === VITALITY ? -1 : b.id === VITALITY ? 1 : a.name.localeCompare(b.name)));
+  if (!DRY) fs.writeFileSync("data/teams.json", JSON.stringify({ teams }, null, 2) + "\n");
+}
+console.log("::notice::" + reg.size + " équipe(s) suivie(s) · " + (allChanges.length ? allChanges.join(", ") : "aucun changement"));
 if (!DRY) await stateRef.set(state);
-fs.writeFileSync(process.env.GITHUB_OUTPUT || "/dev/null", "changed=" + (changes.length && !DRY ? "true" : "false") + "\n", { flag: "a" });
-// Rythme conseillé pour le prochain passage : 5 min autour des matchs (de 6 h avant à la fin), sinon 30 min
-const busy = data.matches.some((m) => m.pid && !m.done && Date.parse(m.start) - now < 6 * H);
-fs.writeFileSync(".engine-next", String(busy ? 300 : 1800));
-fs.writeFileSync(".engine-changed", changes.length && !DRY ? "1" : "0");
+const changed = !DRY && (allChanges.length > 0 || regChanged);
+fs.writeFileSync(process.env.GITHUB_OUTPUT || "/dev/null", "changed=" + (changed ? "true" : "false") + "\n", { flag: "a" });
+// Rythme conseillé : 5 min autour des matchs (de 6 h avant à la fin), sinon 30 min
+fs.writeFileSync(".engine-next", String(busyTeams.length ? 300 : 1800));
+fs.writeFileSync(".engine-changed", changed ? "1" : "0");

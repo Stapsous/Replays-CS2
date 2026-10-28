@@ -9,7 +9,7 @@ while [ $SECONDS -lt $END ]; do
   git pull -q --rebase || git reset -q --hard origin/main
   node .github/engine/engine.mjs || echo "moteur en erreur"
   if [ "$(cat .engine-changed 2>/dev/null)" = "1" ]; then
-    git add data.json && git commit -qm "Mise à jour des liens" && { for i in 1 2 3; do git push -q && break; git pull -q --rebase; done; }
+    git add data.json data && git commit -qm "Mise à jour des liens" && { for i in 1 2 3; do git push -q && break; git pull -q --rebase; done; }
   fi
   node .github/notify/notify.mjs || echo "notifications en erreur"
   NEXT=$(cat .engine-next 2>/dev/null || echo 1800)
