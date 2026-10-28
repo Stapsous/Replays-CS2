@@ -16,6 +16,17 @@
       "ch": "blastpremier",
       "prevPid": 1762451,
       "prevUntil": "2026-11-11T10:30:00.000Z"
+    },
+    {
+      "key": "2026-10-29",
+      "start": "2026-10-29T14:00:00Z",
+      "event": "PGL Masters Bucharest 2026",
+      "pid": 1753684,
+      "ch": "pgl",
+      "decoy": true,
+      "after": "2026-10-28",
+      "prevPid": 1753683,
+      "prevUntil": "2026-10-29T16:00:00.000Z"
     }
   ],
   "links": [
