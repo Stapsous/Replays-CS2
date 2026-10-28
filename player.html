@@ -112,6 +112,9 @@
   .help { color: var(--muted); font-size: 13px; text-align: center; max-width: 640px; }
   .unplayed { max-width: 520px; margin: 18vh auto 0; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px; font-size: 17px; }
   .unplayed[hidden] { display: none; }
+  .bar[hidden], .help[hidden], .stage[hidden] { display: none !important; }
+  .u-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center; }
+  .u-link { color: var(--muted); font-size: 14px; }
   .empty { max-width: 560px; color: var(--muted); text-align: center; margin-top: 15vh; }
   kbd { font-family: ui-monospace, Consolas, monospace; border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; color: var(--fg); }
 </style>
@@ -153,6 +156,14 @@
   La durée totale de la vidéo n'est jamais affichée.
 </p>
 
+<div class="unplayed" id="decoy" hidden>
+  <p><strong>Ce match est un leurre</strong> : Vitality ne jouait pas ce jour-là. Il sert à ne rien révéler dans la liste.</p>
+  <div class="u-actions">
+    <button id="d-back" type="button">Retour à la liste</button>
+    <button id="d-watch" type="button">Regarder quand même</button>
+    <a id="d-twitch" class="u-link" target="_blank" rel="noopener">Ouvrir sur Twitch</a>
+  </div>
+</div>
 <div class="unplayed" id="unplayed" hidden>
   <p>Cette carte n'a pas été jouée : le match s'est terminé avant.</p>
   <button id="u-back" type="button">Retour à la liste</button>
@@ -183,6 +194,18 @@
       var v = (String(l.url).match(/\/videos\/(\d+)/) || [])[1], tt = (String(l.url).match(/[?&]t=([0-9hms]+)/) || [])[1];
       if (v === vid && tt && toSec(tt) === start && (!link || l.unplayed)) link = l;
     });
+    // Leurre : on prévient au lieu de lancer (une seule fois révélé ; « Regarder quand même » reste possible)
+    var mt = link && ((d && d.matches) || []).filter(function (m) { return m.key === link.match; })[0];
+    if (mt && mt.decoy && q.get("force") !== "1") {
+      try { var dk = JSON.parse(localStorage.getItem("replays-decoys") || "{}") || {}; dk[mt.key] = 1; localStorage.setItem("replays-decoys", JSON.stringify(dk)); } catch (e) {}
+      document.getElementById("decoy").hidden = false;
+      document.getElementById("d-back").addEventListener("click", function () {
+        if (EMBED) { try { window.parent.postMessage({ replays: "close" }, location.origin); } catch (e) {} } else location.href = "./";
+      });
+      document.getElementById("d-watch").addEventListener("click", function () { var u = new URL(location.href); u.searchParams.set("force", "1"); location.replace(u.href); });
+      document.getElementById("d-twitch").href = link.url;
+      return;
+    }
     if (link && link.unplayed) {
       document.getElementById("unplayed").hidden = false;
       document.getElementById("u-back").addEventListener("click", function () {

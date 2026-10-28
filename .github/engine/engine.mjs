@@ -147,10 +147,19 @@ try {
       addMatch(pick);
       if (!known.has(pick.id)) break;
       if (!st.ids.includes(pick.id)) st.ids.push(pick.id);
+      // Marquage du leurre dans data.json : le site ne le révèle qu'à l'ouverture, ou une fois le match précédent vu
+      const dm = known.get(pick.id), am = known.get(anchor.id);
+      if (dm && !dm.decoy) { dm.decoy = true; if (am) dm.after = am.key; changes.push("leurre " + dm.key); }
       if (before && st.ids.length > 20) break;
     }
   }
 } catch (e) { console.log("leurres : " + e.message); }
+
+// Rattrapage : marque les leurres publiés avant l'ajout du marquage
+for (const sd of Object.values(state.decoys || {})) for (const id of (sd.ids || [])) {
+  const dm = known.get(id);
+  if (dm && !dm.decoy) { dm.decoy = true; changes.push("leurre " + dm.key); }
+}
 
 // ---------- 3. Liens ----------
 const hasLink = (id) => data.links.some((l) => l.id === id);
