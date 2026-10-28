@@ -113,6 +113,7 @@
   .unplayed { max-width: 520px; margin: 18vh auto 0; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px; font-size: 17px; }
   .unplayed[hidden] { display: none; }
   .bar[hidden], .help[hidden], .stage[hidden] { display: none !important; }
+  .decoy-img { width: min(350px, 80vw); height: auto; border-radius: 10px; }
   .u-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center; }
   .u-link { color: var(--muted); font-size: 14px; }
   .empty { max-width: 560px; color: var(--muted); text-align: center; margin-top: 15vh; }
@@ -157,6 +158,7 @@
 </p>
 
 <div class="unplayed" id="decoy" hidden>
+  <img class="decoy-img" src="img/leurre.jpg" alt="" width="350" height="281">
   <p><strong>Ce match est un leurre</strong> : <span id="d-team">l'équipe</span> ne jouait pas ce jour-là. Il sert à ne rien révéler dans la liste.</p>
   <div class="u-actions">
     <button id="d-back" type="button">Retour à la liste</button>

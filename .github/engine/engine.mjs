@@ -251,6 +251,17 @@ for (const m of data.matches) {
   if (x === undefined) x = await matchById(m.pid);
   if (!x) continue;
   if (!m.ch) { const c = channel(x); if (c) { m.ch = c; changes.push("chaîne " + m.key); } }
+  // Match qui précède sur la même chaîne le même jour, et heure où il est forcément fini (embargo). Le site et les
+  // notifications s'en servent pour ne rien révéler de ce match précédent à qui suit aussi son équipe.
+  if (m.ch && x.serie_id && x.status === "not_started") {
+    try {
+      const sm = await serieMatches(x.serie_id), st = Date.parse(x.scheduled_at || m.start);
+      const pv = sm.filter((y) => y.id !== x.id && channel(y) === m.ch && y.scheduled_at && Date.parse(y.scheduled_at) < st && st - Date.parse(y.scheduled_at) < 12 * H)
+        .sort((a, b) => Date.parse(b.scheduled_at) - Date.parse(a.scheduled_at))[0];
+      const until = pv && new Date(embargo(pv)).toISOString();
+      if (pv && (m.prevPid !== pv.id || m.prevUntil !== until)) { m.prevPid = pv.id; m.prevUntil = until; changes.push("précédent " + m.key); }
+    } catch (e) { console.log(m.key + " : " + e.message); }
+  }
   if (x.scheduled_at && x.scheduled_at !== m.start && x.status === "not_started") { m.start = x.scheduled_at; changes.push("horaire " + m.key); }
   const start = Date.parse(m.start);
   if (now > start + 30 * H) { m.done = true; changes.push("clos " + m.key); continue; }

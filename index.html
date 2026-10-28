@@ -268,8 +268,8 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
       count++;
     });
     var now = Date.now();
-    var byKey = {};
-    (data.matches || []).forEach(function (m) { if (m && m.key) byKey[m.key] = m; });
+    var byKey = {}, followedPids = {};
+    (data.matches || []).forEach(function (m) { if (m && m.key) byKey[m.key] = m; if (m && m.pid) followedPids[m.pid] = 1; });
     function tourOf(m) { return String((m && m.event) || "Autres").replace(/\s+20\d\d$/, "").trim() || "Autres"; }
     // Match qui précède un leurre : champ « after », sinon le match précédent du même tournoi
     function prevOf(m) {
@@ -316,7 +316,8 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
       var kd = el("div", "kind", k.label); kd.appendChild(el("span", "tag " + k.cls, k.tag));
       var c = new Date(l.createdAt), tm = l.url.match(/[?&]t=([0-9hms]+)/), vm = l.url.match(/\/videos\/(\d+)/);
       main.appendChild(kd);
-      main.appendChild(el("div", "meta", (isNaN(c) ? "" : "Ajouté à " + timeFmt.format(c)) + (tm ? " · repère " + tm[1] : "")));
+      // Heure d'ajout et repère masqués si le match précédent sur la chaîne est suivi (ils trahiraient sa durée)
+      if (!l.quiet) main.appendChild(el("div", "meta", (isNaN(c) ? "" : "Ajouté à " + timeFmt.format(c)) + (tm ? " · repère " + tm[1] : "")));
       var actions = el("div", "actions");
       var a = el("a", "watch", "Regarder"); a.href = vm ? "player.html?v=" + vm[1] + "&t=" + (tm ? tm[1] : "0s") + teamQ(l.team) : l.url; a.target = "_blank"; a.rel = "noopener";
       var tw = el("a", "alt", "Twitch"); tw.href = l.url; tw.target = "_blank"; tw.rel = "noopener"; tw.title = "Ouvrir sur Twitch (pratique pour caster depuis le téléphone)";
@@ -381,7 +382,12 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
       var list = el("div", "links"), byKind = { prevu: [], definitif: [] };
       byKind.map = [];
       d.links.forEach(function (l) { (byKind[l.kind] || byKind.prevu).push(l); });
+      // Match précédent sur la même chaîne = match d'une équipe suivie : tant qu'il n'est pas forcément fini,
+      // le lien du vrai début (et les cartes) de ce match-ci révéleraient sa durée. On les retient jusque-là.
+      var shield = m && m.prevPid && followedPids[m.prevPid];
+      if (shield && Date.now() < Date.parse(m.prevUntil || 0)) { byKind.definitif = []; byKind.map = []; }
       var rows = [];
+      if (shield) d.links.forEach(function (l) { l.quiet = true; });
       byKind.definitif.forEach(function (l) { rows.push(linkRow(l)); });
       if (byKind.map.length) rows.push(mapsRow(byKind.map));
       // Le lien définitif remplace le lien à l'horaire prévu : on n'affiche plus ce dernier

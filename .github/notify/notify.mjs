@@ -48,14 +48,16 @@ function playerLink(t, url) {
 // 1. Nouveaux liens de replay
 for (const t of teams) {
   const n = short(t);
+  const mByKey = {}; for (const m of t.data.matches || []) mByKey[m.key] = m;
   for (const l of t.data.links || []) {
+    const pm = mByKey[l.match] || {}, pv = { prevPid: pm.prevPid || null, prevUntil: pm.prevUntil || null };
     if (!l || !l.id || !l.url) continue;
     const fresh = !l.createdAt || now - Date.parse(l.createdAt) < 12 * H;
     if (l.kind === "map") {
-      once(t, "maps:" + l.match, fresh && { type: "maps", body: "Liens par carte d'un replay " + n + " disponibles", link: SITE, tag: t.slug + "-maps-" + l.match });
+      once(t, "maps:" + l.match, fresh && { type: "maps", body: "Liens par carte d'un replay " + n + " disponibles", link: SITE, tag: t.slug + "-maps-" + l.match, ...pv });
     } else {
       const body = l.kind === "definitif" ? "Lien définitif d'un replay " + n + " disponible" : "Nouveau replay " + n + " (lien à l'horaire prévu)";
-      once(t, "link:" + l.id, fresh && { type: "link", body, link: playerLink(t, l.url), tag: t.slug + "-link-" + l.match });
+      once(t, "link:" + l.id, fresh && { type: "link", body, link: playerLink(t, l.url), tag: t.slug + "-link-" + l.match, ...(l.kind === "definitif" ? pv : {}) });
     }
   }
 }
@@ -85,9 +87,10 @@ for (const { t, m } of actives) {
   const n = short(t), pid = m.pid, sched = Date.parse(M.scheduled_at || m.start), left = sched - now;
   const announced = () => sent[K(t, "m15:" + pid)] || sent[K(t, "prev:" + pid)];
 
+  const pv = { prevPid: m.prevPid || null, prevUntil: m.prevUntil || null };
   if (M.status === "running" || M.status === "finished") {
     const recent = M.begin_at && now - Date.parse(M.begin_at) < 45 * MIN;
-    if (!announced() && recent) once(t, "start:" + pid, { type: "started", body: "Un match " + n + " a commencé", link: SITE, tag: t.slug + "-match-" + pid });
+    if (!announced() && recent) once(t, "start:" + pid, { type: "started", body: "Un match " + n + " a commencé", link: SITE, tag: t.slug + "-match-" + pid, ...pv });
     else once(t, "start:" + pid);
     continue;
   }
@@ -113,7 +116,7 @@ for (const { t, m } of actives) {
 
   if (prev.status === "finished" && left > 20 * MIN && !sent[K(t, "m15:" + pid)]) {
     const recentEnd = prev.end_at && now - Date.parse(prev.end_at) < 90 * MIN;
-    if (recentEnd) once(t, "prev:" + pid, { type: "prev", body: "Le match précédent est terminé : un match " + n + " devrait commencer bientôt", link: SITE, tag: t.slug + "-match-" + pid });
+    if (recentEnd) once(t, "prev:" + pid, { type: "prev", body: "Le match précédent est terminé : un match " + n + " devrait commencer bientôt", link: SITE, tag: t.slug + "-match-" + pid, prevPid: prev.id });
   }
   if (prev.status === "running" && left > 25 * MIN) {
     const bo = prev.number_of_games || 1, need = Math.floor(bo / 2) + 1;
@@ -121,7 +124,7 @@ for (const { t, m } of actives) {
     for (const g of prev.games || []) if (g.status === "finished" && g.winner && g.winner.id != null) wins[g.winner.id] = (wins[g.winner.id] || 0) + 1;
     const maxw = Math.max(0, ...Object.values(wins));
     const live = (prev.games || []).find((g) => g.status === "running");
-    if (live && (live.position === bo || maxw === need - 1)) once(t, "soon:" + pid, { type: "soon", body: "Un match " + n + " devrait commencer dans environ 1 h", link: SITE, tag: t.slug + "-match-" + pid });
+    if (live && (live.position === bo || maxw === need - 1)) once(t, "soon:" + pid, { type: "soon", body: "Un match " + n + " devrait commencer dans environ 1 h", link: SITE, tag: t.slug + "-match-" + pid, prevPid: prev.id });
   }
 }
 // Une équipe vue pour la première fois : ses liens existants sont notés comme déjà envoyés, sans notification
@@ -140,9 +143,15 @@ if (queue.length) {
     try { const f = JSON.parse(d.teams || "null"); if (Array.isArray(f) && f.length) follow = f; } catch (e) {}
     devices += tokens.length;
     const done = new Set();
+    // Matchs (vrais ou leurres) des équipes suivies par ce compte : une alerte liée à la fin de l'un d'eux
+    // (« match précédent terminé », « dans environ 1 h », « a commencé », lien définitif et cartes du match
+    // suivant sur la même chaîne) révélerait sa durée. On ne l'envoie pas à ce compte.
+    const followedPids = new Set();
+    for (const t of teams) if (follow.includes(t.slug)) for (const m of t.data.matches || []) if (m.pid) followedPids.add(m.pid);
     for (const msg of queue) {
       if (prefs[msg.type] === false) continue;
       if (msg.team !== "*" && !follow.includes(msg.team)) continue;
+      if (msg.prevPid && followedPids.has(msg.prevPid)) continue;
       if (done.has(msg.tag + msg.type)) continue;
       done.add(msg.tag + msg.type);
       for (const token of tokens) {
