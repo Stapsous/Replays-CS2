@@ -548,7 +548,12 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
   function drawPicker() {
     var q = document.getElementById("picker-q").value.trim().toLowerCase(), list = document.getElementById("picker-list");
     list.textContent = "";
-    registry.filter(function (t) { return !q || (t.name + " " + (t.acronym || "")).toLowerCase().indexOf(q) >= 0; }).forEach(function (t) {
+    // Recherche tolérante : « team spirit » trouve « Spirit » (le mot « team » est ignoré, chaque mot doit apparaître)
+    var words = q.replace(/\bteam\b/g, " ").split(/\s+/).filter(Boolean);
+    registry.filter(function (t) {
+      var hay = (t.name + " " + (t.acronym || "") + " " + (t.slug || "")).toLowerCase();
+      return words.every(function (w) { return hay.indexOf(w) >= 0; });
+    }).forEach(function (t) {
       var lab = el("label"), c = el("input"); c.type = "checkbox"; c.checked = !!pickSel[t.slug];
       c.addEventListener("change", function () { if (c.checked) pickSel[t.slug] = 1; else delete pickSel[t.slug]; });
       lab.appendChild(c);
