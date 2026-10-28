@@ -212,7 +212,7 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
   var markers = [];
   // Point le plus avancé atteint dans cette vidéo, entre le début du match et sa fin (liens du match et des cartes)
   function watchState(l, vid, startSec) {
-    if (seen[l.id]) return "done";
+    if (seen[l.id] || (l.alsoIds || []).some(function (id) { return seen[id]; })) return "done";
     if (!vid) return "";
     var all = load(R_KEY), endSec = l.end ? toSec(l.end) : 0, best = 0;
     Object.keys(all).forEach(function (k) {
@@ -333,8 +333,9 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
       markers.push(mark);
       b.addEventListener("click", function () {
         var st = watchState(l, vm && vm[1], tm ? toSec(tm[1]) : 0);
-        if (st === "done") { delete seen[l.id]; clearProgress(vm && vm[1]); }
-        else { seen[l.id] = 1; clearResume(a.getAttribute("href")); }
+        var allIds = [l.id].concat(l.alsoIds || []);
+        if (st === "done") { allIds.forEach(function (id) { delete seen[id]; }); clearProgress(vm && vm[1]); }
+        else { allIds.forEach(function (id) { seen[id] = 1; }); clearResume(a.getAttribute("href")); }
         save(SEEN_KEY, seen); updateResume();
         // Un « vu » peut révéler (ou re-cacher) le leurre qui suit : on redessine la liste
         lastSig = ""; render(lastData);
@@ -375,7 +376,7 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
       if (m && m.decoy) sec.setAttribute("data-decoy", m.key);
       head.appendChild(el("h2", null, isNaN(dt) ? d.key : dayFmt.format(dt)));
       if (d.match) head.appendChild(el("span", "when", timeFmt.format(dt)));
-      if (d.match && followed.length > 1) head.appendChild(el("span", "team-tag", d.match.teamName || d.match.team || ""));
+      if (d.match && followed.length > 1) head.appendChild(el("span", "team-tag", d.mergedNames ? d.mergedNames.join(" · ") : (d.match.teamName || d.match.team || "")));
       sec.appendChild(head);
       var list = el("div", "links"), byKind = { prevu: [], definitif: [] };
       byKind.map = [];
@@ -394,6 +395,33 @@ body.watching.wide .reopen { display: block; position: fixed; right: max(8px, en
       sec.appendChild(list);
       return sec;
     }
+    // Un même match suivi par plusieurs équipes (vrai match entre elles, ou leurre tombé sur le match d'une autre
+    // équipe suivie) : une seule carte, marquée des noms des équipes. Les deux cas deviennent indiscernables.
+    var skip = {}, groups = {};
+    keys.forEach(function (k) { var m = days[k].match; if (m && m.pid) (groups[m.pid] = groups[m.pid] || []).push(k); });
+    Object.keys(groups).forEach(function (pid) {
+      var ks = groups[pid].filter(function (k) { var m = days[k].match; return !(m.decoy && !decoyHide[tourOf(m)] && revealed(m)); });
+      if (ks.length < 2) return;
+      ks.sort(function (a, b) {
+        var ma = days[a].match, mb = days[b].match;
+        return (ma.decoy ? 1 : 0) - (mb.decoy ? 1 : 0) || (ma.team === "vitality" ? -1 : mb.team === "vitality" ? 1 : 0);
+      });
+      var primary = days[ks[0]];
+      // Ordre des noms toujours le même (Vitality d'abord, puis alphabétique), pour ne pas trahir qui est le leurre
+      primary.mergedNames = ks.map(function (k) { return days[k].match.teamName; }).sort(function (a, b) {
+        return a === "Vitality" ? -1 : b === "Vitality" ? 1 : a.localeCompare(b);
+      });
+      ks.slice(1).forEach(function (k) {
+        skip[k] = 1;
+        days[k].links.forEach(function (o) {
+          var p = primary.links.filter(function (l) { return l.kind === o.kind && (l.map || 0) === (o.map || 0); })[0];
+          if (p) (p.alsoIds = p.alsoIds || []).push(o.id);
+        });
+      });
+    });
+    keys = keys.filter(function (k) { return !skip[k]; });
+    upcoming = upcoming.filter(function (k) { return !skip[k]; });
+
     // Tournois : le plus récent commencé (ou en cours) d'abord, puis ceux qui n'ont pas encore commencé
     var tours = {};
     keys.forEach(function (k) {

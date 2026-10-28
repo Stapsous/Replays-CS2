@@ -111,6 +111,18 @@ function registerTeam(o) {
   else if (!old.image && t.image) { old.image = t.image; regChanged = true; }
 }
 registerTeam({ id: VITALITY, slug: "vitality", name: "Team Vitality", acronym: "VIT" });
+// Équipes ajoutées à la demande, même hors tournois S et A (recherche par nom chez PandaScore, une seule fois)
+const EXTRA = ["GenOne", "Envy"];
+for (const name of EXTRA) {
+  const norm = (x) => String(x || "").toLowerCase().replace(/^team\s+/, "").replace(/[^a-z0-9]/g, "");
+  if ([...reg.values()].some((t) => norm(t.name) === norm(name))) continue;
+  try {
+    const found = await ps("/csgo/teams?search[name]=" + encodeURIComponent(name) + "&per_page=20");
+    const best = found.find((t) => norm(t.name) === norm(name)) || found.find((t) => norm(t.name).includes(norm(name))) || found[0];
+    if (best) { registerTeam(best); console.log("::notice::Équipe ajoutée : " + best.name + " (" + best.id + ")"); }
+    else console.log("::warning::Équipe introuvable chez PandaScore : " + name);
+  } catch (e) { console.log("équipe " + name + " : " + e.message); }
+}
 // Découverte : toutes les équipes des tournois de rang S et A en cours ou à venir
 try {
   const disc = [...remember(await ps("/csgo/matches/running?per_page=100")), ...remember(await ps("/csgo/matches/upcoming?per_page=100&sort=scheduled_at")),
