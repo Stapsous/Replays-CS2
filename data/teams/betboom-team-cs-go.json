@@ -17,7 +17,15 @@
       "prevUntil": "2026-10-29T18:29:40.000Z"
     }
   ],
-  "links": [],
+  "links": [
+    {
+      "id": "2026-10-29-prevu",
+      "match": "2026-10-29",
+      "kind": "prevu",
+      "url": "https://www.twitch.tv/videos/2913765191?t=8h01m56s",
+      "createdAt": "2026-10-29T15:20:55.317Z"
+    }
+  ],
   "team": {
     "id": 133458,
     "slug": "betboom-team-cs-go",
