@@ -7,7 +7,8 @@
       "pid": 1774359,
       "ch": "rtparenacs",
       "prevPid": 1774358,
-      "prevUntil": "2026-10-29T16:14:08.000Z"
+      "prevUntil": "2026-10-29T16:14:08.000Z",
+      "done": true
     },
     {
       "key": "2026-11-02",
@@ -24,6 +25,15 @@
       "ch": "pgl",
       "decoy": true,
       "done": true
+    },
+    {
+      "key": "2026-10-29-3",
+      "start": "2026-10-29T21:15:00Z",
+      "event": "Circuito Retake Season 13 2026",
+      "pid": 1774360,
+      "ch": "rtparenacs",
+      "prevPid": 1774359,
+      "prevUntil": "2026-10-29T22:16:49.000Z"
     }
   ],
   "links": [
@@ -79,7 +89,8 @@
       "match": "2026-10-29",
       "kind": "definitif",
       "url": "https://www.twitch.tv/videos/2913794118?t=8h26m03s",
-      "createdAt": "2026-10-29T17:20:09.572Z"
+      "createdAt": "2026-10-29T17:20:09.572Z",
+      "end": "12h01m52s"
     },
     {
       "id": "2026-10-29-map1",
@@ -102,7 +113,7 @@
       "match": "2026-10-29",
       "kind": "map",
       "map": 3,
-      "url": "https://www.twitch.tv/videos/2913794118?t=8h26m03s",
+      "url": "https://www.twitch.tv/videos/2913794118?t=11h21m44s",
       "createdAt": "2026-10-29T17:20:09.572Z"
     }
   ],
