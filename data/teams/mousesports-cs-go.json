@@ -26,7 +26,15 @@
       "prevUntil": "2026-10-29T15:23:51.000Z"
     }
   ],
-  "links": [],
+  "links": [
+    {
+      "id": "2026-10-29-prevu",
+      "match": "2026-10-29",
+      "kind": "prevu",
+      "url": "https://www.twitch.tv/videos/2913765191?t=6h06m56s",
+      "createdAt": "2026-10-29T13:26:46.446Z"
+    }
+  ],
   "team": {
     "id": 3240,
     "slug": "mousesports-cs-go",
