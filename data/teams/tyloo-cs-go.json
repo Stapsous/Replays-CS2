@@ -25,7 +25,15 @@
       "decoy": true
     }
   ],
-  "links": [],
+  "links": [
+    {
+      "id": "2026-10-29-2-prevu",
+      "match": "2026-10-29-2",
+      "kind": "prevu",
+      "url": "https://www.twitch.tv/videos/2913765191?t=0h41m56s",
+      "createdAt": "2026-10-29T08:02:43.644Z"
+    }
+  ],
   "team": {
     "id": 3248,
     "slug": "tyloo-cs-go",

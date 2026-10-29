@@ -23,7 +23,15 @@
       "decoy": true
     }
   ],
-  "links": [],
+  "links": [
+    {
+      "id": "2026-10-29-prevu",
+      "match": "2026-10-29",
+      "kind": "prevu",
+      "url": "https://www.twitch.tv/videos/2913765191?t=0h41m56s",
+      "createdAt": "2026-10-29T08:02:43.644Z"
+    }
+  ],
   "team": {
     "id": 133708,
     "slug": "legacy-48cb0f61-07e7-4b0d-85a0-5f837e29c807",

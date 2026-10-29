@@ -16,7 +16,15 @@
       "decoy": true
     }
   ],
-  "links": [],
+  "links": [
+    {
+      "id": "2026-10-29-prevu",
+      "match": "2026-10-29",
+      "kind": "prevu",
+      "url": "https://www.twitch.tv/videos/2913765191?t=0h41m56s",
+      "createdAt": "2026-10-29T08:02:43.644Z"
+    }
+  ],
   "team": {
     "id": 126709,
     "slug": "9z",
