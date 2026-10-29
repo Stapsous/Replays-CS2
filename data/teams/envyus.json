@@ -13,6 +13,15 @@
       "event": "Tesla Cup 2026",
       "pid": 1763056,
       "ch": ""
+    },
+    {
+      "key": "2026-10-29",
+      "start": "2026-10-29T18:00:00Z",
+      "event": "Tesla Cup 2026",
+      "pid": 1763059,
+      "ch": "",
+      "decoy": true,
+      "after": "2026-10-28-2"
     }
   ],
   "links": [],
