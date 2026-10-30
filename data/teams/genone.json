@@ -6,6 +6,15 @@
       "event": "CCT Europe Series #12 2026",
       "pid": 1746814,
       "ch": "betboom_cs_ru4"
+    },
+    {
+      "key": "2026-10-31",
+      "start": "2026-10-31T09:00:00Z",
+      "event": "CCT Europe Series #12 2026",
+      "pid": 1746838,
+      "ch": "betboom_cs_ru4",
+      "decoy": true,
+      "after": "2026-10-30"
     }
   ],
   "links": [],
