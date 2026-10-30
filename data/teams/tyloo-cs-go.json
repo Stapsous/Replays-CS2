@@ -35,6 +35,16 @@
       "prevPid": 1774359,
       "prevUntil": "2026-10-29T22:16:49.000Z",
       "done": true
+    },
+    {
+      "key": "2026-10-30",
+      "start": "2026-10-30T09:20:00Z",
+      "event": "Circuito Retake Season 13 2026",
+      "pid": 1774350,
+      "ch": "rtparenacs",
+      "decoy": true,
+      "after": "2026-10-29-3",
+      "done": true
     }
   ],
   "links": [
@@ -156,6 +166,22 @@
       "url": "https://www.twitch.tv/videos/2913794118?t=14h04m20s",
       "createdAt": "2026-10-29T21:29:30.899Z",
       "unplayed": true
+    },
+    {
+      "id": "2026-10-30-definitif",
+      "match": "2026-10-30",
+      "kind": "definitif",
+      "url": "https://www.twitch.tv/videos/2914676897?t=0h29m25s",
+      "createdAt": "2026-10-30T11:58:50.185Z",
+      "end": "0h58m46s"
+    },
+    {
+      "id": "2026-10-30-map1",
+      "match": "2026-10-30",
+      "kind": "map",
+      "map": 1,
+      "url": "https://www.twitch.tv/videos/2914676897?t=0h29m57s",
+      "createdAt": "2026-10-30T11:58:50.185Z"
     }
   ],
   "team": {
