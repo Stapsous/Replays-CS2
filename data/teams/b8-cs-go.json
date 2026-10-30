@@ -28,7 +28,8 @@
       "start": "2026-10-29T15:20:00Z",
       "event": "Tesla Cup 2026",
       "pid": 1763060,
-      "ch": ""
+      "ch": "",
+      "done": true
     }
   ],
   "links": [],
