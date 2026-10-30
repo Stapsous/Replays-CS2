@@ -2,10 +2,12 @@
   "matches": [
     {
       "key": "2026-11-02",
-      "start": "2026-11-02T07:00:00Z",
+      "start": "2026-11-02T04:30:00Z",
       "event": "IEM Beijing 2026",
       "pid": 1761578,
-      "ch": "eslcs"
+      "ch": "eslcs",
+      "prevPid": 1761571,
+      "prevUntil": "2026-11-02T07:00:00.000Z"
     }
   ],
   "links": [],
