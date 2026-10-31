@@ -191,6 +191,13 @@
       "map": 1,
       "url": "https://www.twitch.tv/videos/2914676897?t=0h29m57s",
       "createdAt": "2026-10-30T11:58:50.185Z"
+    },
+    {
+      "id": "2026-10-31-prevu",
+      "match": "2026-10-31",
+      "kind": "prevu",
+      "url": "https://www.twitch.tv/videos/2914676897?t=28h12m09s",
+      "createdAt": "2026-10-31T13:02:33.671Z"
     }
   ],
   "team": {
