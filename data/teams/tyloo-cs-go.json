@@ -47,6 +47,13 @@
       "decoy": true,
       "after": "2026-10-29-3",
       "done": true
+    },
+    {
+      "key": "2026-10-31",
+      "start": "2026-10-31T13:00:00Z",
+      "event": "Circuito Retake Season 13 2026",
+      "pid": 1774412,
+      "ch": "rtparenacs"
     }
   ],
   "links": [
