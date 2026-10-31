@@ -38,7 +38,8 @@
       "decoy": true,
       "after": "2026-10-30",
       "prevPid": 1753689,
-      "prevUntil": "2026-10-31T13:03:32.000Z"
+      "prevUntil": "2026-10-31T13:03:32.000Z",
+      "done": true
     }
   ],
   "links": [
@@ -120,7 +121,8 @@
       "match": "2026-10-31",
       "kind": "definitif",
       "url": "https://www.twitch.tv/videos/2915569629?t=3h48m28s",
-      "createdAt": "2026-10-31T11:03:32.040Z"
+      "createdAt": "2026-10-31T11:03:32.040Z",
+      "end": "8h28m17s"
     },
     {
       "id": "2026-10-31-map1",
@@ -151,7 +153,7 @@
       "match": "2026-10-31",
       "kind": "map",
       "map": 4,
-      "url": "https://www.twitch.tv/videos/2915569629?t=3h48m28s",
+      "url": "https://www.twitch.tv/videos/2915569629?t=6h40m21s",
       "createdAt": "2026-10-31T11:03:32.040Z"
     },
     {
@@ -159,7 +161,7 @@
       "match": "2026-10-31",
       "kind": "map",
       "map": 5,
-      "url": "https://www.twitch.tv/videos/2915569629?t=3h48m28s",
+      "url": "https://www.twitch.tv/videos/2915569629?t=7h47m30s",
       "createdAt": "2026-10-31T11:03:32.040Z"
     }
   ],
