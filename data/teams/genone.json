@@ -18,6 +18,15 @@
       "after": "2026-10-30",
       "prevPid": 1746839,
       "prevUntil": "2026-10-31T14:05:20.000Z"
+    },
+    {
+      "key": "2026-11-01",
+      "start": "2026-11-01T17:00:00Z",
+      "event": "CCT Europe Series #12 2026",
+      "pid": 1746844,
+      "ch": "betboom_cs_ru4",
+      "decoy": true,
+      "after": "2026-10-31"
     }
   ],
   "links": [],
