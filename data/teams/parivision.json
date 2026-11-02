@@ -10,7 +10,39 @@
       "prevUntil": "2026-11-02T07:05:41.000Z"
     }
   ],
-  "links": [],
+  "links": [
+    {
+      "id": "2026-11-02-definitif",
+      "match": "2026-11-02",
+      "kind": "definitif",
+      "url": "https://www.twitch.tv/videos/2917219337?t=4h11m07s",
+      "createdAt": "2026-11-02T05:34:16.228Z"
+    },
+    {
+      "id": "2026-11-02-map1",
+      "match": "2026-11-02",
+      "kind": "map",
+      "map": 1,
+      "url": "https://www.twitch.tv/videos/2917219337?t=4h11m37s",
+      "createdAt": "2026-11-02T05:34:16.228Z"
+    },
+    {
+      "id": "2026-11-02-map2",
+      "match": "2026-11-02",
+      "kind": "map",
+      "map": 2,
+      "url": "https://www.twitch.tv/videos/2917219337?t=4h11m07s",
+      "createdAt": "2026-11-02T05:34:16.228Z"
+    },
+    {
+      "id": "2026-11-02-map3",
+      "match": "2026-11-02",
+      "kind": "map",
+      "map": 3,
+      "url": "https://www.twitch.tv/videos/2917219337?t=4h11m07s",
+      "createdAt": "2026-11-02T05:34:16.228Z"
+    }
+  ],
   "team": {
     "id": 133719,
     "slug": "parivision",
