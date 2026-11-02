@@ -26,7 +26,15 @@
       "done": true
     }
   ],
-  "links": [],
+  "links": [
+    {
+      "id": "2026-11-02-prevu",
+      "match": "2026-11-02",
+      "kind": "prevu",
+      "url": "https://www.twitch.tv/videos/2917219337?t=7h25m04s",
+      "createdAt": "2026-11-02T08:45:40.709Z"
+    }
+  ],
   "team": {
     "id": 3212,
     "slug": "faze",
