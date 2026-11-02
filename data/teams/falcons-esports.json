@@ -19,7 +19,15 @@
       "prevUntil": "2026-11-11T08:00:00.000Z"
     }
   ],
-  "links": [],
+  "links": [
+    {
+      "id": "2026-11-02-prevu",
+      "match": "2026-11-02",
+      "kind": "prevu",
+      "url": "https://www.twitch.tv/videos/2917219337?t=10h25m04s",
+      "createdAt": "2026-11-02T11:45:57.366Z"
+    }
+  ],
   "team": {
     "id": 130564,
     "slug": "falcons-esports",
