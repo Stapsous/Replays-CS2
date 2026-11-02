@@ -56,6 +56,15 @@
       "pid": 1774412,
       "ch": "rtparenacs",
       "done": true
+    },
+    {
+      "key": "2026-11-03",
+      "start": "2026-11-03T04:30:00Z",
+      "event": "IEM Beijing 2026",
+      "pid": 1781472,
+      "ch": "eslcs",
+      "prevPid": 1781473,
+      "prevUntil": "2026-11-03T07:00:00.000Z"
     }
   ],
   "links": [
