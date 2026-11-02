@@ -5,7 +5,8 @@
       "start": "2026-11-02T02:00:00Z",
       "event": "IEM Beijing 2026",
       "pid": 1761567,
-      "ch": "eslcs"
+      "ch": "eslcs",
+      "done": true
     },
     {
       "key": "2026-11-11",
@@ -180,7 +181,8 @@
       "match": "2026-11-02",
       "kind": "definitif",
       "url": "https://www.twitch.tv/videos/2917219337?t=0h45m45s",
-      "createdAt": "2026-11-02T02:06:11.193Z"
+      "createdAt": "2026-11-02T02:06:11.193Z",
+      "end": "3h50m16s"
     },
     {
       "id": "2026-11-02-map1",
@@ -203,7 +205,7 @@
       "match": "2026-11-02",
       "kind": "map",
       "map": 3,
-      "url": "https://www.twitch.tv/videos/2917219337?t=0h45m45s",
+      "url": "https://www.twitch.tv/videos/2917219337?t=3h01m04s",
       "createdAt": "2026-11-02T02:06:11.193Z"
     }
   ],
