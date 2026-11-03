@@ -41,6 +41,15 @@
       "prevPid": 1781462,
       "prevUntil": "2026-11-03T15:14:36.000Z",
       "done": true
+    },
+    {
+      "key": "2026-11-04",
+      "start": "2026-11-04T04:30:00Z",
+      "event": "IEM Beijing 2026",
+      "pid": 1781466,
+      "ch": "eslcs",
+      "prevPid": 1781475,
+      "prevUntil": "2026-11-04T07:00:00.000Z"
     }
   ],
   "links": [
