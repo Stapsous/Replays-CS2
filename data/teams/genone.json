@@ -27,7 +27,15 @@
       "pid": 1746844,
       "ch": "betboom_cs_ru4",
       "decoy": true,
-      "after": "2026-10-31"
+      "after": "2026-10-31",
+      "done": true
+    },
+    {
+      "key": "2026-11-03",
+      "start": "2026-11-03T12:00:00Z",
+      "event": "Exort Fiesta Season 3 2026",
+      "pid": 1788005,
+      "ch": ""
     }
   ],
   "links": [],
