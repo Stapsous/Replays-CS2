@@ -54,7 +54,8 @@
       "pid": 1781469,
       "ch": "eslcs",
       "prevPid": 1781472,
-      "prevUntil": "2026-11-03T09:34:05.000Z"
+      "prevUntil": "2026-11-03T09:34:05.000Z",
+      "done": true
     }
   ],
   "links": [
@@ -222,7 +223,8 @@
       "match": "2026-11-03",
       "kind": "definitif",
       "url": "https://www.twitch.tv/videos/2918072330?t=4h44m46s",
-      "createdAt": "2026-11-03T06:02:49.815Z"
+      "createdAt": "2026-11-03T06:02:49.815Z",
+      "end": "6h38m41s"
     },
     {
       "id": "2026-11-03-map1",
@@ -245,8 +247,9 @@
       "match": "2026-11-03",
       "kind": "map",
       "map": 3,
-      "url": "https://www.twitch.tv/videos/2918072330?t=4h44m46s",
-      "createdAt": "2026-11-03T06:02:49.815Z"
+      "url": "https://www.twitch.tv/videos/2918072330?t=6h39m11s",
+      "createdAt": "2026-11-03T06:02:49.815Z",
+      "unplayed": true
     }
   ],
   "team": {
