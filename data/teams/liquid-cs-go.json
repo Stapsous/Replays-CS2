@@ -72,6 +72,13 @@
       "ch": "eslcs",
       "prevPid": 1781467,
       "prevUntil": "2026-11-04T07:00:00.000Z"
+    },
+    {
+      "key": "2026-11-24",
+      "start": "2026-11-24T09:00:00Z",
+      "event": "PGL Major Singapore 2026",
+      "pid": 1789260,
+      "ch": "pgl"
     }
   ],
   "links": [
