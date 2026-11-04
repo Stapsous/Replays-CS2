@@ -36,6 +36,13 @@
       "event": "PGL Major Singapore 2026",
       "pid": 1789259,
       "ch": "pgl"
+    },
+    {
+      "key": "2026-11-06",
+      "start": "2026-11-06T06:30:00Z",
+      "event": "IEM Beijing 2026",
+      "pid": 1781482,
+      "ch": "eslcs"
     }
   ],
   "links": [
