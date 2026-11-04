@@ -83,7 +83,8 @@
       "pid": 1781468,
       "ch": "eslcs",
       "prevPid": 1781476,
-      "prevUntil": "2026-11-04T12:04:32.000Z"
+      "prevUntil": "2026-11-04T12:04:32.000Z",
+      "done": true
     }
   ],
   "links": [
@@ -355,7 +356,8 @@
       "match": "2026-11-04-2",
       "kind": "definitif",
       "url": "https://www.twitch.tv/videos/2918946402?t=9h06m02s",
-      "createdAt": "2026-11-04T10:23:50.910Z"
+      "createdAt": "2026-11-04T10:23:50.910Z",
+      "end": "11h50m11s"
     },
     {
       "id": "2026-11-04-2-map1",
@@ -378,7 +380,7 @@
       "match": "2026-11-04-2",
       "kind": "map",
       "map": 3,
-      "url": "https://www.twitch.tv/videos/2918946402?t=9h06m02s",
+      "url": "https://www.twitch.tv/videos/2918946402?t=11h12m00s",
       "createdAt": "2026-11-04T10:23:50.910Z"
     }
   ],
