@@ -35,7 +35,8 @@
       "start": "2026-11-03T12:00:00Z",
       "event": "Exort Fiesta Season 3 2026",
       "pid": 1788005,
-      "ch": ""
+      "ch": "",
+      "done": true
     },
     {
       "key": "2026-11-05",
