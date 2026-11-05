@@ -53,7 +53,15 @@
       "ch": "bolt_ru"
     }
   ],
-  "links": [],
+  "links": [
+    {
+      "id": "2026-11-05-2-prevu",
+      "match": "2026-11-05-2",
+      "kind": "prevu",
+      "url": "https://www.twitch.tv/videos/2920077184?t=0h32m59s",
+      "createdAt": "2026-11-05T09:02:01.731Z"
+    }
+  ],
   "team": {
     "id": 128519,
     "slug": "genone",
