@@ -52,6 +52,15 @@
       "pid": 1786799,
       "ch": "bolt_ru",
       "done": true
+    },
+    {
+      "key": "2026-11-06",
+      "start": "2026-11-06T12:00:00Z",
+      "event": "CCT Europe Series #13 2026",
+      "pid": 1786801,
+      "ch": "bolt_ru",
+      "prevPid": 1786800,
+      "prevUntil": "2026-11-06T14:00:00.000Z"
     }
   ],
   "links": [
