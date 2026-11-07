@@ -73,6 +73,15 @@
       "decoy": true,
       "after": "2026-11-05",
       "done": true
+    },
+    {
+      "key": "2026-11-08",
+      "start": "2026-11-08T18:00:00Z",
+      "event": "CCT Europe Series #13 2026",
+      "pid": 1786811,
+      "ch": "bolt_ru",
+      "prevPid": 1786810,
+      "prevUntil": "2026-11-08T20:00:00.000Z"
     }
   ],
   "links": [
