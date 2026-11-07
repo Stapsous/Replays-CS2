@@ -101,6 +101,13 @@
       "pid": 1781484,
       "ch": "eslcs",
       "done": true
+    },
+    {
+      "key": "2026-11-08",
+      "start": "2026-11-08T04:00:00Z",
+      "event": "IEM Beijing 2026",
+      "pid": 1781487,
+      "ch": "eslcs"
     }
   ],
   "links": [

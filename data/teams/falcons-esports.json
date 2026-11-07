@@ -68,6 +68,17 @@
       "decoy": true,
       "after": "2026-11-06",
       "done": true
+    },
+    {
+      "key": "2026-11-08",
+      "start": "2026-11-08T07:30:00Z",
+      "event": "IEM Beijing 2026",
+      "pid": 1781486,
+      "ch": "eslcs",
+      "decoy": true,
+      "after": "2026-11-07",
+      "prevPid": 1781487,
+      "prevUntil": "2026-11-08T09:00:00.000Z"
     }
   ],
   "links": [
