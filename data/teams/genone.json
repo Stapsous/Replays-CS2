@@ -81,7 +81,8 @@
       "pid": 1786811,
       "ch": "bolt_ru",
       "prevPid": 1786810,
-      "prevUntil": "2026-11-08T20:00:00.000Z"
+      "prevUntil": "2026-11-08T20:00:00.000Z",
+      "done": true
     }
   ],
   "links": [
@@ -167,7 +168,8 @@
       "match": "2026-11-08",
       "kind": "definitif",
       "url": "https://www.twitch.tv/videos/2922961529?t=9h43m59s",
-      "createdAt": "2026-11-08T18:16:09.337Z"
+      "createdAt": "2026-11-08T18:16:09.337Z",
+      "end": "11h03m31s"
     },
     {
       "id": "2026-11-08-map1",
@@ -190,8 +192,9 @@
       "match": "2026-11-08",
       "kind": "map",
       "map": 3,
-      "url": "https://www.twitch.tv/videos/2922961529?t=9h43m59s",
-      "createdAt": "2026-11-08T18:16:09.337Z"
+      "url": "https://www.twitch.tv/videos/2922961529?t=11h04m01s",
+      "createdAt": "2026-11-08T18:16:09.337Z",
+      "unplayed": true
     }
   ],
   "team": {
