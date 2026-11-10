@@ -110,6 +110,15 @@
       "event": "CCT Europe Series #13 2026",
       "pid": 1786819,
       "ch": "bolt_ru"
+    },
+    {
+      "key": "2026-11-11-2",
+      "start": "2026-11-11T09:00:00Z",
+      "event": "NODWIN Clutch Series Season 14 2026",
+      "pid": 1796477,
+      "ch": "",
+      "decoy": true,
+      "after": "2026-11-10"
     }
   ],
   "links": [
