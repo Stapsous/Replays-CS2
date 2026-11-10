@@ -99,7 +99,9 @@
       "start": "2026-11-10T18:00:00Z",
       "event": "NODWIN Clutch Series Season 14 2026",
       "pid": 1796476,
-      "ch": ""
+      "ch": "scoresight",
+      "prevPid": 1796475,
+      "prevUntil": "2026-11-10T20:05:19.000Z"
     },
     {
       "key": "2026-11-11",
@@ -226,6 +228,13 @@
       "kind": "prevu",
       "url": "https://www.twitch.tv/videos/2923896055?t=0h29m44s",
       "createdAt": "2026-11-09T09:05:04.858Z"
+    },
+    {
+      "id": "2026-11-10-prevu",
+      "match": "2026-11-10",
+      "kind": "prevu",
+      "url": "https://www.twitch.tv/videos/2912029116?t=345h26m12s",
+      "createdAt": "2026-11-10T18:07:55.074Z"
     }
   ],
   "team": {
