@@ -91,7 +91,8 @@
       "pid": 1786812,
       "ch": "bolt_ru",
       "decoy": true,
-      "after": "2026-11-08"
+      "after": "2026-11-08",
+      "done": true
     },
     {
       "key": "2026-11-10",
