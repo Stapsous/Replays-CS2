@@ -92,6 +92,20 @@
       "ch": "bolt_ru",
       "decoy": true,
       "after": "2026-11-08"
+    },
+    {
+      "key": "2026-11-10",
+      "start": "2026-11-10T18:00:00Z",
+      "event": "NODWIN Clutch Series Season 14 2026",
+      "pid": 1796476,
+      "ch": ""
+    },
+    {
+      "key": "2026-11-11",
+      "start": "2026-11-11T12:00:00Z",
+      "event": "CCT Europe Series #13 2026",
+      "pid": 1786819,
+      "ch": "bolt_ru"
     }
   ],
   "links": [
