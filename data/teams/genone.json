@@ -101,7 +101,8 @@
       "pid": 1796476,
       "ch": "scoresight",
       "prevPid": 1796475,
-      "prevUntil": "2026-11-10T20:05:19.000Z"
+      "prevUntil": "2026-11-10T20:05:19.000Z",
+      "done": true
     },
     {
       "key": "2026-11-11",
@@ -241,7 +242,8 @@
       "match": "2026-11-10",
       "kind": "definitif",
       "url": "https://www.twitch.tv/videos/2912029116?t=345h36m29s",
-      "createdAt": "2026-11-10T18:13:07.857Z"
+      "createdAt": "2026-11-10T18:13:07.857Z",
+      "end": "348h13m32s"
     },
     {
       "id": "2026-11-10-map1",
@@ -264,7 +266,7 @@
       "match": "2026-11-10",
       "kind": "map",
       "map": 3,
-      "url": "https://www.twitch.tv/videos/2912029116?t=345h36m29s",
+      "url": "https://www.twitch.tv/videos/2912029116?t=347h24m37s",
       "createdAt": "2026-11-10T18:13:07.857Z"
     }
   ],
