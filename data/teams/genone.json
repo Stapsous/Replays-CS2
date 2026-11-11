@@ -120,6 +120,13 @@
       "ch": "scoresight",
       "decoy": true,
       "after": "2026-11-10"
+    },
+    {
+      "key": "2026-11-12",
+      "start": "2026-11-12T12:00:00Z",
+      "event": "CCT Europe Series #13 2026",
+      "pid": 1786822,
+      "ch": "bolt_ru"
     }
   ],
   "links": [
