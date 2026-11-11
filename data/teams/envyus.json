@@ -25,6 +25,15 @@
       "decoy": true,
       "after": "2026-10-28-2",
       "done": true
+    },
+    {
+      "key": "2026-11-17",
+      "start": "2026-11-17T19:00:00Z",
+      "event": "Tipsport RUSH Brno 2026",
+      "pid": 1805732,
+      "ch": "playzoneup",
+      "prevPid": 1805731,
+      "prevUntil": "2026-11-17T21:00:00.000Z"
     }
   ],
   "links": [],
