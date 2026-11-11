@@ -13,7 +13,8 @@
       "start": "2026-11-11T02:00:00Z",
       "event": "BLAST Rivals Fall 2026",
       "pid": 1762450,
-      "ch": "blastpremier"
+      "ch": "blastpremier",
+      "done": true
     },
     {
       "key": "2026-10-29",
@@ -470,7 +471,8 @@
       "match": "2026-11-11",
       "kind": "definitif",
       "url": "https://www.twitch.tv/videos/2925434857?t=0h36m12s",
-      "createdAt": "2026-11-11T02:02:36.362Z"
+      "createdAt": "2026-11-11T02:02:36.362Z",
+      "end": "2h39m41s"
     },
     {
       "id": "2026-11-11-map1",
@@ -493,8 +495,9 @@
       "match": "2026-11-11",
       "kind": "map",
       "map": 3,
-      "url": "https://www.twitch.tv/videos/2925434857?t=0h36m12s",
-      "createdAt": "2026-11-11T02:02:36.362Z"
+      "url": "https://www.twitch.tv/videos/2925434857?t=2h40m11s",
+      "createdAt": "2026-11-11T02:02:36.362Z",
+      "unplayed": true
     }
   ],
   "team": {
