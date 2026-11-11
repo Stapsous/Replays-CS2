@@ -116,7 +116,7 @@
       "start": "2026-11-11T09:00:00Z",
       "event": "NODWIN Clutch Series Season 14 2026",
       "pid": 1796477,
-      "ch": "",
+      "ch": "scoresight",
       "decoy": true,
       "after": "2026-11-10"
     }
