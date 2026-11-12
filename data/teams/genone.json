@@ -126,7 +126,8 @@
       "start": "2026-11-12T12:00:00Z",
       "event": "CCT Europe Series #13 2026",
       "pid": 1786822,
-      "ch": "bolt_ru"
+      "ch": "bolt_ru",
+      "done": true
     },
     {
       "key": "2026-11-13",
@@ -340,7 +341,8 @@
       "match": "2026-11-12",
       "kind": "definitif",
       "url": "https://www.twitch.tv/videos/2926642166?t=0h40m43s",
-      "createdAt": "2026-11-12T12:12:28.892Z"
+      "createdAt": "2026-11-12T12:12:28.892Z",
+      "end": "3h41m42s"
     },
     {
       "id": "2026-11-12-map1",
@@ -363,7 +365,7 @@
       "match": "2026-11-12",
       "kind": "map",
       "map": 3,
-      "url": "https://www.twitch.tv/videos/2926642166?t=0h40m43s",
+      "url": "https://www.twitch.tv/videos/2926642166?t=3h09m47s",
       "createdAt": "2026-11-12T12:12:28.892Z"
     }
   ],
