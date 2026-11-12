@@ -61,7 +61,8 @@
       "pid": 1762462,
       "ch": "blastpremier",
       "prevPid": 1762461,
-      "prevUntil": "2026-11-12T11:59:20.000Z"
+      "prevUntil": "2026-11-12T11:59:20.000Z",
+      "done": true
     }
   ],
   "links": [
@@ -275,7 +276,8 @@
       "match": "2026-11-12",
       "kind": "definitif",
       "url": "https://www.twitch.tv/videos/2926353119?t=9h26m53s",
-      "createdAt": "2026-11-12T10:49:07.510Z"
+      "createdAt": "2026-11-12T10:49:07.510Z",
+      "end": "12h29m01s"
     },
     {
       "id": "2026-11-12-map1",
@@ -298,7 +300,7 @@
       "match": "2026-11-12",
       "kind": "map",
       "map": 3,
-      "url": "https://www.twitch.tv/videos/2926353119?t=9h26m53s",
+      "url": "https://www.twitch.tv/videos/2926353119?t=11h49m16s",
       "createdAt": "2026-11-12T10:49:07.510Z"
     }
   ],
