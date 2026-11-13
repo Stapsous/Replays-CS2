@@ -132,7 +132,7 @@
     },
     {
       "key": "2026-11-13",
-      "start": "2026-11-13T12:00:00Z",
+      "start": "2026-11-13T12:10:00Z",
       "event": "NODWIN Clutch Series Season 14 2026",
       "pid": 1796487,
       "ch": "scoresight",
@@ -146,7 +146,8 @@
       "pid": 1786825,
       "ch": "bolt_ru",
       "decoy": true,
-      "after": "2026-11-12"
+      "after": "2026-11-12",
+      "done": true
     }
   ],
   "links": [
@@ -390,7 +391,8 @@
       "match": "2026-11-13-2",
       "kind": "definitif",
       "url": "https://www.twitch.tv/videos/2927462647?t=0h23m44s",
-      "createdAt": "2026-11-13T09:09:46.251Z"
+      "createdAt": "2026-11-13T09:09:46.251Z",
+      "end": "3h26m20s"
     },
     {
       "id": "2026-11-13-2-map1",
@@ -413,7 +415,7 @@
       "match": "2026-11-13-2",
       "kind": "map",
       "map": 3,
-      "url": "https://www.twitch.tv/videos/2927462647?t=0h23m44s",
+      "url": "https://www.twitch.tv/videos/2927462647?t=2h49m19s",
       "createdAt": "2026-11-13T09:09:46.251Z"
     }
   ],
