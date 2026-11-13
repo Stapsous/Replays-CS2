@@ -155,6 +155,15 @@
       "event": "European Pro League Season 10 2026",
       "pid": 1803635,
       "ch": ""
+    },
+    {
+      "key": "2026-11-14-2",
+      "start": "2026-11-14T18:00:00Z",
+      "event": "NODWIN Clutch Series Season 14 2026",
+      "pid": 1796492,
+      "ch": "scoresight",
+      "prevPid": 1796491,
+      "prevUntil": "2026-11-14T20:00:00.000Z"
     }
   ],
   "links": [
