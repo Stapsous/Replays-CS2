@@ -148,6 +148,13 @@
       "decoy": true,
       "after": "2026-11-12",
       "done": true
+    },
+    {
+      "key": "2026-11-14",
+      "start": "2026-11-14T09:00:00Z",
+      "event": "European Pro League Season 10 2026",
+      "pid": 1803635,
+      "ch": ""
     }
   ],
   "links": [
