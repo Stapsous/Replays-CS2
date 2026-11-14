@@ -1,0 +1,19 @@
+{
+  "matches": [
+    {
+      "key": "2026-11-24",
+      "start": "2026-11-24T04:00:00Z",
+      "event": "PGL Major Singapore 2026",
+      "pid": 1789254,
+      "ch": "pgl"
+    }
+  ],
+  "links": [],
+  "team": {
+    "id": 126439,
+    "slug": "lynn-vision",
+    "name": "Lynn Vision",
+    "acronym": "LVG",
+    "image": "https://cdn-api.pandascore.co/images/team/image/126439/800px_lynn_vision_gaming_2024_allmode.png"
+  }
+}
