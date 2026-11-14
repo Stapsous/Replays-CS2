@@ -164,6 +164,15 @@
       "ch": "scoresight",
       "prevPid": 1796490,
       "prevUntil": "2026-11-14T20:00:00.000Z"
+    },
+    {
+      "key": "2026-11-15",
+      "start": "2026-11-15T09:00:00Z",
+      "event": "European Pro League Season 10 2026",
+      "pid": 1803637,
+      "ch": "",
+      "decoy": true,
+      "after": "2026-11-14"
     }
   ],
   "links": [
