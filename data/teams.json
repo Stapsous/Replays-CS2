@@ -50,6 +50,13 @@
       "image": "https://cdn-api.pandascore.co/images/team/image/134264/222px_cw_allmode.png"
     },
     {
+      "id": 138988,
+      "slug": "dendele-cs",
+      "name": "DENDELE CS",
+      "acronym": "DEN",
+      "image": "https://cdn-api.pandascore.co/images/team/image/138988/454px_dendele_cs_allmode.png"
+    },
+    {
       "id": 3222,
       "slug": "envyus",
       "name": "Envy",
@@ -174,6 +181,13 @@
       "name": "PARIVISION",
       "acronym": "PRV",
       "image": "https://cdn-api.pandascore.co/images/team/image/133719/250px_parivision_allmode.png"
+    },
+    {
+      "id": 139565,
+      "slug": "pvision",
+      "name": "PVISION",
+      "acronym": "PV",
+      "image": "https://cdn-api.pandascore.co/images/team/image/139565/250px_parivision_allmode.png"
     },
     {
       "id": 124523,

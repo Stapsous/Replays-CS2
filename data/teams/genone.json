@@ -137,7 +137,8 @@
       "pid": 1796487,
       "ch": "scoresight",
       "prevPid": 1796485,
-      "prevUntil": "2026-11-13T14:04:22.000Z"
+      "prevUntil": "2026-11-13T14:04:22.000Z",
+      "done": true
     },
     {
       "key": "2026-11-13-2",
