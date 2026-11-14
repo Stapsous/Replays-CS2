@@ -90,6 +90,15 @@
       "prevPid": 1781487,
       "prevUntil": "2026-11-08T09:06:00.000Z",
       "done": true
+    },
+    {
+      "key": "2026-11-15",
+      "start": "2026-11-15T12:00:00Z",
+      "event": "PGL Cluj-Napoca: Closed Qualifier 2027",
+      "pid": 1796528,
+      "ch": "pgl",
+      "prevPid": 1796527,
+      "prevUntil": "2026-11-15T14:00:00.000Z"
     }
   ],
   "links": [
