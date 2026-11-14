@@ -1,0 +1,21 @@
+{
+  "matches": [
+    {
+      "key": "2026-11-24",
+      "start": "2026-11-24T05:00:00Z",
+      "event": "PGL Major Singapore 2026",
+      "pid": 1789258,
+      "ch": "pgl",
+      "prevPid": 1789257,
+      "prevUntil": "2026-11-24T06:00:00.000Z"
+    }
+  ],
+  "links": [],
+  "team": {
+    "id": 133435,
+    "slug": "m80-cs-go",
+    "name": "M80",
+    "acronym": "M80",
+    "image": "https://cdn-api.pandascore.co/images/team/image/133435/788px_m80_2023_allmode.png"
+  }
+}
