@@ -64,11 +64,25 @@
       "image": "https://cdn-api.pandascore.co/images/team/image/3222/600px_team_envy_2018_lightmode.png"
     },
     {
+      "id": 129413,
+      "slug": "eternal-fire",
+      "name": "Eternal Fire",
+      "acronym": "EF",
+      "image": "https://cdn-api.pandascore.co/images/team/image/129413/800px_eternal_fire_2023_allmode.png"
+    },
+    {
       "id": 3212,
       "slug": "faze",
       "name": "FaZe",
       "acronym": "FaZe",
       "image": "https://cdn-api.pandascore.co/images/team/image/3212/285px_fa_ze_esports_october_2025_lightmode.png"
+    },
+    {
+      "id": 134746,
+      "slug": "flyquest-cs-go",
+      "name": "FlyQuest",
+      "acronym": "FLY",
+      "image": "https://cdn-api.pandascore.co/images/team/image/134746/fly_questlogo_square.png"
     },
     {
       "id": 124530,
@@ -216,6 +230,13 @@
       "name": "TYLOO",
       "acronym": "TYLOO",
       "image": "https://cdn-api.pandascore.co/images/team/image/3248/TYLOO.png"
+    },
+    {
+      "id": 135273,
+      "slug": "wildcard",
+      "name": "Wildcard",
+      "acronym": "WC",
+      "image": "https://cdn-api.pandascore.co/images/team/image/135273/188px_wildcard_2024_lightmode.png"
     }
   ]
 }

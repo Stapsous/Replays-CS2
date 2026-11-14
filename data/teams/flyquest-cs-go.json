@@ -1,0 +1,21 @@
+{
+  "matches": [
+    {
+      "key": "2026-11-24",
+      "start": "2026-11-24T07:00:00Z",
+      "event": "PGL Major Singapore 2026",
+      "pid": 1789255,
+      "ch": "pgl",
+      "prevPid": 1789260,
+      "prevUntil": "2026-11-24T08:00:00.000Z"
+    }
+  ],
+  "links": [],
+  "team": {
+    "id": 134746,
+    "slug": "flyquest-cs-go",
+    "name": "FlyQuest",
+    "acronym": "FLY",
+    "image": "https://cdn-api.pandascore.co/images/team/image/134746/fly_questlogo_square.png"
+  }
+}
