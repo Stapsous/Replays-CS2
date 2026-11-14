@@ -1,0 +1,19 @@
+{
+  "matches": [
+    {
+      "key": "2026-11-24",
+      "start": "2026-11-24T04:00:00Z",
+      "event": "PGL Major Singapore 2026",
+      "pid": 1789257,
+      "ch": "pgl"
+    }
+  ],
+  "links": [],
+  "team": {
+    "id": 126377,
+    "slug": "imperial-cs-go",
+    "name": "Imperial",
+    "acronym": "IMP",
+    "image": "https://cdn-api.pandascore.co/images/team/image/126377/711px_imperial_esports_2025_allmode.png"
+  }
+}
