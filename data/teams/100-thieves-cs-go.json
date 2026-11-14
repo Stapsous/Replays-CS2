@@ -1,0 +1,30 @@
+{
+  "matches": [
+    {
+      "key": "2026-11-15",
+      "start": "2026-11-15T12:00:00Z",
+      "event": "PGL Cluj-Napoca: Closed Qualifier 2027",
+      "pid": 1796527,
+      "ch": "pgl",
+      "prevPid": 1796529,
+      "prevUntil": "2026-11-15T14:00:00.000Z"
+    },
+    {
+      "key": "2026-11-24",
+      "start": "2026-11-24T05:00:00Z",
+      "event": "PGL Major Singapore 2026",
+      "pid": 1789253,
+      "ch": "pgl",
+      "prevPid": 1789257,
+      "prevUntil": "2026-11-24T06:00:00.000Z"
+    }
+  ],
+  "links": [],
+  "team": {
+    "id": 126452,
+    "slug": "100-thieves-cs-go",
+    "name": "100 Thieves",
+    "acronym": "100T",
+    "image": "https://cdn-api.pandascore.co/images/team/image/126452/8474.png"
+  }
+}
