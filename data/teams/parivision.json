@@ -84,7 +84,8 @@
       "start": "2026-11-15T18:00:00Z",
       "event": "PGL Cluj-Napoca: Closed Qualifier 2027",
       "pid": 1796530,
-      "ch": "pgl"
+      "ch": "pgl",
+      "done": true
     }
   ],
   "links": [
@@ -373,7 +374,8 @@
       "match": "2026-11-15-2",
       "kind": "definitif",
       "url": "https://www.twitch.tv/videos/2917637842?t=314h00m06s",
-      "createdAt": "2026-11-15T18:12:18.984Z"
+      "createdAt": "2026-11-15T18:12:18.984Z",
+      "end": "317h34m29s"
     },
     {
       "id": "2026-11-15-2-map1",
@@ -396,7 +398,7 @@
       "match": "2026-11-15-2",
       "kind": "map",
       "map": 3,
-      "url": "https://www.twitch.tv/videos/2917637842?t=314h00m06s",
+      "url": "https://www.twitch.tv/videos/2917637842?t=316h23m10s",
       "createdAt": "2026-11-15T18:12:18.984Z"
     }
   ],
