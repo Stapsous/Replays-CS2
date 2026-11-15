@@ -26,7 +26,8 @@
       "pid": 1796534,
       "ch": "pgl",
       "prevPid": 1796530,
-      "prevUntil": "2026-11-15T23:07:52.000Z"
+      "prevUntil": "2026-11-15T23:07:52.000Z",
+      "done": true
     }
   ],
   "links": [
@@ -81,7 +82,8 @@
       "match": "2026-11-15-2",
       "kind": "definitif",
       "url": "https://www.twitch.tv/videos/2917637842?t=314h33m06s",
-      "createdAt": "2026-11-15T18:43:25.181Z"
+      "createdAt": "2026-11-15T18:43:25.181Z",
+      "end": "316h10m12s"
     },
     {
       "id": "2026-11-15-2-map1",
@@ -104,8 +106,9 @@
       "match": "2026-11-15-2",
       "kind": "map",
       "map": 3,
-      "url": "https://www.twitch.tv/videos/2917637842?t=314h33m06s",
-      "createdAt": "2026-11-15T18:43:25.181Z"
+      "url": "https://www.twitch.tv/videos/2917637842?t=316h10m42s",
+      "createdAt": "2026-11-15T18:43:25.181Z",
+      "unplayed": true
     }
   ],
   "team": {
