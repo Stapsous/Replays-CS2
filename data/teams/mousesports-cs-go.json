@@ -121,7 +121,8 @@
       "pid": 1762449,
       "ch": "blastpremier",
       "decoy": true,
-      "after": "2026-11-14"
+      "after": "2026-11-14",
+      "done": true
     }
   ],
   "links": [
@@ -603,7 +604,8 @@
       "match": "2026-11-15",
       "kind": "definitif",
       "url": "https://www.twitch.tv/videos/2929388789?t=1h16m23s",
-      "createdAt": "2026-11-15T08:10:19.352Z"
+      "createdAt": "2026-11-15T08:10:19.352Z",
+      "end": "4h12m30s"
     },
     {
       "id": "2026-11-15-map1",
@@ -634,16 +636,18 @@
       "match": "2026-11-15",
       "kind": "map",
       "map": 4,
-      "url": "https://www.twitch.tv/videos/2929388789?t=1h16m23s",
-      "createdAt": "2026-11-15T08:10:19.352Z"
+      "url": "https://www.twitch.tv/videos/2929388789?t=4h13m00s",
+      "createdAt": "2026-11-15T08:10:19.352Z",
+      "unplayed": true
     },
     {
       "id": "2026-11-15-map5",
       "match": "2026-11-15",
       "kind": "map",
       "map": 5,
-      "url": "https://www.twitch.tv/videos/2929388789?t=1h16m23s",
-      "createdAt": "2026-11-15T08:10:19.352Z"
+      "url": "https://www.twitch.tv/videos/2929388789?t=4h13m00s",
+      "createdAt": "2026-11-15T08:10:19.352Z",
+      "unplayed": true
     }
   ],
   "team": {
