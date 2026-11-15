@@ -8,6 +8,13 @@
       "image": "https://cdn-api.pandascore.co/images/team/image/3455/team_vitalitylogo_square.png"
     },
     {
+      "id": 999999001,
+      "slug": "lol-worlds",
+      "name": "LoL Worlds 2026",
+      "acronym": "LOL",
+      "image": ""
+    },
+    {
       "id": 126452,
       "slug": "100-thieves-cs-go",
       "name": "100 Thieves",

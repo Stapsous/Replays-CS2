@@ -1,0 +1,73 @@
+{
+  "team": {
+    "id": 999999001,
+    "slug": "lol-worlds",
+    "name": "LoL Worlds 2026",
+    "acronym": "LOL",
+    "image": ""
+  },
+  "matches": [
+    {
+      "key": "2026-11-14",
+      "start": "2026-11-14T19:40:00Z",
+      "event": "LoL Worlds 2026",
+      "done": true
+    }
+  ],
+  "links": [
+    {
+      "id": "2026-11-14-definitif",
+      "match": "2026-11-14",
+      "kind": "definitif",
+      "url": "https://www.twitch.tv/videos/2928653119?t=4h13m46s",
+      "end": "8h32m17s",
+      "createdAt": "2026-11-15T06:12:46.774Z"
+    },
+    {
+      "id": "2026-11-14-map1",
+      "match": "2026-11-14",
+      "kind": "map",
+      "map": 1,
+      "unit": "Partie",
+      "url": "https://www.twitch.tv/videos/2928653119?t=4h14m17s",
+      "createdAt": "2026-11-15T06:12:46.774Z"
+    },
+    {
+      "id": "2026-11-14-map2",
+      "match": "2026-11-14",
+      "kind": "map",
+      "map": 2,
+      "unit": "Partie",
+      "url": "https://www.twitch.tv/videos/2928653119?t=5h20m50s",
+      "createdAt": "2026-11-15T06:12:46.774Z"
+    },
+    {
+      "id": "2026-11-14-map3",
+      "match": "2026-11-14",
+      "kind": "map",
+      "map": 3,
+      "unit": "Partie",
+      "url": "https://www.twitch.tv/videos/2928653119?t=6h40m17s",
+      "createdAt": "2026-11-15T06:12:46.774Z"
+    },
+    {
+      "id": "2026-11-14-map4",
+      "match": "2026-11-14",
+      "kind": "map",
+      "map": 4,
+      "unit": "Partie",
+      "url": "https://www.twitch.tv/videos/2928653119?t=7h38m47s",
+      "createdAt": "2026-11-15T06:12:46.774Z"
+    },
+    {
+      "id": "2026-11-14-map5",
+      "match": "2026-11-14",
+      "kind": "map",
+      "map": 5,
+      "unit": "Partie",
+      "url": "https://www.twitch.tv/videos/2928653119?t=8h32m47s",
+      "unplayed": true,
+      "createdAt": "2026-11-15T06:12:46.774Z"
+    }
+  ]
+}
