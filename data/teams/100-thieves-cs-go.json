@@ -26,6 +26,13 @@
       "pid": 1796530,
       "ch": "pgl",
       "done": true
+    },
+    {
+      "key": "2026-11-17",
+      "start": "2026-11-17T12:00:00Z",
+      "event": "PGL Cluj-Napoca: Closed Qualifier 2027",
+      "pid": 1796532,
+      "ch": "pgl"
     }
   ],
   "links": [
