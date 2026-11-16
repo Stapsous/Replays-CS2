@@ -184,7 +184,8 @@
       "pid": 1796493,
       "ch": "scoresight",
       "decoy": true,
-      "after": "2026-11-14-2"
+      "after": "2026-11-14-2",
+      "done": true
     },
     {
       "key": "2026-11-16",
