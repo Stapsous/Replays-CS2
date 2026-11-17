@@ -43,7 +43,15 @@
       "ch": ""
     }
   ],
-  "links": [],
+  "links": [
+    {
+      "id": "2026-11-17-prevu",
+      "match": "2026-11-17",
+      "kind": "prevu",
+      "url": "https://www.twitch.tv/videos/2931269566?t=9h35m30s",
+      "createdAt": "2026-11-17T19:02:46.826Z"
+    }
+  ],
   "team": {
     "id": 3222,
     "slug": "envyus",
