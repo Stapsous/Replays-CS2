@@ -34,6 +34,13 @@
       "ch": "playzoneup",
       "prevPid": 1805731,
       "prevUntil": "2026-11-17T21:00:00.000Z"
+    },
+    {
+      "key": "2026-12-02",
+      "start": "2026-12-02T11:00:00Z",
+      "event": "ROG Journey Winter 2026",
+      "pid": 1818679,
+      "ch": ""
     }
   ],
   "links": [],

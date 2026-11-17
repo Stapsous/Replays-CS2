@@ -83,6 +83,13 @@
       "prevPid": 1781487,
       "prevUntil": "2026-11-08T09:06:00.000Z",
       "done": true
+    },
+    {
+      "key": "2026-12-01",
+      "start": "2026-12-01T11:00:00Z",
+      "event": "ROG Journey Winter 2026",
+      "pid": 1818673,
+      "ch": ""
     }
   ],
   "links": [
