@@ -96,6 +96,16 @@
       "prevPid": 1796536,
       "prevUntil": "2026-11-16T20:10:21.000Z",
       "done": true
+    },
+    {
+      "key": "2026-11-17",
+      "start": "2026-11-17T12:00:00Z",
+      "event": "PGL Cluj-Napoca: Closed Qualifier 2027",
+      "pid": 1796532,
+      "ch": "pgl",
+      "decoy": true,
+      "after": "2026-11-16",
+      "done": true
     }
   ],
   "links": [
@@ -450,6 +460,38 @@
       "url": "https://www.twitch.tv/videos/2917637842?t=339h55m41s",
       "createdAt": "2026-11-16T18:13:08.675Z",
       "unplayed": true
+    },
+    {
+      "id": "2026-11-17-definitif",
+      "match": "2026-11-17",
+      "kind": "definitif",
+      "url": "https://www.twitch.tv/videos/2917637842?t=355h56m56s",
+      "createdAt": "2026-11-17T14:39:24.184Z",
+      "end": "358h29m41s"
+    },
+    {
+      "id": "2026-11-17-map1",
+      "match": "2026-11-17",
+      "kind": "map",
+      "map": 1,
+      "url": "https://www.twitch.tv/videos/2917637842?t=355h57m28s",
+      "createdAt": "2026-11-17T14:39:24.184Z"
+    },
+    {
+      "id": "2026-11-17-map2",
+      "match": "2026-11-17",
+      "kind": "map",
+      "map": 2,
+      "url": "https://www.twitch.tv/videos/2917637842?t=356h45m44s",
+      "createdAt": "2026-11-17T14:39:24.184Z"
+    },
+    {
+      "id": "2026-11-17-map3",
+      "match": "2026-11-17",
+      "kind": "map",
+      "map": 3,
+      "url": "https://www.twitch.tv/videos/2917637842?t=357h51m12s",
+      "createdAt": "2026-11-17T14:39:24.184Z"
     }
   ],
   "team": {
