@@ -227,6 +227,15 @@
       "ch": "scoresight",
       "decoy": true,
       "after": "2026-11-18"
+    },
+    {
+      "key": "2026-11-20-2",
+      "start": "2026-11-20T18:00:00Z",
+      "event": "CCT Europe Series #14 2026",
+      "pid": 1789186,
+      "ch": "jester_andrew",
+      "prevPid": 1789185,
+      "prevUntil": "2026-11-20T20:00:00.000Z"
     }
   ],
   "links": [
