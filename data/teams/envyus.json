@@ -42,6 +42,15 @@
       "event": "ROG Journey Winter 2026",
       "pid": 1818679,
       "ch": ""
+    },
+    {
+      "key": "2026-11-18",
+      "start": "2026-11-18T19:00:00Z",
+      "event": "RUSH Brno 2026",
+      "pid": 1805734,
+      "ch": "playzoneup",
+      "prevPid": 1805730,
+      "prevUntil": "2026-11-18T21:00:00.000Z"
     }
   ],
   "links": [
