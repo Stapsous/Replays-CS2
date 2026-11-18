@@ -50,7 +50,8 @@
       "pid": 1805734,
       "ch": "playzoneup",
       "prevPid": 1805730,
-      "prevUntil": "2026-11-18T21:04:55.000Z"
+      "prevUntil": "2026-11-18T21:04:55.000Z",
+      "done": true
     }
   ],
   "links": [
@@ -98,7 +99,8 @@
       "match": "2026-11-18",
       "kind": "definitif",
       "url": "https://www.twitch.tv/videos/2932174229?t=10h13m13s",
-      "createdAt": "2026-11-18T19:34:52.998Z"
+      "createdAt": "2026-11-18T19:34:52.998Z",
+      "end": "13h49m17s"
     },
     {
       "id": "2026-11-18-map1",
@@ -121,7 +123,7 @@
       "match": "2026-11-18",
       "kind": "map",
       "map": 3,
-      "url": "https://www.twitch.tv/videos/2932174229?t=10h13m13s",
+      "url": "https://www.twitch.tv/videos/2932174229?t=13h00m19s",
       "createdAt": "2026-11-18T19:34:52.998Z"
     }
   ],
