@@ -236,7 +236,8 @@
       "pid": 1789186,
       "ch": "jester_andrew",
       "prevPid": 1789185,
-      "prevUntil": "2026-11-20T20:16:21.000Z"
+      "prevUntil": "2026-11-20T20:16:21.000Z",
+      "done": true
     },
     {
       "key": "2026-11-21",
@@ -521,7 +522,8 @@
       "match": "2026-11-20-2",
       "kind": "definitif",
       "url": "https://www.twitch.tv/videos/2934826911?t=7h09m25s",
-      "createdAt": "2026-11-20T18:49:32.218Z"
+      "createdAt": "2026-11-20T18:49:32.218Z",
+      "end": "8h57m58s"
     },
     {
       "id": "2026-11-20-2-map1",
@@ -544,8 +546,9 @@
       "match": "2026-11-20-2",
       "kind": "map",
       "map": 3,
-      "url": "https://www.twitch.tv/videos/2934826911?t=7h09m25s",
-      "createdAt": "2026-11-20T18:49:32.218Z"
+      "url": "https://www.twitch.tv/videos/2934826911?t=8h58m28s",
+      "createdAt": "2026-11-20T18:49:32.218Z",
+      "unplayed": true
     }
   ],
   "team": {
