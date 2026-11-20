@@ -60,6 +60,13 @@
       "pid": 1805735,
       "ch": "playzoneup",
       "done": true
+    },
+    {
+      "key": "2026-11-21",
+      "start": "2026-11-21T13:00:00Z",
+      "event": "RUSH Brno 2026",
+      "pid": 1805737,
+      "ch": "playzoneup"
     }
   ],
   "links": [
