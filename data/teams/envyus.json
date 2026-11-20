@@ -58,7 +58,8 @@
       "start": "2026-11-20T15:00:00Z",
       "event": "RUSH Brno 2026",
       "pid": 1805735,
-      "ch": "playzoneup"
+      "ch": "playzoneup",
+      "done": true
     }
   ],
   "links": [
@@ -145,7 +146,8 @@
       "match": "2026-11-20",
       "kind": "definitif",
       "url": "https://www.twitch.tv/videos/2934862410?t=2h42m54s",
-      "createdAt": "2026-11-20T15:17:39.204Z"
+      "createdAt": "2026-11-20T15:17:39.204Z",
+      "end": "6h05m26s"
     },
     {
       "id": "2026-11-20-map1",
@@ -168,7 +170,7 @@
       "match": "2026-11-20",
       "kind": "map",
       "map": 3,
-      "url": "https://www.twitch.tv/videos/2934862410?t=2h42m54s",
+      "url": "https://www.twitch.tv/videos/2934862410?t=5h32m53s",
       "createdAt": "2026-11-20T15:17:39.204Z"
     }
   ],
