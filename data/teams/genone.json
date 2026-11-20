@@ -237,6 +237,15 @@
       "ch": "jester_andrew",
       "prevPid": 1789185,
       "prevUntil": "2026-11-20T20:00:00.000Z"
+    },
+    {
+      "key": "2026-11-21",
+      "start": "2026-11-21T09:00:00Z",
+      "event": "NODWIN Clutch Series Season 14 2026",
+      "pid": 1796515,
+      "ch": "scoresight",
+      "decoy": true,
+      "after": "2026-11-20"
     }
   ],
   "links": [
