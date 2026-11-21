@@ -40,7 +40,8 @@
       "pid": 1791312,
       "ch": "",
       "decoy": true,
-      "after": "2026-11-19"
+      "after": "2026-11-19",
+      "done": true
     }
   ],
   "links": [],
