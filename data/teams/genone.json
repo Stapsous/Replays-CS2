@@ -255,7 +255,8 @@
       "pid": 1789187,
       "ch": "jester_andrew",
       "decoy": true,
-      "after": "2026-11-20-2"
+      "after": "2026-11-20-2",
+      "done": true
     }
   ],
   "links": [
@@ -571,7 +572,8 @@
       "match": "2026-11-21-2",
       "kind": "definitif",
       "url": "https://www.twitch.tv/videos/2935926148?t=0h40m49s",
-      "createdAt": "2026-11-21T09:06:21.768Z"
+      "createdAt": "2026-11-21T09:06:21.768Z",
+      "end": "3h54m35s"
     },
     {
       "id": "2026-11-21-2-map1",
@@ -594,7 +596,7 @@
       "match": "2026-11-21-2",
       "kind": "map",
       "map": 3,
-      "url": "https://www.twitch.tv/videos/2935926148?t=0h40m49s",
+      "url": "https://www.twitch.tv/videos/2935926148?t=2h58m30s",
       "createdAt": "2026-11-21T09:06:21.768Z"
     }
   ],
