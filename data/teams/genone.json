@@ -259,6 +259,16 @@
       "decoy": true,
       "after": "2026-11-20-2",
       "done": true
+    },
+    {
+      "key": "2026-11-22",
+      "start": "2026-11-22T14:15:00Z",
+      "event": "CCT Europe Series #14 2026",
+      "pid": 1789191,
+      "ch": "jester_andrew",
+      "decoy": true,
+      "after": "2026-11-21-2",
+      "done": true
     }
   ],
   "links": [
@@ -600,6 +610,38 @@
       "map": 3,
       "url": "https://www.twitch.tv/videos/2935926148?t=2h58m30s",
       "createdAt": "2026-11-21T09:06:21.768Z"
+    },
+    {
+      "id": "2026-11-22-definitif",
+      "match": "2026-11-22",
+      "kind": "definitif",
+      "url": "https://www.twitch.tv/videos/2937168946?t=3h40m39s",
+      "createdAt": "2026-11-22T17:03:49.834Z",
+      "end": "6h31m23s"
+    },
+    {
+      "id": "2026-11-22-map1",
+      "match": "2026-11-22",
+      "kind": "map",
+      "map": 1,
+      "url": "https://www.twitch.tv/videos/2937168946?t=3h41m09s",
+      "createdAt": "2026-11-22T17:03:49.834Z"
+    },
+    {
+      "id": "2026-11-22-map2",
+      "match": "2026-11-22",
+      "kind": "map",
+      "map": 2,
+      "url": "https://www.twitch.tv/videos/2937168946?t=4h53m07s",
+      "createdAt": "2026-11-22T17:03:49.834Z"
+    },
+    {
+      "id": "2026-11-22-map3",
+      "match": "2026-11-22",
+      "kind": "map",
+      "map": 3,
+      "url": "https://www.twitch.tv/videos/2937168946?t=5h49m13s",
+      "createdAt": "2026-11-22T17:03:49.834Z"
     }
   ],
   "team": {
