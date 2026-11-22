@@ -247,7 +247,8 @@
       "pid": 1796515,
       "ch": "scoresight",
       "decoy": true,
-      "after": "2026-11-20"
+      "after": "2026-11-20",
+      "done": true
     },
     {
       "key": "2026-11-21-2",
