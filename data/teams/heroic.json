@@ -556,6 +556,21 @@
       "kind": "prevu",
       "url": "https://www.twitch.tv/videos/2939045375?t=5h19m15s",
       "createdAt": "2026-11-24T08:46:11.312Z"
+    },
+    {
+      "id": "2026-11-24-2-definitif",
+      "match": "2026-11-24-2",
+      "kind": "definitif",
+      "url": "https://www.twitch.tv/videos/2939045375?t=5h24m22s",
+      "createdAt": "2026-11-24T08:51:24.987Z"
+    },
+    {
+      "id": "2026-11-24-2-map1",
+      "match": "2026-11-24-2",
+      "kind": "map",
+      "map": 1,
+      "url": "https://www.twitch.tv/videos/2939045375?t=5h24m52s",
+      "createdAt": "2026-11-24T08:51:24.987Z"
     }
   ],
   "team": {
