@@ -12,7 +12,7 @@
     },
     {
       "key": "2026-11-24-2",
-      "start": "2026-11-24T10:00:00Z",
+      "start": "2026-11-24T09:35:00Z",
       "event": "PGL Major Singapore 2026",
       "pid": 1816908,
       "ch": "pgl",
@@ -43,6 +43,13 @@
       "map": 1,
       "url": "https://www.twitch.tv/videos/2939040599?t=1h45m46s",
       "createdAt": "2026-11-24T05:09:20.678Z"
+    },
+    {
+      "id": "2026-11-24-2-prevu",
+      "match": "2026-11-24-2",
+      "kind": "prevu",
+      "url": "https://www.twitch.tv/videos/2939040599?t=6h16m02s",
+      "createdAt": "2026-11-24T09:38:05.134Z"
     }
   ],
   "team": {
