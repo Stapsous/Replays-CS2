@@ -9,6 +9,15 @@
       "prevPid": 1789258,
       "prevUntil": "2026-11-24T07:04:13.000Z",
       "done": true
+    },
+    {
+      "key": "2026-11-24-2",
+      "start": "2026-11-24T08:45:00Z",
+      "event": "PGL Major Singapore 2026",
+      "pid": 1816906,
+      "ch": "pgl_cs2",
+      "prevPid": 1789255,
+      "prevUntil": "2026-11-24T09:21:59.000Z"
     }
   ],
   "links": [
