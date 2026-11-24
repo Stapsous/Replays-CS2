@@ -2,12 +2,12 @@
   "matches": [
     {
       "key": "2026-11-24",
-      "start": "2026-11-24T05:00:00Z",
+      "start": "2026-11-24T05:15:00Z",
       "event": "PGL Major Singapore 2026",
       "pid": 1789253,
       "ch": "pgl",
-      "prevPid": 1789257,
-      "prevUntil": "2026-11-24T06:08:17.000Z"
+      "prevPid": 1789258,
+      "prevUntil": "2026-11-24T07:00:00.000Z"
     }
   ],
   "links": [],

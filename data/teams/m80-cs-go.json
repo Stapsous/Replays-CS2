@@ -10,7 +10,15 @@
       "prevUntil": "2026-11-24T06:08:17.000Z"
     }
   ],
-  "links": [],
+  "links": [
+    {
+      "id": "2026-11-24-prevu",
+      "match": "2026-11-24",
+      "kind": "prevu",
+      "url": "https://www.twitch.tv/videos/2939040599?t=1h41m02s",
+      "createdAt": "2026-11-24T05:04:08.384Z"
+    }
+  ],
   "team": {
     "id": 133435,
     "slug": "m80-cs-go",
