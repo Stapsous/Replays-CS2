@@ -151,7 +151,8 @@
       "pid": 1816916,
       "ch": "pgl",
       "prevPid": 1816914,
-      "prevUntil": "2026-11-25T08:01:46.000Z"
+      "prevUntil": "2026-11-25T08:01:46.000Z",
+      "done": true
     }
   ],
   "links": [
@@ -577,7 +578,8 @@
       "match": "2026-11-25",
       "kind": "definitif",
       "url": "https://www.twitch.tv/videos/2940110542?t=1h41m02s",
-      "createdAt": "2026-11-25T07:15:58.037Z"
+      "createdAt": "2026-11-25T07:15:58.037Z",
+      "end": "2h43m31s"
     },
     {
       "id": "2026-11-25-map1",
