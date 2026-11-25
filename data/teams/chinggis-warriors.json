@@ -27,7 +27,8 @@
       "pid": 1816919,
       "ch": "pgl",
       "prevPid": 1816917,
-      "prevUntil": "2026-11-25T13:31:22.000Z"
+      "prevUntil": "2026-11-25T13:31:22.000Z",
+      "done": true
     }
   ],
   "links": [
@@ -82,7 +83,8 @@
       "match": "2026-11-25",
       "kind": "definitif",
       "url": "https://www.twitch.tv/videos/2940110542?t=4h35m08s",
-      "createdAt": "2026-11-25T10:10:51.377Z"
+      "createdAt": "2026-11-25T10:10:51.377Z",
+      "end": "7h40m32s"
     },
     {
       "id": "2026-11-25-map1",
@@ -105,7 +107,7 @@
       "match": "2026-11-25",
       "kind": "map",
       "map": 3,
-      "url": "https://www.twitch.tv/videos/2940110542?t=4h35m08s",
+      "url": "https://www.twitch.tv/videos/2940110542?t=6h46m07s",
       "createdAt": "2026-11-25T10:10:51.377Z"
     }
   ],
