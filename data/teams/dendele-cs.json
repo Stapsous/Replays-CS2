@@ -39,7 +39,8 @@
       "decoy": true,
       "after": "2026-11-25",
       "prevPid": 1816922,
-      "prevUntil": "2026-11-26T11:02:02.000Z"
+      "prevUntil": "2026-11-26T11:02:02.000Z",
+      "done": true
     }
   ],
   "links": [
@@ -127,7 +128,8 @@
       "match": "2026-11-26",
       "kind": "definitif",
       "url": "https://www.twitch.tv/videos/2941079507?t=3h50m44s",
-      "createdAt": "2026-11-26T09:04:55.870Z"
+      "createdAt": "2026-11-26T09:04:55.870Z",
+      "end": "5h50m37s"
     },
     {
       "id": "2026-11-26-map1",
@@ -150,8 +152,9 @@
       "match": "2026-11-26",
       "kind": "map",
       "map": 3,
-      "url": "https://www.twitch.tv/videos/2941079507?t=3h50m44s",
-      "createdAt": "2026-11-26T09:04:55.870Z"
+      "url": "https://www.twitch.tv/videos/2941079507?t=5h51m07s",
+      "createdAt": "2026-11-26T09:04:55.870Z",
+      "unplayed": true
     }
   ],
   "team": {
