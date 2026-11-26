@@ -75,6 +75,15 @@
       "pid": 1816922,
       "ch": "pgl",
       "done": true
+    },
+    {
+      "key": "2026-11-27",
+      "start": "2026-11-27T06:00:00Z",
+      "event": "PGL Major Singapore 2026",
+      "pid": 1816927,
+      "ch": "pgl",
+      "decoy": true,
+      "after": "2026-11-26"
     }
   ],
   "links": [
