@@ -269,6 +269,13 @@
       "decoy": true,
       "after": "2026-11-21-2",
       "done": true
+    },
+    {
+      "key": "2026-11-27",
+      "start": "2026-11-27T18:00:00Z",
+      "event": "Exort Fiesta Season 4 2026",
+      "pid": 1819327,
+      "ch": ""
     }
   ],
   "links": [
