@@ -278,6 +278,37 @@
       "kind": "prevu",
       "url": "https://www.twitch.tv/videos/2942004934?t=6h34m31s",
       "createdAt": "2026-11-27T12:03:24.692Z"
+    },
+    {
+      "id": "2026-11-27-definitif",
+      "match": "2026-11-27",
+      "kind": "definitif",
+      "url": "https://www.twitch.tv/videos/2942004934?t=6h42m53s",
+      "createdAt": "2026-11-27T12:08:45.580Z"
+    },
+    {
+      "id": "2026-11-27-map1",
+      "match": "2026-11-27",
+      "kind": "map",
+      "map": 1,
+      "url": "https://www.twitch.tv/videos/2942004934?t=6h43m23s",
+      "createdAt": "2026-11-27T12:08:45.580Z"
+    },
+    {
+      "id": "2026-11-27-map2",
+      "match": "2026-11-27",
+      "kind": "map",
+      "map": 2,
+      "url": "https://www.twitch.tv/videos/2942004934?t=6h42m53s",
+      "createdAt": "2026-11-27T12:08:45.580Z"
+    },
+    {
+      "id": "2026-11-27-map3",
+      "match": "2026-11-27",
+      "kind": "map",
+      "map": 3,
+      "url": "https://www.twitch.tv/videos/2942004934?t=6h42m53s",
+      "createdAt": "2026-11-27T12:08:45.580Z"
     }
   ],
   "team": {
