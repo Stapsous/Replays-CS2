@@ -1,0 +1,21 @@
+{
+  "matches": [
+    {
+      "key": "2026-11-28",
+      "start": "2026-11-28T06:00:00Z",
+      "event": "PGL Major Singapore 2026",
+      "pid": 1817103,
+      "ch": "pgl",
+      "prevPid": 1817101,
+      "prevUntil": "2026-11-28T07:00:00.000Z"
+    }
+  ],
+  "links": [],
+  "team": {
+    "id": 3209,
+    "slug": "astralis",
+    "name": "Astralis",
+    "acronym": "AST",
+    "image": "https://cdn-api.pandascore.co/images/team/image/3209/ASTRALIS.png"
+  }
+}

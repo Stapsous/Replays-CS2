@@ -8,13 +8,6 @@
       "image": "https://cdn-api.pandascore.co/images/team/image/3455/team_vitalitylogo_square.png"
     },
     {
-      "id": 999999001,
-      "slug": "lol-worlds",
-      "name": "LoL Worlds 2026",
-      "acronym": "LOL",
-      "image": ""
-    },
-    {
       "id": 126452,
       "slug": "100-thieves-cs-go",
       "name": "100 Thieves",
@@ -27,6 +20,13 @@
       "name": "9z",
       "acronym": "9z",
       "image": "https://cdn-api.pandascore.co/images/team/image/126709/9z_team_2024_lightmode.png"
+    },
+    {
+      "id": 3209,
+      "slug": "astralis",
+      "name": "Astralis",
+      "acronym": "AST",
+      "image": "https://cdn-api.pandascore.co/images/team/image/3209/ASTRALIS.png"
     },
     {
       "id": 131505,
@@ -155,6 +155,13 @@
       "image": "https://cdn-api.pandascore.co/images/team/image/3213/463px_team_liquid_2024_full_lightmode.png"
     },
     {
+      "id": 999999001,
+      "slug": "lol-worlds",
+      "name": "LoL Worlds 2026",
+      "acronym": "LOL",
+      "image": ""
+    },
+    {
       "id": 126439,
       "slug": "lynn-vision",
       "name": "Lynn Vision",
@@ -167,6 +174,13 @@
       "name": "M80",
       "acronym": "M80",
       "image": "https://cdn-api.pandascore.co/images/team/image/133435/788px_m80_2023_allmode.png"
+    },
+    {
+      "id": 3250,
+      "slug": "mibr",
+      "name": "MIBR",
+      "acronym": "MIBR",
+      "image": "https://cdn-api.pandascore.co/images/team/image/3250/600px_mibr_2018.png"
     },
     {
       "id": 3240,
@@ -223,6 +237,13 @@
       "name": "Team Falcons",
       "acronym": "FAL",
       "image": "https://cdn-api.pandascore.co/images/team/image/130564/team_falconslogo_square.png"
+    },
+    {
+      "id": 139563,
+      "slug": "the-one",
+      "name": "THE ONE",
+      "acronym": "ONE",
+      "image": "https://cdn-api.pandascore.co/images/team/image/139563/456px_the_one_lightmode.png"
     },
     {
       "id": 3272,
