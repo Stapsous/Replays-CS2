@@ -144,6 +144,17 @@
       "decoy": true,
       "after": "2026-11-26",
       "done": true
+    },
+    {
+      "key": "2026-11-28",
+      "start": "2026-11-28T09:00:00Z",
+      "event": "PGL Major Singapore 2026",
+      "pid": 1817107,
+      "ch": "pgl_cs2",
+      "decoy": true,
+      "after": "2026-11-27",
+      "prevPid": 1817104,
+      "prevUntil": "2026-11-28T09:28:34.000Z"
     }
   ],
   "links": [

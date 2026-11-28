@@ -49,6 +49,16 @@
       "prevPid": 1816927,
       "prevUntil": "2026-11-27T11:02:18.000Z",
       "done": true
+    },
+    {
+      "key": "2026-11-28",
+      "start": "2026-11-28T06:15:00Z",
+      "event": "PGL Major Singapore 2026",
+      "pid": 1817101,
+      "ch": "pgl",
+      "decoy": true,
+      "after": "2026-11-27",
+      "done": true
     }
   ],
   "links": [
@@ -170,6 +180,22 @@
       "map": 3,
       "url": "https://www.twitch.tv/videos/2942004934?t=5h31m23s",
       "createdAt": "2026-11-27T08:33:42.346Z"
+    },
+    {
+      "id": "2026-11-28-definitif",
+      "match": "2026-11-28",
+      "kind": "definitif",
+      "url": "https://www.twitch.tv/videos/2942907375?t=3h05m37s",
+      "createdAt": "2026-11-28T08:34:25.779Z",
+      "end": "3h54m13s"
+    },
+    {
+      "id": "2026-11-28-map1",
+      "match": "2026-11-28",
+      "kind": "map",
+      "map": 1,
+      "url": "https://www.twitch.tv/videos/2942907375?t=3h06m07s",
+      "createdAt": "2026-11-28T08:34:25.779Z"
     }
   ],
   "team": {
