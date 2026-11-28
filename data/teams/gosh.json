@@ -215,6 +215,13 @@
       "url": "https://www.twitch.tv/videos/2942004934?t=2h35m09s",
       "createdAt": "2026-11-27T06:02:30.993Z",
       "unplayed": true
+    },
+    {
+      "id": "2026-11-28-prevu",
+      "match": "2026-11-28",
+      "kind": "prevu",
+      "url": "https://www.twitch.tv/videos/2942919834?t=5h52m05s",
+      "createdAt": "2026-11-28T09:20:45.512Z"
     }
   ],
   "team": {
