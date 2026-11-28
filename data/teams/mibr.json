@@ -10,7 +10,15 @@
       "prevUntil": "2026-11-28T08:17:11.000Z"
     }
   ],
-  "links": [],
+  "links": [
+    {
+      "id": "2026-11-28-prevu",
+      "match": "2026-11-28",
+      "kind": "prevu",
+      "url": "https://www.twitch.tv/videos/2942907375?t=3h48m26s",
+      "createdAt": "2026-11-28T07:01:34.807Z"
+    }
+  ],
   "team": {
     "id": 3250,
     "slug": "mibr",
