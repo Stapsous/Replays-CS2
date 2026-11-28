@@ -61,7 +61,8 @@
       "decoy": true,
       "after": "2026-11-27",
       "prevPid": 1817104,
-      "prevUntil": "2026-11-28T09:28:34.000Z"
+      "prevUntil": "2026-11-28T09:28:34.000Z",
+      "done": true
     }
   ],
   "links": [
@@ -222,7 +223,8 @@
       "match": "2026-11-28",
       "kind": "definitif",
       "url": "https://www.twitch.tv/videos/2942919834?t=5h57m50s",
-      "createdAt": "2026-11-28T09:25:55.798Z"
+      "createdAt": "2026-11-28T09:25:55.798Z",
+      "end": "6h23m37s"
     },
     {
       "id": "2026-11-28-map1",
