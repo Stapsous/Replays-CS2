@@ -55,7 +55,8 @@
       "start": "2026-11-28T04:00:00Z",
       "event": "PGL Major Singapore 2026",
       "pid": 1817025,
-      "ch": "pgl"
+      "ch": "pgl",
+      "done": true
     }
   ],
   "links": [
@@ -208,7 +209,8 @@
       "match": "2026-11-28",
       "kind": "definitif",
       "url": "https://www.twitch.tv/videos/2942907375?t=0h49m36s",
-      "createdAt": "2026-11-28T04:01:41.139Z"
+      "createdAt": "2026-11-28T04:01:41.139Z",
+      "end": "1h43m50s"
     },
     {
       "id": "2026-11-28-map1",
